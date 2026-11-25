@@ -4,7 +4,7 @@ import { createRequire } from 'node:module'
 process.env.NEXT_PUBLIC_WUKONG_TRIAL = '1'
 const require = createRequire(import.meta.url)
 require('../scripts/register-typescript.cjs')
-const { currentSummon, realmStatus, todayTodos } = require('../lib/home.ts')
+const { currentSummon, realmStatus, dailyTodos } = require('../lib/home.ts')
 const { createProduct, productTransition: transition } = require('../lib/product-state.ts')
 const at = time => Date.parse(`2026-09-19T${time}:00+08:00`)
 const initial = createProduct(at('09:00'), '01234567-89ab-cdef-0123-456789abcdef')
@@ -40,26 +40,30 @@ test('仙境状态：可预约 → 预约已截止 → 召唤中 → 今日已�
   assert.equal(realmStatus('stone_spirit', s.entries, at('09:30')), 'reserved')
   assert.equal(realmStatus('stone_spirit', s.entries, at('11:30')), 'live-reserved')
 })
-test('今日待办：按紧急程度排序，随流程推进而变化', () => {
-  // 新用户：只有一条「预约召唤」
-  const fresh = todayTodos(initial, at('09:00'))
-  assert.deepEqual(fresh.map(t => [t.tone, t.cta]), [['action', '去预约']])
-  // 预约后：等待召唤开始，不再提示预约
+const status = (st, time) => dailyTodos(st, at(time)).map(t => t.status).join(',')
+test('今日待办固定五行：预约、召唤、打款、修炼、收款，随流程推进变化', () => {
+  assert.deepEqual(dailyTodos(initial, at('09:00')).map(t => t.kind), ['reserve', 'cast', 'pay', 'train', 'receive'])
+  // 新用户：只有预约是待处理
+  assert.equal(status(initial, '09:00'), 'todo,none,none,none,none')
+  // 预约后：预约完成，召唤等待开始
   let s = reserve(initial, 'stone_spirit', '09:00')
-  assert.deepEqual(todayTodos(s, at('09:30')).map(t => t.tone), ['wait'])
-  // 召唤周期内：可以当场召唤
-  const live = todayTodos(s, at('11:10'))
-  assert.equal(live[0].castKey, s.entries[0].key); assert.equal(live[0].cta, '召唤')
-  // 召唤成功：待打款排第一，带倒计时
+  assert.equal(status(s, '09:30'), 'done,wait,none,none,none')
+  // 召唤周期内：召唤可当场点
+  const live = dailyTodos(s, at('11:10'))
+  assert.equal(live[1].status, 'todo'); assert.equal(live[1].castKey, s.entries[0].key); assert.equal(live[1].until, at('12:00'))
+  // 召唤成功：打款待处理，带金额和倒计时
   s = transition(s, { type: 'summon-cast', key: s.entries[0].key }, at('11:10')).state
-  const pay = todayTodos(s, at('11:11'))
-  assert.equal(pay[0].tone, 'urgent'); assert.equal(pay[0].cta, '去打款'); assert.equal(pay[0].until, at('12:10')); assert.equal(pay[0].amountCents, 1000)
-  // 打款后：等乙方确认；确认入舍后：今日修炼
+  const pay = dailyTodos(s, at('11:11'))
+  assert.equal(pay[1].status, 'done'); assert.equal(pay[2].status, 'todo'); assert.equal(pay[2].amountCents, 1000); assert.equal(pay[2].until, at('12:10'))
+  assert.equal(dailyTodos({ ...s, usdt: 0 }, at('11:11'))[2].warn, true)
+  // 打款后等乙方确认；入舍后今日待修
   s = transition(s, { type: 'trade-pay', id: s.trades[0].id }, at('11:12')).state
-  assert.ok(todayTodos(s, at('11:13')).some(t => t.tone === 'wait' && t.title.includes('等待乙方确认')))
+  assert.equal(dailyTodos(s, at('11:13'))[2].status, 'wait')
   s = transition(s, { type: 'tick' }, at('11:20')).state
-  const after = todayTodos(s, at('11:20'))
-  assert.ok(after.some(t => t.id === 'train' && t.tone === 'action'))
-  assert.ok(after.some(t => t.tone === 'done' && t.title.includes('召唤成功')))
-  assert.deepEqual(after.map(t => t.tone), [...after.map(t => t.tone)].sort((a, b) => ['urgent', 'action', 'wait', 'done'].indexOf(a) - ['urgent', 'action', 'wait', 'done'].indexOf(b)))
+  const housed = dailyTodos(s, at('11:20'))
+  assert.equal(housed[2].status, 'none'); assert.equal(housed[3].status, 'todo'); assert.equal(housed[3].title, '今日待修 1 只')
+  s = transition(s, { type: 'cultivate', action: { type: 'train', ids: [s.contracts[0].id], accelerate: false, expected: 10 } }, at('11:21')).state
+  assert.equal(dailyTodos(s, at('11:21'))[3].status, 'done')
+  // 18:00 后今日预约全部截止
+  assert.equal(dailyTodos(initial, at('18:30'))[0].status, 'none')
 })

@@ -885,41 +885,39 @@
 .trade-confirm { padding: 12px; border-radius: 10px; border: 1px solid #e0a05a66; background: #2a1d0e88; }
 .nav-badge { position: absolute; top: 6%; right: 16%; z-index: 2; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #d9502e; color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #120d07, 0 0 10px #d9502e99; pointer-events: none; }
 
-/* 首页：今日待办。一屏看完，克制用色：只有最要紧的一件事用金色按钮 */
-.home-page { min-height: 100dvh; background: #050506; }
-.home-body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 480px; margin: -34px auto 0; padding: 0 20px calc(140px + env(safe-area-inset-bottom)); }
-.home-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
-.home-date { min-height: 16px; font-size: 11px; letter-spacing: .28em; color: #c9a866; }
-.home-title { margin-top: 4px; font-family: var(--font-display); font-size: 28px; font-weight: 900; letter-spacing: .12em; line-height: 1.1; color: #fff2d6; text-shadow: 0 2px 18px #000c; }
-.home-count { padding-bottom: 4px; font-size: 12px; color: #a59c8c; }
-.home-count strong { margin-right: 2px; font-family: var(--font-latin); font-size: 20px; color: #ffd27a; }
-.home-sub { display: block; margin-top: 3px; font-size: 11.5px; line-height: 1.5; color: #a59c8c; }
-.home-feature { position: relative; padding: 16px; border-radius: 16px; border: 1px solid #d9b26a80; background: radial-gradient(130% 120% at 0% 0%, #3d2a10 0%, #17130d 55%, #100e0b 100%); box-shadow: 0 0 0 1px #ffe39a12 inset, 0 18px 44px #000a; }
-.home-feature.is-urgent { border-color: #e0a05aa6; }
-.home-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; letter-spacing: .2em; color: #ffd9a0; }
-.home-tag::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: #ffcf5c; box-shadow: 0 0 8px #ffcf5c; }
-.is-urgent .home-tag::before { background: #e0703f; box-shadow: 0 0 8px #e0703f; }
-.home-feature-title { margin-top: 6px; font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: .04em; color: #ffe9c2; }
-.home-amount { font-family: var(--font-latin); font-size: 24px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; color: #ffd27a; }
-/* 其余事项：一条竖线串起来的时间轴，不用卡片 */
-.home-list { position: relative; display: flex; flex-direction: column; padding-left: 4px; }
-.home-list::before { content: ''; position: absolute; left: 12px; top: 22px; bottom: 22px; width: 1px; background: linear-gradient(180deg, #c59b5200, #c59b5266 12%, #c59b5266 88%, #c59b5200); }
-.home-list li { position: relative; display: flex; align-items: center; gap: 14px; }
-.home-list li + li .home-row { border-top: 1px solid #b0904b1f; }
-.home-node { position: relative; z-index: 1; display: inline-flex; flex: none; align-items: center; justify-content: center; width: 17px; height: 17px; border-radius: 999px; border: 1px solid #c59b52; background: #0b0a08; color: #1a140b; }
-.is-action .home-node { border-color: #ffcf5c; box-shadow: 0 0 10px #ffcf5c80; }
-.is-action .home-node::after { content: ''; width: 7px; height: 7px; border-radius: 999px; background: #ffcf5c; }
-.is-urgent .home-node { border-color: #e0703f; box-shadow: 0 0 10px #e0703f99; }
-.is-urgent .home-node::after { content: ''; width: 7px; height: 7px; border-radius: 999px; background: #e0703f; }
-.is-wait .home-node { border-color: #8f8574; }
-.is-done .home-node { border-color: #8a7a52; background: #8a7a52; }
-.home-row { display: flex; flex: 1; min-width: 0; align-items: center; gap: 12px; min-height: 62px; padding: 10px 0; text-align: left; }
-.home-row-title { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14.5px; font-weight: 500; color: #efe7d8; }
-.is-wait .home-row-title { color: #cfc6b4; }
-.is-done .home-row-title { color: #8f8778; }
-.is-done .home-sub { color: #6f695f; }
-.home-cta { display: inline-flex; align-items: center; gap: 1px; font-size: 12.5px; color: #ffd27a; }
-.home-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 44px 0; text-align: center; }
+/* 首页：今日待办。整页正好一屏：画面在上自动伸缩，待办面板贴着导航栏，五行固定 */
+.home-page { display: flex; flex-direction: column; height: 100dvh; min-height: 560px; overflow: hidden; background: #050506; }
+.home-panel { position: relative; z-index: 1; flex: none; width: 100%; max-width: 480px; margin: -72px auto 0; padding: 0 16px calc(112px + env(safe-area-inset-bottom)); }
+.home-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 0 6px 12px; }
+.home-date { min-height: 16px; font-size: 11px; letter-spacing: .28em; color: #d9bb7c; text-shadow: 0 1px 8px #000; }
+.home-title { margin-top: 4px; font-family: var(--font-display); font-size: 28px; font-weight: 900; letter-spacing: .12em; line-height: 1.1; color: #fff2d6; text-shadow: 0 2px 18px #000; }
+.home-count { padding-bottom: 4px; font-size: 12px; color: #c9c0ae; text-shadow: 0 1px 8px #000; }
+.home-count strong { margin-right: 3px; font-family: var(--font-latin); font-size: 22px; color: #ffd27a; }
+/* 五行放在同一块面板里，中间用细线隔开，左边一条线把图标串起来 */
+.home-list { position: relative; display: flex; flex-direction: column; border-radius: 18px; border: 1px solid #c59b5266; background: linear-gradient(180deg, rgb(24 20 14 / 94%), rgb(12 11 9 / 97%)); box-shadow: 0 0 0 1px #ffe39a0f inset, 0 22px 48px #000b; overflow: hidden; }
+.home-list::before { content: ''; position: absolute; left: 31px; top: 34px; bottom: 34px; width: 1px; background: #c59b5240; }
+.home-list li + li { border-top: 1px solid #b0904b24; }
+.home-row { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: clamp(56px, 8.2dvh, 72px); padding: 8px 14px; text-align: left; }
+.home-node { position: relative; z-index: 1; display: inline-flex; flex: none; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 999px; border: 1px solid #8f7a4c; background: #100e0b; color: #a8946a; }
+.home-label { display: block; font-size: 10px; letter-spacing: .3em; color: #9c8a63; }
+.home-row-title { display: block; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14.5px; font-weight: 500; color: #e6ddcc; }
+.home-sub { display: block; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: #958c7c; }
+.home-amount { font-family: var(--font-latin); font-size: 15px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: #ffd27a; }
+.home-amount small { margin-left: 3px; font-family: inherit; font-size: 9px; font-weight: 400; color: #a59c8c; }
+.home-timer { font-family: var(--font-latin); font-size: 12px; line-height: 1; font-variant-numeric: tabular-nums; color: #cfc6b4; }
+.home-cta { display: inline-flex; align-items: center; gap: 1px; padding: 3px 4px 3px 10px; border-radius: 999px; border: 1px solid #ffcf5c99; background: #ffcf5c1f; font-size: 12px; color: #ffe39a; }
+/* 待处理：整行微亮，图标发光 */
+.home-list .is-todo { background: linear-gradient(90deg, #ffcf5c1c, #ffcf5c05 70%); }
+.is-todo .home-node { border-color: #ffcf5c; background: #2e220d; color: #ffd27a; box-shadow: 0 0 14px #ffcf5c66; }
+.is-todo .home-label { color: #ffd27a; }
+.is-todo .home-row-title { color: #fff2d6; font-weight: 700; }
+.is-wait .home-node { border-color: #c59b52; color: #d9bb7c; }
+.is-done .home-node { border-color: #6f8f5c; background: #1a2414; color: #a9cf94; }
+.is-done .home-row-title { color: #b8b0a0; }
+.is-none .home-node { border-color: #4a443a; color: #6f695f; }
+.is-none .home-label { color: #6f695f; }
+.is-none .home-row-title { color: #8a8272; font-weight: 400; }
+.is-none .home-sub { color: #5f5a51; }
 
 /* 悟空世界：按此刻状态区分仙境，顺序不变 */
 .realm-cover.is-live, .realm-cover.is-live-reserved { outline: 2px solid #ffcf5c; outline-offset: 2px; box-shadow: 0 0 36px #ffcf5c55; }
