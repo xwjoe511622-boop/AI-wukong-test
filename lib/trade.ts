@@ -7,6 +7,7 @@ import { matchAt, roundFor } from './summon-preview'
  * - 乙方（receiver，收款方/释放方）：悟空完成修炼且原周期结束后进入传承中，
  *   等下一轮同阶段召唤匹配到甲方；甲方打款后，乙方核实到账并确认，传承结算完成。
  *
+ * 中心化撮合：匹配由平台完成，打款从平台内 USDT 余额划转，没有链上地址与付款凭证。
  * 当前没有接入后端撮合，对方的操作由本地模拟（见 COUNTERPARTY_DELAY_MS）。
  * 接入后端后，这里的模拟逻辑由接口返回的交易状态替代，页面不需要改动。
  */
@@ -22,7 +23,8 @@ export type Trade = {
   matchedAt: number
   /** 甲方打款截止时刻 */
   deadline: number
-  counterparty: { uid: string; address: string }
+  /** 系统匹配的对方：只展示 UID，打款在平台内 USDT 余额间划转 */
+  counterparty: { uid: string }
   status: TradeStatus
   paidAt?: number
   confirmedAt?: number
@@ -51,9 +53,8 @@ function hexOf(seed: string, length: number) {
 }
 /** 演示用的对方身份：由交易编号确定性生成，不是真实用户 */
 export function demoCounterparty(seed: string) {
-  return { uid: `WK${hexOf(`uid:${seed}`, 16).toUpperCase()}`, address: `0x${hexOf(`addr:${seed}`, 40)}` }
+  return { uid: `WK${hexOf(`uid:${seed}`, 16).toUpperCase()}` }
 }
-export const shortAddress = (value: string) => `${value.slice(0, 8)}…${value.slice(-6)}`
 
 /** 时刻 t 之后（含）该阶段下一次召唤匹配完成的时刻：传承中的悟空在这一刻匹配到甲方 */
 export function nextMatchAfter(stage: Stage, t: number) {
@@ -89,6 +90,6 @@ export function isTrade(value: unknown): value is Trade {
   const t = value as Trade
   return typeof t.id === 'string' && ['payer', 'receiver'].includes(t.role) && Object.hasOwn(LEVEL_BY_ID, t.stage)
     && Number.isSafeInteger(t.amountCents) && t.amountCents >= 0 && Number.isFinite(t.matchedAt) && Number.isFinite(t.deadline)
-    && !!t.counterparty && typeof t.counterparty.uid === 'string' && typeof t.counterparty.address === 'string'
+    && !!t.counterparty && typeof t.counterparty.uid === 'string'
     && ['awaiting_payment', 'awaiting_confirm', 'completed', 'overdue'].includes(t.status)
 }

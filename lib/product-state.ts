@@ -1,7 +1,7 @@
 import { createPreview, isPreview, transition as cultivate, endsAt, quote, settlement, money, dateTime, RULES, type Action as CultivationAction, type Contract } from './cultivation-preview'
 import { initialPreview, parsePreview, transition as summon, costCents, matchAt, type PreviewAction, type Entry } from './summon-preview'
 import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS, TRIAL_MODE, TRIAL_PEACH, TRIAL_USDT, VALID_USER_MIN_PEACH } from './game-data'
-import { COUNTERPARTY_DELAY_MS, PAYMENT_WINDOW_MS, demoCounterparty, isTrade, nextMatchAfter, shortAddress, type Trade } from './trade'
+import { COUNTERPARTY_DELAY_MS, PAYMENT_WINDOW_MS, demoCounterparty, isTrade, nextMatchAfter, type Trade } from './trade'
 import { rewardParts, tribeTier, type AccountRecord, type MemberRecord, type RewardRecord } from './profile-rules'
 
 // 换键：契约功能取消后旧存档不再载入，新存档以预置猴舍开始。
@@ -193,7 +193,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
     if (now >= trade.deadline) return { state, message: '已超过打款期限。' }
     if (state.usdt < trade.amountCents) return { state, message: 'USDT 余额不足，无法完成打款。可先在个人地址接收 USDT。' }
     let next = payerPays({ ...state, usdt: state.usdt - trade.amountCents }, trade, now)
-    next = record(next, 'summon_pay', -trade.amountCents, `${LEVEL_BY_ID[trade.stage].name}召唤：向乙方 ${shortAddress(trade.counterparty.address)} 打款配套金额 ${money(trade.amountCents)} USDT，等待乙方确认到账（${TRIAL_MODE ? '体验版' : '当前版本'}不产生真实转账）。`, now, 'usdt')
+    next = record(next, 'summon_pay', -trade.amountCents, `${LEVEL_BY_ID[trade.stage].name}召唤：向乙方 ${trade.counterparty.uid} 打款配套金额 ${money(trade.amountCents)} USDT，等待乙方确认到账（${TRIAL_MODE ? '体验版' : '当前版本'}不产生真实转账）。`, now, 'usdt')
     return { state: next, message: `已打款 ${money(trade.amountCents)} USDT，等待乙方确认到账。` }
   }
   if (action.type === 'trade-confirm') {

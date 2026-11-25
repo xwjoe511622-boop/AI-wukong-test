@@ -1,8 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
-import { Check, ChevronRight, Copy } from 'lucide-react'
+import { Check, ChevronRight } from 'lucide-react'
 import { LEVEL_BY_ID } from '@/lib/game-data'
 import { dateTime, money } from '@/lib/cultivation-preview'
 import { durationText } from '@/lib/summon-preview'
@@ -17,18 +16,6 @@ export function tradeTone(trade: Trade): TradeTone {
 }
 export function TradeChip({ trade, className }: { trade: Trade; className?: string }) {
   return <span className={cn('trade-chip', `is-${tradeTone(trade)}`, className)}>{tradeStatusText(trade)}</span>
-}
-
-/** 一行可复制的长文本：收款地址 */
-export function CopyField({ label, value }: { label: string; value: string }) {
-  const [copied, setCopied] = useState(false)
-  const copy = async () => {
-    try { await navigator.clipboard.writeText(value); setCopied(true); setTimeout(() => setCopied(false), 1600) } catch { setCopied(false) }
-  }
-  return <div className="trade-field">
-    <dt>{label}</dt>
-    <dd><code className="break-all">{value}</code><button type="button" onClick={copy} aria-label={`复制${label}`} className="trade-copy">{copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}{copied ? '已复制' : '复制'}</button></dd>
-  </div>
 }
 
 const STEPS = {

@@ -5,13 +5,13 @@ import { useState } from 'react'
 import { AlertTriangle, ShieldCheck } from 'lucide-react'
 import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS } from '@/lib/game-data'
 import { dateTime, money } from '@/lib/cultivation-preview'
-import { COUNTERPARTY_NOTE, TRADE_ROLE_LABEL, shortAddress, tradeTitle } from '@/lib/trade'
+import { COUNTERPARTY_NOTE, TRADE_ROLE_LABEL, tradeTitle } from '@/lib/trade'
 import { useDemoControls } from '@/lib/use-demo-controls'
 import { useProduct } from './product-provider'
 import { SettlementFacts } from './settlement-dialog'
 import { UsdtValue } from './peach-value'
 import { ProfileButton, ProfileButtonLink, ProfileEmpty } from './profile-ui'
-import { CopyField, Countdown, TradeChip, TradeSteps } from './trade-ui'
+import { Countdown, TradeChip, TradeSteps } from './trade-ui'
 
 export function TradeView({ id }: { id: string }) {
   const { state, ready, now, act, notice } = useProduct()
@@ -43,11 +43,10 @@ export function TradeView({ id }: { id: string }) {
 
     <section className="profile-surface"><h2 className="profile-heading mb-3">交易进度</h2><TradeSteps trade={trade} /></section>
 
-    <section className="profile-surface" aria-label={payer ? '乙方收款信息' : '甲方信息'}>
-      <h2 className="profile-heading mb-3">{payer ? '乙方收款信息' : '甲方信息'}</h2>
+    <section className="profile-surface" aria-label={payer ? '乙方信息' : '甲方信息'}>
+      <h2 className="profile-heading mb-3">{payer ? '乙方信息' : '甲方信息'}</h2>
       <dl className="flex flex-col gap-3">
         <div className="trade-field"><dt>{payer ? '乙方' : '甲方'} UID</dt><dd><code>{trade.counterparty.uid}</code></dd></div>
-        <CopyField label={payer ? '收款地址（USDT）' : '付款地址'} value={trade.counterparty.address} />
         {trade.paidAt && <div className="trade-field"><dt>打款时间</dt><dd>{dateTime(trade.paidAt)}</dd></div>}
         {trade.confirmedAt && <div className="trade-field"><dt>确认到账时间</dt><dd>{dateTime(trade.confirmedAt)}</dd></div>}
       </dl>
@@ -59,7 +58,7 @@ export function TradeView({ id }: { id: string }) {
     {payer && trade.status === 'awaiting_payment' && <section className="profile-surface" aria-label="打款">
       <p className="flex items-center justify-between text-xs text-[var(--profile-muted)]"><span>可用 USDT 余额</span><UsdtValue cents={state.usdt} size="sm" muted /></p>
       {short ? <><p role="alert" className="mt-3 flex items-start gap-2 text-xs leading-5 text-[#f0b49a]"><AlertTriangle className="mt-0.5 size-4 shrink-0" />USDT 余额不足，还差 {money(trade.amountCents - state.usdt)} USDT。请先在个人地址接收 USDT，再回来打款。</p><div className="mt-3"><ProfileButtonLink href="/me/wallet?mode=in" size="large">去个人地址接收 USDT</ProfileButtonLink></div></>
-        : confirming ? <div className="trade-confirm mt-3"><p className="text-xs leading-6">将从 USDT 余额向乙方 <code>{shortAddress(trade.counterparty.address)}</code> 打款 <strong className="text-[var(--gold-100)]">{money(trade.amountCents)} USDT</strong>。打款后无法撤回，系统会通知乙方核实到账。</p><div className="mt-3 grid grid-cols-2 gap-2"><ProfileButton secondary onClick={() => setConfirming(false)}>取消</ProfileButton><ProfileButton onClick={() => { act({ type: 'trade-pay', id: trade.id }); setConfirming(false) }}>确认打款</ProfileButton></div></div>
+        : confirming ? <div className="trade-confirm mt-3"><p className="text-xs leading-6">将从 USDT 余额向乙方 <code>{trade.counterparty.uid}</code> 打款 <strong className="text-[var(--gold-100)]">{money(trade.amountCents)} USDT</strong>。打款后无法撤回，系统会通知乙方核实到账。</p><div className="mt-3 grid grid-cols-2 gap-2"><ProfileButton secondary onClick={() => setConfirming(false)}>取消</ProfileButton><ProfileButton onClick={() => { act({ type: 'trade-pay', id: trade.id }); setConfirming(false) }}>确认打款</ProfileButton></div></div>
         : <div className="mt-3"><ProfileButton size="large" onClick={() => setConfirming(true)}>向乙方打款 {money(trade.amountCents)} USDT</ProfileButton></div>}
     </section>}
 
