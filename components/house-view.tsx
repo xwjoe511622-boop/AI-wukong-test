@@ -19,7 +19,7 @@ export function HouseView() {
 
     {/* ② 当前悟空总览 */}
     <section aria-labelledby="contracts-title" className="house-hud px-4 py-3">
-      <div className="flex items-baseline justify-between gap-2">
+      <div className="flex items-baseline justify-between gap-2 pr-12">
         <h2 id="contracts-title" className="font-display text-sm font-semibold text-[var(--gold-200)]">当前悟空</h2>
         <p className="font-latin text-lg font-bold tabular-nums text-[var(--gold-100)]">{summary.total}<span className="ml-0.5 font-display text-xs font-normal text-stone-300">只</span></p>
       </div>

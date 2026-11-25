@@ -17,13 +17,13 @@ export function ProductProvider({ children }: { children: ReactNode }) {
     void mutate(state, false)
     // 存到 localStorage：关闭标签页或浏览器后，余额与猴舍仍然保留
     try { localStorage.setItem(PRODUCT_KEY, JSON.stringify(state)) }
-    catch { setWarning('浏览器未能保存本次记录，请勿关闭页面。') }
+    catch { setWarning('本次记录暂时没能保存，请先不要关闭页面。') }
   }, [mutate])
   useEffect(() => {
     let state = current.current
     if (!state) {
       try { const raw = localStorage.getItem(PRODUCT_KEY); if (raw) state = parseProduct(raw) }
-      catch { setWarning('存档读取异常，已开启新的旅程。') }
+      catch { setWarning('没能读取到之前的记录，已为你开启新的旅程。') }
       state ??= createProduct(Date.now(), crypto.randomUUID())
     }
     const result = productTransition(state, { type: 'tick' }, Date.now() + state.offset)

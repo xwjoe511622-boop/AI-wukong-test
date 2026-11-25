@@ -8,6 +8,7 @@ import { ROOMS, RULES, phase, quote, sortContracts, summarize, type Contract } f
 import { useCultivationPreview } from './cultivation-preview-provider'
 import { CultivationVideo } from './cultivation-video'
 import { ContractSlip } from './contract-slip'
+import { PageBar } from './profile-ui'
 import { PeachValue, PeachText } from './peach-value'
 
 export function RoomView({ stage }: { stage: Stage }) {
@@ -18,15 +19,8 @@ export function RoomView({ stage }: { stage: Stage }) {
   const summary = summarize(contracts, now)
 
   return <div className="house-overview flex flex-col gap-4">
-    <header className="flex items-start gap-3 pr-12">
-      <Link href="/house" aria-label="返回猴舍" className="mt-0.5 flex size-10 shrink-0 items-center justify-center border border-amber-200/20 text-amber-100"><ArrowLeft className="size-4" /></Link>
-      <div className="min-w-0 flex-1">
-        <h1 className="font-display text-xl font-bold leading-tight text-[var(--gold-100)]">{room.room}</h1><p className="mt-1 text-[11px] tracking-widest text-[var(--gold-400)]">{rule.realm}</p>
-        <p className="mt-1 flex flex-wrap items-center gap-y-0.5 text-xs text-stone-300"><span className="whitespace-nowrap">当前悟空 <span className="tabular-nums text-stone-100">{summary.total}</span>只</span>
-          {summary.byPhase.修炼中 > 0 && <span className="whitespace-nowrap"><span className="mx-1.5 text-stone-600">·</span>修炼中 <span className="tabular-nums text-stone-100">{summary.byPhase.修炼中}</span>只</span>}
-        </p>
-      </div>
-    </header>
+    <PageBar title={room.room} back="/house" />
+    <p className="page-intro text-center">{rule.realm} · 当前悟空 {summary.total} 只{summary.byPhase.修炼中 > 0 ? ` · 修炼中 ${summary.byPhase.修炼中} 只` : ''}</p>
 
     <section aria-label={`${rule.name}修炼之境`} className="cultivation-current">
       <CultivationVideo key={`${stage}-${contracts.length > 0}`} stage={stage} locked={!contracts.length} empty={!state.contracts.length} />

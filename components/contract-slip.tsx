@@ -30,7 +30,7 @@ export function ContractSlip({ contract: c }: { contract: Contract }) {
 
     <section aria-label="修炼值" className="px-4 pt-4 text-center">
       <p className="text-[11px] tracking-[.2em] text-[var(--gold-200)]/80">修炼值</p>
-      <p className="slip-value" aria-live="off">{Number(whole).toLocaleString('zh-CN')}<span>.{fraction}</span><small>USDT</small></p>
+      <p className="slip-value" aria-live="off">{Number(whole).toLocaleString('zh-CN')}<span>.{fraction}</span><em className="unit not-italic">USDT</em></p>
       <p className="mt-1 text-[11px] text-stone-400">{p.done ? `已圆满 · 修炼加成 +${rule.gain}%` : `修炼加成 +${rule.gain}% · 圆满后生效`}</p>
     </section>
 

@@ -10,6 +10,7 @@ import { useSummonPreview } from './summon-preview-provider'
 import { SummonPreviewConfirm } from './summon-preview-confirm'
 import { SummonPreviewEntry } from './summon-preview-entry'
 import { PeachIcon } from './peach'
+import { PageBar } from './profile-ui'
 import { useProduct } from './product-provider'
 import { useSound } from '@/lib/sound'
 
@@ -44,11 +45,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
 
   return <div className="stage-page flex flex-col gap-4">
     {/* 返回条固定在最上面，往下翻也一直在；和下面的立绘之间不留空隙 */}
-    <header className="stage-bar">
-      <Link href="/world" className="flex min-h-11 items-center text-xs text-[var(--gold-200)]">← 返回</Link>
-      <h1 className="font-display text-base tracking-wider text-gold">{level.realm}</h1>
-      <span aria-hidden />
-    </header>
+    <PageBar title={level.realm} back="/world" />
 
     <div className="stage-hero -mx-4 -mt-4"><RealmCardHero key={stage} level={level} /></div>
 
@@ -59,7 +56,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     <section aria-labelledby="round-title" className="hud-panel rounded-xl px-4 py-4">
       <h2 id="round-title" className="text-[11px] tracking-wider text-[var(--gold-200)]/80">第{round.number}轮 · {level.name}</h2>
       <dl className="stage-sum mt-3">
-        <div><dt>本轮修炼值</dt><dd className="font-latin text-gold">{peachText(cost)}<small>USDT</small></dd></div>
+        <div><dt>本轮修炼值</dt><dd className="font-latin text-gold">{peachText(cost)}<span className="unit">USDT</span></dd></div>
         <div><dt>修炼天数</dt><dd className="text-[var(--gold-100)]">{level.cycleDays}<small>天</small></dd></div>
         <div><dt>本轮修炼加成</dt><dd className="font-latin text-gold">+{level.gainPct}<small>%</small></dd></div>
         <div><dt>每日修炼消耗</dt><dd className="flex items-center justify-center gap-1.5 text-[var(--gold-100)]">{free ? <span className="text-base font-normal">不消耗</span> : <>{peachWhole(level.perCycleCost)}<PeachIcon size={16} /></>}</dd></div>

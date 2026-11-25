@@ -18,7 +18,8 @@ export function useProfile() {
 export function useProfileList(section: string, filter = 'all', page = 0, validity: 'all' | 'valid' | 'invalid' = 'all', keyword = '', sort: MemberSort = 'newest') {
   const { state, ready } = useProduct()
   const kinds: Record<string, string[]> = { lock: ['summon_lock'], return: ['summon_return'], contracts: ['contract'], cultivation: ['cycle'], inherit: ['inherit'], inheritance: ['inherit'], summon: ['summon_lock', 'summon', 'summon_return'], companion: ['companion'], tribe: ['tribe'], recharge: ['recharge', 'buy_pay'], pay: ['summon_pay', 'summon_forfeit'], transfer: ['transfer_out', 'transfer_in'] }
-  const records = section === 'records' ? (state?.records ?? []).filter(r => filter === 'all' || (kinds[filter] ?? [filter]).includes(r.kind)) : []
+  // 金额为 0 的流水只是状态说明（已由通知承担），不进资产明细
+  const records = section === 'records' ? (state?.records ?? []).filter(r => r.amountCents !== 0).filter(r => filter === 'all' || (kinds[filter] ?? [filter]).includes(r.kind)) : []
   const rewards = section === 'rewards' ? (state?.rewards ?? []).filter(r => filter === 'all' || r.rewardType === filter) : []
   // 每位成员累计为我带来的奖励：同行奖励与部族奖励相加
   const rewardBy = new Map<string, number>()

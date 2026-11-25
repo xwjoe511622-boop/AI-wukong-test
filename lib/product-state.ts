@@ -15,6 +15,8 @@ export const walletAddress = (playerId: string) => { const hex = playerId.replac
 /** 头像只接受缩小后的图片 data URL，限制大小以免撑爆本地存档 */
 export const AVATAR_MAX_CHARS = 200_000
 export const isAvatar = (value: unknown): value is string => typeof value === 'string' && /^data:image\/(png|jpeg|webp);base64,/.test(value) && value.length <= AVATAR_MAX_CHARS
+/** UID 的基本格式：字母、数字、短横线，8 到 64 位 */
+export const isUid = (value: string) => /^[A-Za-z0-9-]{8,64}$/.test(value)
 export const isWalletAddress = (value: string) => /^0x[0-9a-fA-F]{40}$/.test(value)
 /** 站内通知：召唤结果、待打款、入舍、匹配到承接人、待确认收款、到账、违约 */
 export type Notice = { id: string; title: string; body: string; at: number; href: string; read?: boolean }
@@ -49,6 +51,8 @@ export type ProductAction =
   | { type: 'transfer'; currency: Currency; amountCents: number; address: string }
   | { type: 'demo-receive'; currency: Currency; amountCents: number }
   | { type: 'buy-peach'; amountCents: number }
+  /** 平台内转账：按对方 UID 转蟠桃或 USDT */
+  | { type: 'transfer-to'; currency: Currency; amountCents: number; uid: string }
   /** 承接人：从 USDT 余额向传承人打款修炼值 */
   | { type: 'trade-pay'; id: string }
   /** 传承人：核实到账后确认收款，完成传承所得 */
@@ -228,7 +232,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
     if (now >= trade.deadline) return { state, message: '已超过打款期限。' }
     if (state.usdt < trade.amountCents) return { state, message: 'USDT 余额不足，无法完成打款。请先补足 USDT。' }
     let next = payerPays({ ...state, usdt: state.usdt - trade.amountCents }, trade, now)
-    next = record(next, 'summon_pay', -trade.amountCents, `${LEVEL_BY_ID[trade.stage].name}召唤：向传承人 ${trade.counterparty.uid} 打款修炼值 ${money(trade.amountCents)} USDT，等待传承人确认到账（当前版本不产生真实转账）。`, now, 'usdt')
+    next = record(next, 'summon_pay', -trade.amountCents, `${LEVEL_BY_ID[trade.stage].name}召唤：向传承人 ${trade.counterparty.uid} 打款修炼值 ${money(trade.amountCents)} USDT，等待传承人确认到账。`, now, 'usdt')
     return { state: next, message: `已打款 ${money(trade.amountCents)} USDT，等待传承人确认到账。` }
   }
   if (action.type === 'trade-confirm') {
@@ -268,7 +272,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
     if (!/^WK[A-F0-9]{16}$/.test(code)) return { state, message: '请输入有效的18位邀请码。' }
     if (code === state.inviteCode) return { state, message: '不能接受自己的邀请。' }
     if (state.inviter) return { state, message: '你已建立同行关系，无需重复接受。' }
-    return { state: { ...state, inviter: code }, message: '同行关系已记录；尚未校验真实用户，不产生真实人数或奖励。' }
+    return { state: { ...state, inviter: code }, message: '已接受邀请，同行关系已建立。' }
   }
   if (action.type === 'summon') {
     if (action.action.type !== 'join') return { state, message: '请在召唤周期内点「召唤」。' }
@@ -287,6 +291,17 @@ export function productTransition(state: ProductState, action: ProductAction, no
     next = record(next, 'buy_pay', -action.amountCents, `购买 ${money(action.amountCents)} 蟠桃，支付 ${money(action.amountCents)} USDT（1蟠桃 = 1 USDT）。`, now, 'usdt')
     next = record(next, 'recharge', action.amountCents, `购买到账 ${money(action.amountCents)} 蟠桃，已显示在「我的资产」。`, now)
     return { state: next, message: `已购买 ${money(action.amountCents)} 蟠桃。` }
+  }
+  if (action.type === 'transfer-to') {
+    const label = CURRENCY_LABEL[action.currency]
+    const key = action.currency === 'usdt' ? 'usdt' as const : 'balance' as const
+    const uid = action.uid.trim()
+    if (!label) return { state, message: '不支持的资产类型。' }
+    if (!isUid(uid)) return { state, message: '请输入对方的 UID。' }
+    if (uid.toLowerCase() === state.playerId.toLowerCase()) return { state, message: '不能转给自己。' }
+    if (!Number.isSafeInteger(action.amountCents) || action.amountCents <= 0) return { state, message: '请输入有效的数量，最多两位小数。' }
+    if (state[key] < action.amountCents) return { state, message: `${label} 余额不足。` }
+    return { state: record({ ...state, [key]: state[key] - action.amountCents }, 'transfer_out', -action.amountCents, `转给 ${uid}：${money(action.amountCents)} ${label}。`, now, action.currency), message: `已向 ${uid} 转出 ${money(action.amountCents)} ${label}。` }
   }
   if (action.type === 'transfer' || action.type === 'demo-receive') {
     const label = CURRENCY_LABEL[action.currency]

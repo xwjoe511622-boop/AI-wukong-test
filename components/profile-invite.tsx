@@ -18,11 +18,11 @@ export function ProfileInvite({ code }: { code?: string }) {
       await navigator.clipboard.writeText(text)
       setCopied(what); setNotice(`${what === 'link' ? '邀请链接' : '邀请码'}已复制，发给朋友即可`)
       setTimeout(() => setCopied(current => current === what ? null : current), 2000)
-    } catch { setNotice('浏览器限制自动复制，请长按下方文字手动复制。') }
+    } catch { setNotice('没能自动复制，请长按上方文字手动复制。') }
   }
   return <section className="profile-invite !flex-col !items-stretch" aria-labelledby="invite-title">
     <Image src="/assets/invite-journey.png" alt="" fill sizes="(max-width: 480px) 100vw, 448px" />
-    <div className="mt-auto w-full p-4 pt-28">
+    <div className="mt-auto w-full p-4 pt-16">
       <h2 id="invite-title" className="font-display text-xl font-bold tracking-wider text-[var(--gold-100)]">邀请同行者</h2>
       <p className="mt-1 text-xs text-[var(--gold-200)]">与君同行，共赴悟空世界</p>
       <dl className="mt-3 flex flex-col gap-2">

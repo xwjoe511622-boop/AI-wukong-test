@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-.cultivation-primary, .cultivation-secondary { display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+.cultivation-primary, .cultivation-secondary { font-size: 12px; }
 .cultivation-facts { display: flex; flex-direction: column; gap: 11px; font-size: 12px; }
 .cultivation-facts > div { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .cultivation-facts dt { min-width: 0; color: #c9c0b1; }
@@ -167,6 +167,8 @@
   --font-display: 'Noto Serif SC';
   --font-sans: 'Noto Sans SC';
   --font-latin: 'Cinzel';
+  /* 所有数值统一用这一款数字字体：紧凑、等宽数字、不拉字距 */
+  --font-num: 'Barlow Semi Condensed', 'DIN Alternate', 'Noto Sans SC', system-ui, sans-serif;
 }
 
 :root {
@@ -259,20 +261,34 @@
       linear-gradient(160deg, #ffe39a, #a76a12 40%, #5c3c08 70%, #ffcf5c) border-box;
   }
 
+  /*
+   * 花边按钮：用九宫格方式贴图——两端的花饰保持原比例，只拉伸中间，
+   * 所以不同宽度的按钮花饰都不会被压扁。
+   * 贴图里中间那块深色底板比几何中心略低，文字用上下不等的内边距对准底板中线。
+   */
   .btn-gold,
   .btn-ghost-gold,
   .cultivation-primary,
   .cultivation-secondary {
     --action-art: url('/assets/action-button-medium.png');
-    background: var(--action-art) center / 100% 100% no-repeat;
+    --cap: 50px;
+    --slice: 264;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 0 solid transparent;
+    border-image: var(--action-art) 0 var(--slice) fill / 0 var(--cap) / 0 stretch;
     color: var(--gold-100);
-    border: 0;
     border-radius: 0;
     box-shadow: none;
     min-height: 48px;
-    padding: 14px 28px;
-    line-height: 1.4;
+    padding: 15px 34px 9px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: .06em;
     text-align: center;
+    white-space: nowrap;
     text-shadow: 0 1px 3px var(--ink-900);
     cursor: pointer;
     transition: filter 180ms;
@@ -284,24 +300,36 @@
   }
   :is(.btn-gold, .btn-ghost-gold, .cultivation-primary, .cultivation-secondary).w-full {
     --action-art: url('/assets/action-button-long.png');
+    --cap: 70px;
+    display: flex;
     min-height: 64px;
-    padding-inline: 44px;
+    padding: 20px 48px 12px;
   }
   :is(.btn-gold, .btn-ghost-gold, .cultivation-primary, .cultivation-secondary).ornate-short {
     --action-art: url('/assets/action-button-short.png');
-    padding-inline: 22px;
+    --slice: 166;
+    --cap: 42px;
+    padding: 13px 30px 11px;
   }
-  /* 行内小按钮：仍使用短图，按比例缩小以嵌入卡片一行 */
+  /* 行内小按钮：花边缩到这么小会糊成一团，改用简洁的金线胶囊；花边只留给大按钮 */
   :is(.btn-gold, .btn-ghost-gold, .cultivation-primary, .cultivation-secondary).btn-compact {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 36px;
-    /* 两端花饰各占约 24px，留足内边距，文字才不会压在花饰上 */
-    padding: 8px 28px;
-    min-width: 104px;
+    border: 1px solid #ffcf5cb3;
+    border-image: none;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #5a4318, #2e220d);
+    min-height: 34px;
+    min-width: 0;
+    padding: 0 16px;
     font-size: 12px;
-    white-space: nowrap;
+    letter-spacing: .04em;
+    color: #ffe9c2;
+    text-shadow: none;
+  }
+  :is(.btn-ghost-gold, .cultivation-secondary).btn-compact {
+    border-color: #b0904b80;
+    background: #0000004d;
+    color: #e9cf9f;
+    filter: none;
   }
   :is(.btn-gold, .btn-ghost-gold, .cultivation-primary, .cultivation-secondary):hover:not(:disabled) {
     filter: brightness(1.15);
@@ -801,7 +829,7 @@
 .profile-amount-md { font-size: 18px; }
 .profile-amount-lg { font-size: clamp(28px,7.6vw,36px); letter-spacing: -.025em; }
 .profile-button { font-family: var(--font-display); font-size: 12px; white-space: nowrap; font-weight: 600; }
-.profile-button.btn-compact { min-height: 40px; }
+.profile-button.btn-compact { min-height: 34px; }
 .profile-invite { position: relative; isolation: isolate; overflow: hidden; border-radius: 10px; border: 1px solid #be944655; min-height: 222px; display: flex; align-items: flex-end; }
 .profile-invite > img { z-index: -2; object-fit: cover; object-position: center 32%; }
 .profile-invite::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg,#080908fa 0%,#080908a6 37%,#08090800 85%); }
@@ -903,7 +931,7 @@
 .home-row-title { display: block; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14.5px; font-weight: 500; color: #e6ddcc; }
 .home-sub { display: block; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: #958c7c; }
 .home-amount { font-family: var(--font-latin); font-size: 15px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: #ffd27a; }
-.home-amount small { margin-left: 3px; font-family: inherit; font-size: 9px; font-weight: 400; color: #a59c8c; }
+
 .home-timer { font-family: var(--font-latin); font-size: 12px; line-height: 1; font-variant-numeric: tabular-nums; color: #cfc6b4; }
 .home-cta { display: inline-flex; align-items: center; gap: 1px; padding: 3px 4px 3px 10px; border-radius: 999px; border: 1px solid #ffcf5c99; background: #ffcf5c1f; font-size: 12px; color: #ffe39a; }
 /* 待处理：整行微亮，图标发光 */
@@ -967,11 +995,11 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 /* 仙境页顶部返回条：贴顶固定，左右顶到屏幕边 */
 .stage-bar { position: sticky; top: 0; z-index: 30; display: grid; grid-template-columns: 72px 1fr 72px; align-items: center; margin: -16px -16px 0; padding: env(safe-area-inset-top) 16px 0; min-height: 52px; text-align: center; background: linear-gradient(180deg, #0b0a08f2, #0b0a08d9); border-bottom: 1px solid #c59b5255; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 .stage-bar > a { justify-self: start; }
-.stage-bar + div .realm-hero { border-radius: 0 0 14px 14px; }
+.page-bar + .stage-hero .realm-hero { border-radius: 0 0 14px 14px; }
 
 /* 仙境页 */
 /* 整页用纯深色底，盖住全局的仙境背景图：背景不抢立绘 */
-.stage-page { position: relative; margin: -16px -16px 0; padding: 16px 16px 8px; background: #0a0907; min-height: 100dvh; }
+.stage-page { position: relative; }
 /* 立绘后面的仙境图本身也带人物和文字：虚化、压暗，只留氛围 */
 .stage-hero .realm-hero-scenery img { filter: blur(9px) brightness(.42) saturate(.75); transform: scale(1.12); }
 .stage-page .hud-panel { background: linear-gradient(180deg, #17140f, #100e0b); }
@@ -1014,3 +1042,25 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .notice-toast strong { display: block; font-size: 13px; color: #ffe9c2; }
 .notice-toast span span { display: block; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: #cfc6b4; }
 @media (prefers-reduced-motion: reduce) { .notice-toast { transition: none; } }
+
+/* ── 数值与单位：全站统一 ── */
+.num, .font-latin.tabular-nums, .profile-amount, .home-amount, .home-timer, .home-count strong, .slip-value, .stage-sum dd, .asset-number { font-family: var(--font-num); letter-spacing: .01em; font-variant-numeric: tabular-nums lining-nums; }
+.unit { margin-left: .28em; font-family: var(--font-num); font-size: .52em; font-weight: 500; letter-spacing: .08em; opacity: .72; }
+
+/* ── 全站统一的顶部返回条 ── */
+.page-bar { position: sticky; top: 0; z-index: 30; display: grid; grid-template-columns: 72px 1fr 72px; align-items: center; margin: -16px -16px 0; padding: env(safe-area-inset-top) 16px 0; min-height: 52px; text-align: center; background: linear-gradient(180deg, #0b0a08f5, #0b0a08e0); border-bottom: 1px solid #c59b5255; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.page-bar > a { justify-self: start; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; font-size: 13px; color: var(--gold-200); }
+.page-bar h1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-display); font-size: 16px; font-weight: 700; letter-spacing: .1em; color: #ffe9c2; }
+.page-intro { font-size: 12px; line-height: 1.7; color: #a59c8c; }
+
+/* ── 背景：除首页外，所有页面是同一种纯深色底，文字后面不再透出图片 ── */
+.app-plain { background: radial-gradient(120% 60% at 50% 0%, #17130c 0%, #0a0907 55%, #070605 100%); }
+.app-plain :is(.profile-surface, .hud-panel, .house-hud, .cultivation-daily, .read-panel) { background: linear-gradient(180deg, #17140f, #100e0b); }
+
+/* 「我的」资产下方的三个快捷操作：简洁胶囊，只有主操作是金色 */
+.quick-actions { display: grid; grid-template-columns: 1fr 1fr 1.25fr; gap: 8px; }
+.quick-actions a { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; border-radius: 12px; border: 1px solid #b0904b66; background: #00000059; font-size: 13px; color: #e9cf9f; }
+.quick-actions a.is-primary { border-color: #ffcf5c; background: linear-gradient(180deg, #6b4f1a, #3a2a0e); color: #fff2d6; font-weight: 600; }
+.relation-tabs.\!grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+/* 邀请卡：收矮一些 */
+.profile-invite { min-height: 0; }

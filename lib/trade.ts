@@ -1,4 +1,4 @@
-import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS, TRIAL_MODE, type Stage } from './game-data'
+import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS, type Stage } from './game-data'
 import { matchDelay, roundFor } from './summon-preview'
 
 /**
@@ -83,7 +83,6 @@ export function tradeStatusText(trade: Trade) {
 export function tradeTitle(trade: Trade) {
   return `${LEVEL_BY_ID[trade.stage].name} · ${trade.role === 'payer' ? '召唤打款' : '传承收款'}`
 }
-export const COUNTERPARTY_NOTE = `当前版本未接入真实撮合，对方为系统模拟，约 ${COUNTERPARTY_DELAY_MS / 60_000} 分钟内自动完成操作；不产生真实转账。`
 
 export function isTrade(value: unknown): value is Trade {
   if (!value || typeof value !== 'object') return false

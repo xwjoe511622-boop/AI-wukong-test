@@ -46,7 +46,7 @@ function Row({ todo, now, onCast }: { todo: DailyTodo; now: number; onCast: () =
       <span className={`home-sub ${todo.warn ? '!text-[#f0a58a]' : ''}`}>{todo.sub}</span>
     </span>
     <span className="flex shrink-0 flex-col items-end gap-1">
-      {todo.amountCents !== undefined && <span className="home-amount">{money(todo.amountCents)}<small>USDT</small></span>}
+      {todo.amountCents !== undefined && <span className="home-amount">{money(todo.amountCents)}<span className="unit">USDT</span></span>}
       {left !== null && <span className={`home-timer ${todo.status === 'todo' && todo.kind === 'pay' && left < 10 * 60_000 ? '!text-[#f08a6a]' : ''}`}>{durationText(left)}</span>}
       {todo.cta ? <span className="home-cta">{todo.cta}<ChevronRight className="size-3.5" /></span> : todo.amountCents === undefined && left === null && <ChevronRight className="size-4 text-stone-600" />}
     </span>

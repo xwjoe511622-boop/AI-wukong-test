@@ -104,7 +104,7 @@ function MemberDetail({ section, empty, count, now, invalid }: { section: Sectio
       : <ul className="profile-list flex flex-col">{members.data.members.map(m => <li key={`${m.uid}-${m.joinedAt}`} className="flex items-center gap-3 border-b border-[var(--profile-border)] py-3.5">
         <Avatar src={m.avatar} size={40} />
         <div className="min-w-0 flex-1"><p className="truncate font-mono text-[13px] text-[var(--gold-100)]">{m.uid}</p><p className="mt-1 truncate text-[11px] text-[var(--profile-muted)]">{(m.generation ?? 3) <= 2 ? generationName(m.generation ?? 0) : '更深层'} · {joinedText(m.joinedAt, now)}</p></div>
-        <div className="shrink-0 text-right">{!!m.rewardCents && <p className="font-latin text-[13px] font-bold tabular-nums text-gold">+{money(m.rewardCents)}<span className="ml-1 text-[10px] font-normal opacity-80">USDT</span></p>}<p className={`text-[11px] ${m.valid === false ? 'text-[#f0b49a]' : 'text-[var(--profile-muted)]'}`}>{m.valid === false ? `未达 ${VALID_USER_MIN_PEACH} 蟠桃` : '有效用户'}</p></div>
+        <div className="shrink-0 text-right">{!!m.rewardCents && <p className="font-latin text-[13px] font-bold tabular-nums text-gold">+{money(m.rewardCents)}<span className="unit">USDT</span></p>}<p className={`text-[11px] ${m.valid === false ? 'text-[#f0b49a]' : 'text-[var(--profile-muted)]'}`}>{m.valid === false ? `未达 ${VALID_USER_MIN_PEACH} 蟠桃` : '有效用户'}</p></div>
       </li>)}</ul>}
     <div className="mt-3"><ProfilePager page={page} hasMore={members.data?.hasMore ?? false} onPage={setPage} /></div>
   </div>

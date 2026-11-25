@@ -5,11 +5,11 @@ import { useState } from 'react'
 import { AlertTriangle, ShieldCheck } from 'lucide-react'
 import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS } from '@/lib/game-data'
 import { dateTime, money } from '@/lib/cultivation-preview'
-import { COUNTERPARTY_NOTE, TRADE_ROLE_LABEL, tradeTitle } from '@/lib/trade'
+import { TRADE_ROLE_LABEL, tradeTitle } from '@/lib/trade'
 import { useProduct } from './product-provider'
 import { SettlementFacts } from './settlement-dialog'
 import { UsdtValue } from './peach-value'
-import { ProfileButton, ProfileButtonLink, ProfileEmpty } from './profile-ui'
+import { PageBar, ProfileButton, ProfileButtonLink, ProfileEmpty } from './profile-ui'
 import { Countdown, TradeChip, TradeSteps } from './trade-ui'
 
 export function TradeView({ id }: { id: string }) {
@@ -17,7 +17,7 @@ export function TradeView({ id }: { id: string }) {
   const [confirming, setConfirming] = useState(false)
   if (!ready || !state) return <p role="status" className="py-12 text-center text-sm text-[var(--profile-muted)]">正在读取交易…</p>
   const trade = state.trades.find(t => t.id === id)
-  if (!trade) return <><Back /><ProfileEmpty title="没有找到这笔交易">交易可能已归档，或保存在另一台设备的浏览器中。</ProfileEmpty></>
+  if (!trade) return <><PageBar title="交易详情" back="/me/trades" /><ProfileEmpty title="没有找到这笔交易">这笔交易可能已经归档。</ProfileEmpty></>
   const level = LEVEL_BY_ID[trade.stage]
   const payer = trade.role === 'payer'
   const contract = [...state.contracts, ...state.history].find(c => c.id === (trade.contractId ?? `summon-${trade.entryKey}`))
@@ -25,10 +25,10 @@ export function TradeView({ id }: { id: string }) {
   const left = trade.deadline - now
 
   return <div className="flex flex-col gap-5">
-    <Back />
+    <PageBar title="交易详情" back="/me/trades" />
     <header>
       <div className="flex flex-wrap items-center gap-2"><TradeChip trade={trade} /><span className="text-[11px] text-[var(--profile-muted)]">{TRADE_ROLE_LABEL[trade.role]}</span></div>
-      <h1 className="mt-2 font-display text-2xl font-bold text-[var(--gold-100)]">{tradeTitle(trade)}</h1>
+      <h2 className="mt-2 font-display text-2xl font-bold text-[var(--gold-100)]">{tradeTitle(trade)}</h2>
       <p className="mt-1 text-xs text-[var(--profile-muted)]">{level.realm} · 匹配于 {dateTime(trade.matchedAt)}（北京时间）</p>
     </header>
 
@@ -69,7 +69,7 @@ export function TradeView({ id }: { id: string }) {
     {trade.status === 'awaiting_confirm' && payer && <p className="profile-surface text-center text-xs leading-6 text-[var(--profile-muted)]">已打款，等待传承人核实到账并确认。确认后 {level.name} 自动进入猴舍。</p>}
     {trade.status === 'awaiting_payment' && !payer && <p className="profile-surface text-center text-xs leading-6 text-[var(--profile-muted)]">已匹配到承接人，等待对方在打款期内完成打款。到账后这里会提示你确认收款。</p>}
     {trade.status === 'completed' && <section className="profile-surface text-center">
-      <p className="text-sm text-[var(--gold-100)]">{payer ? `交易完成，${level.name}已进入猴舍` : `传承所得完成，${money(trade.amountCents)} USDT 已转入 USDT 余额`}</p>
+      <p className="text-sm text-[var(--gold-100)]">{payer ? `交易完成，${level.name}已进入猴舍` : `传承完成，${money(trade.amountCents)} USDT 已转入 USDT 余额`}</p>
       <div className="mt-3 flex justify-center">{payer ? <Link href={`/house/room/${trade.stage}`} className="btn-gold profile-button inline-flex items-center justify-center">进入猴舍修炼</Link> : <Link href="/house/history" className="btn-ghost-gold profile-button inline-flex items-center justify-center">查看传承历史</Link>}</div>
     </section>}
     {trade.status === 'overdue' && <section className="profile-surface text-center">
@@ -80,10 +80,5 @@ export function TradeView({ id }: { id: string }) {
 
     <p role="status" aria-live="polite" className="min-h-4 text-center text-[11px] leading-5 text-[var(--gold-200)]">{notice}</p>
     <p className="text-center text-xs text-[var(--profile-muted)]">这笔交易有问题？<Link href="/me/support" className="ml-1 text-[var(--gold-200)] underline underline-offset-4">联系客服申诉</Link></p>
-    <p className="text-center text-[10px] leading-5 text-[var(--profile-muted)]">{COUNTERPARTY_NOTE}</p>
   </div>
-}
-
-function Back() {
-  return <div><ProfileButtonLink href="/me/trades" size="small" secondary>返回我的交易</ProfileButtonLink></div>
 }

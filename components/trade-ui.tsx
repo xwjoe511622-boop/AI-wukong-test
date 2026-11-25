@@ -20,7 +20,7 @@ export function TradeChip({ trade, className }: { trade: Trade; className?: stri
 
 const STEPS = {
   payer: ['召唤成功 · 匹配传承人', '向传承人打款', '传承人确认到账', '悟空进入猴舍'],
-  receiver: ['传承 · 匹配承接人', '承接人打款', '我确认到账', '传承所得完成'],
+  receiver: ['传承 · 匹配承接人', '承接人打款', '我确认到账', '传承完成 · 所得到账'],
 } as const
 /** 交易进度：已完成的步骤打勾，当前步骤高亮 */
 export function TradeSteps({ trade }: { trade: Trade }) {

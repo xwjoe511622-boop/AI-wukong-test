@@ -9,7 +9,7 @@ export function PeachValue({ cents, size = 'md', sign, className, muted }: { cen
   const [font, icon] = SIZES[size]
   const tone = muted ? 'text-stone-200' : 'text-gold'
   return (
-    <span className={cn('inline-flex items-center gap-1 whitespace-nowrap font-latin font-bold tabular-nums', tone, className)} style={{ fontSize: font }}>
+    <span className={cn('num inline-flex items-center gap-1 whitespace-nowrap font-bold', tone, className)} style={{ fontSize: font }}>
       {sign}{money(cents)}
       <Image src="/assets/peach.png" alt="蟠桃" width={icon} height={icon} style={{ width: icon, height: icon }} className="inline-block shrink-0 drop-shadow-[0_1px_4px_rgba(255,120,60,0.45)]" />
     </span>
@@ -20,8 +20,8 @@ export function PeachValue({ cents, size = 'md', sign, className, muted }: { cen
 export function UsdtValue({ cents, size = 'md', sign, className, muted }: { cents: number; size?: keyof typeof SIZES; sign?: '+' | '-'; className?: string; muted?: boolean }) {
   const [font] = SIZES[size]
   return (
-    <span className={cn('inline-flex items-baseline gap-1 whitespace-nowrap font-latin font-bold tabular-nums', muted ? 'text-stone-200' : 'text-gold', className)} style={{ fontSize: font }}>
-      {sign}{money(cents)}<span className="font-normal opacity-80" style={{ fontSize: Math.max(10, Math.round(font * 0.55)) }}>USDT</span>
+    <span className={cn('num inline-flex items-baseline whitespace-nowrap font-bold', muted ? 'text-stone-200' : 'text-gold', className)} style={{ fontSize: font }}>
+      {sign}{money(cents)}<span className="unit" style={{ fontSize: Math.max(9.5, Math.round(font * 0.52)) }}>USDT</span>
     </span>
   )
 }
