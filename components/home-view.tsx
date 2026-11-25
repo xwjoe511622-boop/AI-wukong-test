@@ -26,7 +26,7 @@ export function HomeView() {
         <HouseCard now={now} />
         <Link href="/me/wallet" className="home-card" aria-label="我的资产">
           <div className="flex items-center justify-between"><h2 className="home-card-title">我的资产</h2><ChevronRight className="size-4 text-[var(--gold-400)]" /></div>
-          <div className="mt-3 grid grid-cols-2 gap-3"><div><p className="home-label">蟠桃</p><PeachValue cents={state.balance} size="lg" className="mt-1" /></div><div className="border-l border-[#b0904b38] pl-4"><p className="home-label">USDT</p><UsdtValue cents={state.usdt} size="lg" className="mt-1" /></div></div>
+          <div className="mt-3 grid grid-cols-2 gap-3"><div><p className="home-label">蟠桃</p><PeachValue cents={state.balance} size="md" className="mt-1" /></div><div className="border-l border-[#b0904b38] pl-4"><p className="home-label">USDT</p><UsdtValue cents={state.usdt} size="md" className="mt-1" /></div></div>
         </Link>
       </>}
     </div>
