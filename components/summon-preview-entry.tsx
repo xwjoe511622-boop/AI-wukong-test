@@ -6,11 +6,13 @@ import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS, RESERVATION_CUTOFF_MINUTES, cycleTex
 import { durationText, roundNumber, matchAt, type Entry } from '@/lib/summon-preview'
 import { DAY, dateTime } from '@/lib/cultivation-preview'
 import { useProduct } from './product-provider'
+import { useSound } from '@/lib/sound'
 import { PeachValue, UsdtValue } from './peach-value'
 import { Countdown } from './trade-ui'
 
 export function SummonPreviewEntry({ entry, compact = false }: { entry: Entry; compact?: boolean }) {
-  const { state, now } = useProduct()
+  const { state, now, act } = useProduct()
+  const { play } = useSound()
   const level = LEVEL_BY_ID[entry.stage]
   const contract = [...(state?.contracts ?? []), ...(state?.history ?? [])].find(c => c.id === `summon-${entry.key}`)
   const trade = state?.trades.find(t => t.entryKey === entry.key)
@@ -41,12 +43,15 @@ export function SummonPreviewEntry({ entry, compact = false }: { entry: Entry; c
   if (entry.status === 'forfeited') return <section aria-label="逾期违约" className="hud-panel rounded-xl p-4 text-center"><h2 className="font-display text-xl text-[var(--gold-100)]">召唤成功 · 逾期未打款</h2><div className="mt-4"><PeachValue cents={entry.paid} size="lg" sign="-" /></div><p className="mt-2 text-xs leading-6 text-[var(--gold-200)]">召唤成功后 {PAYMENT_WINDOW_HOURS} 小时内未完成配套金额打款，判定逾期违约：本次召唤所扣除的蟠桃已充公，不予退还。可继续参与后续召唤。</p><Link href={tradeHref} className="btn-ghost-gold mt-4 inline-flex w-full items-center justify-center text-sm">查看交易</Link></section>
   if (entry.status === 'refunded') return <section aria-label="本轮召唤未成功" className="hud-panel rounded-xl p-4 text-center"><h2 className="font-display text-xl text-[var(--gold-100)]">本轮召唤未成功</h2><div className="mt-4"><PeachValue cents={entry.paid} size="lg" /></div><p className="mt-2 text-xs text-[var(--gold-200)]">本次召唤使用的蟠桃已全额退还，可继续参与后续召唤</p><Link href="/world" className="btn-ghost-gold mt-4 inline-flex w-full items-center justify-center text-sm">返回悟空世界</Link></section>
   const closed = now >= entry.deadline - RESERVATION_CUTOFF_MINUTES * 60_000
-  const matching = now >= entry.deadline
-  return <section aria-label="召唤已预约" className="hud-panel rounded-xl p-4 text-center">
-    <p className="text-[10px] text-[var(--gold-200)]">{level.realm} · 召唤已预约</p><h2 className="mt-2 font-display text-xl text-gold">{matching ? '自动匹配中' : closed ? '预约已截止' : '召唤已预约'}</h2>
-    <p className="mt-3 text-xs text-[var(--gold-200)]">{matching ? '系统正在自动匹配 · 匹配完成后立即公布结果' : `${level.summonStopTime} 预约截止 · ${level.summonWindow} 自动匹配`}</p>
-    {matching ? <p className="mt-4 font-display text-lg tracking-widest text-[var(--gold-100)] motion-safe:animate-pulse">匹配中…</p> : <><p className="mt-3 text-[11px] text-[var(--gold-200)]">距自动匹配开始</p><p className="mt-1 font-latin text-3xl tabular-nums text-[var(--gold-100)]">{durationText(Math.max(0, entry.deadline - now))}</p></>}
+  // 召唤周期内：点「召唤」，系统当场匹配并公布结果
+  const live = now >= entry.deadline
+  return <section aria-label={live ? '召唤周期进行中' : '已预约召唤'} className={`hud-panel rounded-xl p-4 text-center ${live ? 'panel-glow' : ''}`}>
+    <p className="text-[10px] text-[var(--gold-200)]">{level.realm} · 已预约召唤</p><h2 className="mt-2 font-display text-xl text-gold">{live ? '召唤周期进行中' : closed ? '预约已截止 · 等待召唤开始' : '已预约召唤'}</h2>
+    <p className="mt-3 text-xs text-[var(--gold-200)]">{live ? '点下召唤，系统立即匹配并公布结果' : `${level.summonWindow} 召唤周期内回来点「召唤」`}</p>
+    <p className="mt-3 text-[11px] text-[var(--gold-200)]">{live ? '距本轮召唤结束' : '距召唤开始'}</p><p className="mt-1 font-latin text-3xl tabular-nums text-[var(--gold-100)]">{durationText(Math.max(0, (live ? matchAt({ deadline: entry.deadline }) : entry.deadline) - now))}</p>
     <p className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-[var(--gold-200)]">已暂扣召唤蟠桃 <PeachValue cents={entry.paid} size="sm" /></p>
-    <button type="button" className="btn-gold mt-4 w-full text-sm" disabled>已预约本轮召唤，无需重复参与</button>
+    {live ? <button type="button" className="btn-gold mt-4 w-full text-sm" onClick={() => { play('nav'); act({ type: 'summon-cast', key: entry.key }) }}>召唤</button>
+      : <button type="button" className="btn-gold mt-4 w-full text-sm" disabled>{level.summonStartTime} 开始召唤</button>}
+    <p className="mt-2 text-[11px] leading-5 text-[var(--gold-200)]/80">{live ? '本轮结束前未点召唤的，由系统按该阶段剩余名额处理。' : '召唤成功扣除召唤蟠桃并进入打款；失败全额退还。'}</p>
   </section>
 }

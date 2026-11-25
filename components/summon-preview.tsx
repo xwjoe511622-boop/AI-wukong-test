@@ -70,7 +70,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
       <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
         <Fact label="修炼周期" value={cycleText(level)} />
         <Fact label="圆满增幅" value={`+${level.gainPct}%`} align="right" gold note="完成修炼周期后获得" />
-        <Fact label="召唤时间" value={<span className="whitespace-nowrap"><span className="font-latin">{level.summonStopTime}</span> 预约截止</span>} note={<span className="whitespace-nowrap">{level.summonWindow} 自动匹配</span>} />
+        <Fact label="召唤时间" value={<span className="whitespace-nowrap"><span className="font-latin">{level.summonStopTime}</span> 预约截止</span>} note={<span className="whitespace-nowrap">{level.summonWindow} 召唤</span>} />
         <Fact label="每轮修炼次数" value={`${level.runDays}次`} align="right" note={trialDiff ? `正式版 ${level.cultivationCount} 次` : undefined} />
         <Fact label="每日修炼" value={<Cost value={level.perCycleCost} suffix=" / 天" />} />
         <Fact label="全程修炼" value={<Cost value={level.perCycleCost * level.runDays} end />} align="right" note={trialDiff ? `正式版 ${peachWhole(level.perCycleCost * level.cycleDays)}` : undefined} />
@@ -87,19 +87,19 @@ export function SummonPreview({ stage }: { stage: Stage }) {
         <Link href="/world" className="btn-ghost-gold mt-4 inline-flex w-full items-center justify-center text-sm">返回七大仙境</Link>
       </section>
       : ready && entry
-      ? <SummonPreviewEntry entry={entry} />
-      : <section aria-label="发起召唤" className="hud-panel rounded-xl px-4 pb-4 pt-3 text-center">
-        <p className="text-[10px] text-[var(--gold-200)]/70">{round.open || !ready ? '距本轮预约截止' : round.ended ? '本轮已结束 · 距下一轮开放预约' : round.matching ? '自动匹配中 · 距本周期结束' : '预约已截止 · 距自动匹配开始'}</p>
+      ? <div id="summon-action" className="scroll-mt-24"><SummonPreviewEntry entry={entry} /></div>
+      : <section id="summon-action" aria-label="预约召唤" className="scroll-mt-24 hud-panel rounded-xl px-4 pb-4 pt-3 text-center">
+        <p className="text-[10px] text-[var(--gold-200)]/70">{round.open || !ready ? '距本轮预约截止' : round.ended ? '本轮已结束 · 距下一轮开放预约' : round.matching ? '召唤进行中 · 未预约本轮 · 距本轮结束' : '预约已截止 · 距召唤开始'}</p>
         <p className="mt-1 font-latin text-3xl font-bold leading-none tabular-nums text-[var(--gold-100)]">{h} : {m} : {s}</p>
-        <button type="button" className="btn-gold mt-4 w-full text-sm" disabled={!ready || !round.open || state.balance < totalLocked || usdt < cost} onClick={() => { setConfirmation(round.key); setError('') }}>{!ready ? '读取中…' : round.ended ? '本轮已结束' : !round.open ? '本轮预约已截止' : state.balance < totalLocked ? '蟠桃不足' : usdt < cost ? 'USDT 余额不足' : '发起召唤'}</button>
-        <p className="mt-2 flex items-center justify-center gap-1 text-[11px] text-[var(--gold-200)]">{round.open ? <>提交时暂扣召唤蟠桃 {peachText(totalLocked)}<PeachIcon size={12} /> · 失败全额退还</> : '可继续参与后续召唤：下一轮自次日 00:00 起预约'}</p>
+        <button type="button" className="btn-gold mt-4 w-full text-sm" disabled={!ready || !round.open || state.balance < totalLocked || usdt < cost} onClick={() => { setConfirmation(round.key); setError('') }}>{!ready ? '读取中…' : round.ended ? '本轮已结束' : !round.open ? '本轮预约已截止 · 未预约不能召唤' : state.balance < totalLocked ? '蟠桃不足' : usdt < cost ? 'USDT 余额不足' : '预约召唤'}</button>
+        <p className="mt-2 flex items-center justify-center gap-1 text-[11px] text-[var(--gold-200)]">{round.open ? <>预约时暂扣召唤蟠桃 {peachText(totalLocked)}<PeachIcon size={12} /> · 失败全额退还</> : '可继续参与后续召唤：下一轮自次日 00:00 起预约'}</p>
         {error && <p role="alert" className="mt-2 text-xs text-[var(--gold-200)]">{error}</p>}
       </section>}
 
     <details className="hud-panel rounded-xl">
       <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 text-sm text-[var(--gold-100)]">召唤规则<ChevronRight className="size-4 text-[var(--gold-400)]" aria-hidden /></summary>
       <ul className="flex flex-col gap-2 px-4 pb-4 text-[11px] leading-5 text-[var(--gold-200)]">
-        <li>召唤周期 {level.summonWindow}（北京时间）。{level.summonStopTime} 停止召唤，即预约截止；{level.summonStartTime} 起进入本周期，系统在周期内自动匹配。匹配完成后立即公布结果，无需等待整点，例如 {level.summonStartTime.slice(0, 3)}05 完成匹配即在 {level.summonStartTime.slice(0, 3)}05 公布。</li>
+        <li>召唤周期 {level.summonWindow}（北京时间）。{level.summonStopTime} 预约截止，未预约不能召唤；{level.summonStartTime} 起进入本周期，预约过的玩家点「召唤」，系统当场匹配并公布结果。预约了但整个周期都没点召唤的，周期结束时由系统按该阶段剩余名额处理。</li>
         <li>配套金额以 USDT 计，由甲方向乙方打款；蟠桃只是召唤与修炼的消耗单位。{free ? '本阶段不消耗召唤蟠桃。' : `召唤成功后系统自动扣除召唤蟠桃 ${peachWhole(level.summonCost)}；召唤失败全额退还本次召唤使用的蟠桃。`}</li>
         <li>每个召唤周期每人提交一次。召唤失败不产生交易，可继续参与后续召唤。</li>
         <li>{free ? '本阶段不需要消耗蟠桃：召唤与修炼均不扣费。' : `蟠桃消耗：召唤 ${peachWhole(level.summonCost)}，一次性扣除；修炼每日 ${peachWhole(level.perCycleCost)}，共 ${level.runDays} 天；本阶段合计 ${peachWhole(runCost(level))}${trialDiff ? `（正式版 ${level.cycleDays} 天，合计 ${peachWhole(level.lifecycleCost)}）` : ''}。`}{PEACH_UNIT_TEXT}。契约功能已取消，不再参与任何召唤流程。</li>

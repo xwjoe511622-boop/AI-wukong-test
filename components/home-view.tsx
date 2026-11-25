@@ -54,7 +54,7 @@ function TodoCard({ trades, now }: { trades: Trade[]; now: number }) {
   </section>
 }
 
-/** 当前召唤：跟着我自己的状态显示一条 */
+/** 当前召唤：此刻轮到哪个仙境，以及我在这一轮里的情况 */
 function SummonCard({ now }: { now: number }) {
   const { state } = useProduct()
   const current = currentSummon(state?.entries ?? [], now)
@@ -65,22 +65,35 @@ function SummonCard({ now }: { now: number }) {
     <Link href="/world" className="btn-ghost-gold mt-3.5 inline-flex w-full items-center justify-center text-sm">看看七大仙境</Link>
   </section>
   const level = LEVEL_BY_ID[current.stage]
-  const mine = current.kind !== 'open'
-  const status = current.kind === 'open' ? '可预约' : current.kind === 'reserved' ? '已预约' : '匹配中'
-  const others = current.kind === 'open' ? current.openCount - 1 : current.openCount
-  return <section className="home-card !p-0" aria-labelledby="home-summon-title">
-    <Link href={`/world?stage=${level.id}`} className="flex items-stretch gap-3 p-3">
+  const live = current.kind === 'live'
+  const next = current.nextBookable ? LEVEL_BY_ID[current.nextBookable] : null
+  // 直接落到仙境页的操作区（召唤 / 预约召唤按钮），不用再往下翻
+  const href = `/world?stage=${level.id}#summon-action`
+  // 这一轮里我能做什么：召唤 / 预约召唤 / 看结果 / 什么都做不了
+  const canCast = live && current.mine === 'reserved'
+  const canReserve = !live && current.canReserve && current.mine === 'none'
+  const settled = current.mine === 'success' || current.mine === 'refunded' || current.mine === 'forfeited'
+  const mineText = current.mine === 'reserved' ? (live ? '已预约 · 现在可以召唤' : '已预约 · 等待召唤开始')
+    : current.mine === 'success' ? '本轮召唤成功' : current.mine === 'refunded' ? '本轮召唤未成功 · 蟠桃已退还' : current.mine === 'forfeited' ? '本轮逾期未打款'
+    : live ? '未预约本轮，不能召唤' : current.canReserve ? '尚未预约' : '预约已截止，本轮不能召唤'
+  return <section className={`home-card !p-0 ${canCast ? 'is-todo' : ''}`} aria-labelledby="home-summon-title">
+    <Link href={href} className="flex items-stretch gap-3 p-3">
       <span className="relative w-[104px] shrink-0 overflow-hidden rounded-lg border border-[#b0904b55]"><Image src={level.realmCover} alt="" fill sizes="104px" className="object-cover" /><Image src={level.characterImage} alt="" fill sizes="104px" className="object-contain object-bottom" /></span>
       <span className="flex min-w-0 flex-1 flex-col py-0.5">
-        <span className="flex items-center justify-between gap-2"><span id="home-summon-title" className="home-card-title">当前召唤</span><span className={`trade-chip ${mine ? 'is-wait' : 'is-todo'}`}>{status}</span></span>
+        <span className="flex items-center justify-between gap-2"><span id="home-summon-title" className="home-card-title">{live ? '当前召唤' : '即将召唤'}</span><span className={`trade-chip ${live ? 'is-todo' : 'is-wait'}`}>{live ? '召唤中' : `${level.summonStartTime} 开始`}</span></span>
         <span className="mt-2 block truncate font-display text-lg font-bold leading-tight text-gold">{level.name}</span>
-        <span className="mt-0.5 block text-[11px] text-[var(--gold-200)]">{level.realm} · {level.summonWindow} 自动匹配</span>
-        <span className="mt-2.5 block text-xs text-stone-300">{current.kind === 'matching' ? <span className="text-[var(--gold-100)] motion-safe:animate-pulse">系统正在匹配，完成后立即公布结果</span> : <>{current.kind === 'open' ? '距预约截止' : '距匹配开始'} <span className="font-latin text-base font-bold tabular-nums text-[var(--gold-100)]">{durationText(Math.max(0, current.until - now))}</span></>}</span>
+        <span className="mt-0.5 block text-[11px] text-[var(--gold-200)]">{level.realm} · {level.summonWindow}</span>
+        <span className="mt-2 block text-xs text-stone-300">{live ? '距本轮结束' : '距召唤开始'} <span className="font-latin text-base font-bold tabular-nums text-[var(--gold-100)]">{durationText(Math.max(0, current.until - now))}</span></span>
+        <span className={`mt-1 block text-[11px] ${canCast ? 'text-[#ffd9a0]' : 'text-stone-400'}`}>{mineText}</span>
       </span>
     </Link>
     <div className="flex items-center gap-3 border-t border-[#b0904b2e] px-3 py-2.5">
-      <Link href={`/world?stage=${level.id}`} className={`${mine ? 'btn-ghost-gold' : 'btn-gold'} inline-flex flex-1 items-center justify-center text-sm`}>{mine ? '查看我的预约' : '去召唤'}</Link>
-      <Link href="/world" className="inline-flex shrink-0 items-center gap-0.5 text-xs text-[var(--gold-200)]">{current.reservedCount > 1 ? `共预约 ${current.reservedCount} 个` : others > 0 ? `还有 ${others} 个可预约` : '七大仙境'}<ChevronRight className="size-3.5" /></Link>
+      {canCast ? <Link href={href} className="btn-gold inline-flex flex-1 items-center justify-center text-sm">去召唤</Link>
+        : canReserve ? <Link href={href} className="btn-gold inline-flex flex-1 items-center justify-center text-sm">预约召唤</Link>
+        : settled || current.mine === 'reserved' ? <Link href={href} className="btn-ghost-gold inline-flex flex-1 items-center justify-center text-sm">{settled ? '查看本轮结果' : '查看我的预约'}</Link>
+        : next ? <Link href={`/world?stage=${next.id}#summon-action`} className="btn-gold inline-flex flex-1 items-center justify-center text-sm">预约下一个 · {next.name}</Link>
+        : <Link href="/world" className="btn-ghost-gold inline-flex flex-1 items-center justify-center text-sm">看看七大仙境</Link>}
+      <Link href="/world" className="inline-flex shrink-0 items-center gap-0.5 text-xs text-[var(--gold-200)]">七大仙境<ChevronRight className="size-3.5" /></Link>
     </div>
   </section>
 }

@@ -1,6 +1,6 @@
 export type Stage = 'stone_spirit' | 'spirit_monkey' | 'wukong' | 'battle_wukong' | 'great_sage' | 'destiny_sage' | 'infinite_sage'
 
-// 每个召唤周期开始前 30 分钟停止召唤（预约截止）；周期 1 小时内系统自动匹配，匹配完成立即公布结果。
+// 每个召唤周期开始前 30 分钟预约截止；周期 1 小时内，预约过的玩家点「召唤」，系统当场匹配并公布结果。
 export const RESERVATION_CUTOFF_MINUTES = 30
 // 数值以《AI悟空进阶 · 蟠桃召唤与交易释放机制》正式执行版（2026-11-25）为准。契约功能已取消。
 export const PEACH_UNIT_TEXT = '1蟠桃 = 1 USDT'
@@ -17,7 +17,7 @@ export const TRIAL_PEACH = 1000
 export const TRIAL_USDT = 10000
 /** 个人账号持有不少于 50 个蟠桃才算有效用户 */
 export const VALID_USER_MIN_PEACH = 50
-/** 召唤周期（自动匹配期）时长：小时 */
+/** 召唤周期时长：小时 */
 export const MATCH_WINDOW_HOURS = 1
 export const PLATFORM_PROFIT_FEE = 0.03
 export const INHERITANCE_FEE_PCT = PLATFORM_PROFIT_FEE * 100

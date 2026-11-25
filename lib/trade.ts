@@ -1,5 +1,5 @@
 import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS, TRIAL_MODE, type Stage } from './game-data'
-import { matchAt, roundFor } from './summon-preview'
+import { matchDelay, roundFor } from './summon-preview'
 
 /**
  * 甲乙双方交易。
@@ -56,11 +56,11 @@ export function demoCounterparty(seed: string) {
   return { uid: `WK${hexOf(`uid:${seed}`, 16).toUpperCase()}` }
 }
 
-/** 时刻 t 之后（含）该阶段下一次召唤匹配完成的时刻：传承中的悟空在这一刻匹配到甲方 */
+/** 时刻 t 之后（含）该阶段下一次有甲方召唤成功的时刻（模拟）：传承中的悟空在这一刻匹配到甲方 */
 export function nextMatchAfter(stage: Stage, t: number) {
   for (let day = 0; day < 3; day++) {
     const round = roundFor(stage, t + day * 86_400_000)
-    const at = matchAt({ key: round.key, deadline: round.deadline })
+    const at = round.deadline + matchDelay(round.key)
     if (at >= t) return at
   }
   return t

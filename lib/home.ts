@@ -1,38 +1,42 @@
 import { LEVELS, type Stage } from './game-data'
-import { matchAt, roundFor, type Entry } from './summon-preview'
+import { roundFor, type Entry } from './summon-preview'
+
+/** 我在某一轮里的情况 */
+export type MyRound = 'none' | 'reserved' | 'success' | 'refunded' | 'forfeited'
+const mine = (entries: Entry[], key: string): MyRound => {
+  const entry = entries.find(e => e.key === key)
+  return !entry ? 'none' : entry.status === 'waiting' ? 'reserved' : entry.status
+}
 
 /**
- * 首页「当前召唤」：跟着玩家自己的状态走，只给出一条最该看的信息。
- * 1. 我有预约在等结果 → 最快出结果的那一个（已预约 / 匹配中）
- * 2. 没有预约但现在有仙境可预约 → 最快截止的那一个
- * 3. 今日全部结束 → 明日 00:00 开放预约
+ * 首页「当前召唤」：此刻轮到哪个仙境。
+ * - live：正在召唤周期内（例如 11:00–12:00 是石灵）。预约过的可以点召唤
+ * - upcoming：今天下一个要开始的仙境（例如 11:00 之前是石灵）
+ * - closed：今日七个周期全部结束，可预约明日
+ * nextBookable：现在还能预约、且我没预约的最近一个仙境
  */
 export type CurrentSummon =
-  | { kind: 'reserved' | 'matching'; stage: Stage; until: number; reservedCount: number; openCount: number }
-  | { kind: 'open'; stage: Stage; until: number; reservedCount: 0; openCount: number }
-  | { kind: 'closed'; until: number; reservedCount: 0; openCount: 0 }
+  | { kind: 'live' | 'upcoming'; stage: Stage; until: number; mine: MyRound; canReserve: boolean; nextBookable: Stage | null }
+  | { kind: 'closed'; until: number; nextBookable: Stage | null }
 
 export function currentSummon(entries: Entry[], now: number): CurrentSummon {
   const rounds = LEVELS.filter(l => l.isOpen).map(level => ({ level, round: roundFor(level.id, now) }))
-  // 现在还能预约、且我没预约过的仙境，按截止时间从近到远
-  const open = rounds.filter(({ round }) => round.open && !entries.some(e => e.key === round.key)).sort((a, b) => a.round.cutoff - b.round.cutoff)
-  const waiting = entries.filter(e => e.status === 'waiting').sort((a, b) => matchAt(a) - matchAt(b))
-  if (waiting.length) {
-    const entry = waiting[0]
-    const matching = now >= entry.deadline
-    return { kind: matching ? 'matching' : 'reserved', stage: entry.stage, until: matching ? matchAt(entry) : entry.deadline, reservedCount: waiting.length, openCount: open.length }
-  }
-  if (open.length) return { kind: 'open', stage: open[0].level.id, until: open[0].round.cutoff, reservedCount: 0, openCount: open.length }
-  return { kind: 'closed', until: rounds[0]?.round.nextOpen ?? now, reservedCount: 0, openCount: 0 }
+  const bookable = (except?: Stage) => rounds.filter(({ level, round }) => level.id !== except && round.open && !entries.some(e => e.key === round.key)).sort((a, b) => a.round.cutoff - b.round.cutoff)[0]?.level.id ?? null
+  const live = rounds.find(({ round }) => round.matching)
+  if (live) return { kind: 'live', stage: live.level.id, until: live.round.windowEnd, mine: mine(entries, live.round.key), canReserve: false, nextBookable: bookable(live.level.id) }
+  const upcoming = rounds.filter(({ round }) => now < round.deadline).sort((a, b) => a.round.deadline - b.round.deadline)[0]
+  if (upcoming) return { kind: 'upcoming', stage: upcoming.level.id, until: upcoming.round.deadline, mine: mine(entries, upcoming.round.key), canReserve: upcoming.round.open, nextBookable: bookable(upcoming.level.id) }
+  return { kind: 'closed', until: rounds[0]?.round.nextOpen ?? now, nextBookable: null }
 }
 
-/** 悟空世界列表里每个仙境此刻的状态，用于高亮 */
-export type RealmStatus = 'reserved' | 'open' | 'cutoff' | 'matching' | 'ended'
+/** 悟空世界列表里每个仙境此刻的状态，用于高亮；顺序不变 */
+export type RealmStatus = 'live' | 'live-reserved' | 'reserved' | 'open' | 'cutoff' | 'ended'
 export function realmStatus(stage: Stage, entries: Entry[], now: number): RealmStatus {
   const round = roundFor(stage, now)
   if (round.ended) return 'ended'
-  if (entries.some(e => e.key === round.key && e.status === 'waiting')) return 'reserved'
-  if (round.open) return 'open'
-  return round.matching ? 'matching' : 'cutoff'
+  const reserved = mine(entries, round.key) === 'reserved'
+  if (round.matching) return reserved ? 'live-reserved' : 'live'
+  if (reserved) return 'reserved'
+  return round.open ? 'open' : 'cutoff'
 }
-export const REALM_STATUS_LABEL: Record<RealmStatus, string> = { reserved: '已预约', open: '可预约', cutoff: '预约已截止', matching: '匹配中', ended: '今日已结束' }
+export const REALM_STATUS_LABEL: Record<RealmStatus, string> = { live: '召唤中', 'live-reserved': '召唤中 · 可召唤', reserved: '已预约', open: '可预约', cutoff: '预约已截止', ended: '今日已结束' }

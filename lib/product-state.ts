@@ -24,6 +24,8 @@ export type ProductState = {
 }
 export type ProductAction =
   | { type: 'summon'; action: PreviewAction }
+  /** 召唤周期内点「召唤」：系统当场匹配并公布结果。必须先预约 */
+  | { type: 'summon-cast'; key: string }
   | { type: 'cultivate'; action: CultivationAction }
   | { type: 'invite'; code: string }
   | { type: 'tick' }
@@ -167,7 +169,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
     let next = state
     let message = ''
     for (const entry of state.entries) {
-      // 自动匹配完成的时刻才公布结果；生命周期与打款倒计时都从这一刻起算
+      // 玩家点下召唤（或周期结束系统代为处理）的时刻公布结果；生命周期与打款倒计时都从这一刻起算
       const published = matchAt(entry)
       if (entry.status !== 'waiting' || now < published) continue
       const level = LEVEL_BY_ID[entry.stage]
@@ -186,6 +188,13 @@ export function productTransition(state: ProductState, action: ProductAction, no
     }
     const advanced = advanceTrades(next, now)
     return { state: advanced.state, message: advanced.message || message }
+  }
+  if (action.type === 'summon-cast') {
+    const entry = state.entries.find(e => e.key === action.key)
+    if (!entry) return { state, message: '没有预约本轮召唤，不能召唤。' }
+    if (entry.status !== 'waiting') return { state, message: '本轮已召唤过。' }
+    if (now < entry.deadline) return { state, message: `召唤周期尚未开始，请在 ${LEVEL_BY_ID[entry.stage].summonWindow} 召唤。` }
+    return productTransition({ ...state, entries: state.entries.map(e => e.key === entry.key ? { ...e, summonedAt: now } : e) }, { type: 'tick' }, now)
   }
   if (action.type === 'trade-pay') {
     const trade = state.trades.find(t => t.id === action.id)
@@ -229,12 +238,12 @@ export function productTransition(state: ProductState, action: ProductAction, no
     return { state: { ...state, inviter: code }, message: '同行关系已记录；尚未校验真实用户，不产生真实人数或奖励。' }
   }
   if (action.type === 'summon') {
-    if (action.action.type !== 'join') return { state, message: '请使用演示控制选择结果，等待本轮结果公布。' }
-    if (LEVEL_BY_ID[action.action.stage].isOpen && state.usdt < costCents(action.action.stage)) return { state, message: 'USDT 余额不足以完成本轮配套金额打款，暂不能提交召唤。' }
+    if (action.action.type !== 'join') return { state, message: '请在召唤周期内点「召唤」。' }
+    if (LEVEL_BY_ID[action.action.stage].isOpen && state.usdt < costCents(action.action.stage)) return { state, message: 'USDT 余额不足以完成本轮配套金额打款，暂不能预约召唤。' }
     const result = summon({ ...initialPreview(), balance: state.balance, entries: state.entries }, { ...action.action, now })
     if (result.state.entries === state.entries) return { state, message: result.message }
     const entry = result.state.entries.at(-1)!
-    const next = record({ ...state, balance: result.state.balance, entries: result.state.entries }, 'summon_lock', -entry.paid, `${LEVEL_BY_ID[entry.stage].name}召唤：暂扣召唤蟠桃，成功后自动扣除，失败全额退还。`, now)
+    const next = record({ ...state, balance: result.state.balance, entries: result.state.entries }, 'summon_lock', -entry.paid, `${LEVEL_BY_ID[entry.stage].name}预约召唤：暂扣召唤蟠桃，召唤成功后扣除，失败全额退还。`, now)
     return { state: next, message: result.message }
   }
   if (action.type === 'buy-peach') {

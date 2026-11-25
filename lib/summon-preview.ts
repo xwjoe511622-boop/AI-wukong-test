@@ -4,7 +4,7 @@ import { todayOccurrence, splitDuration } from './schedule'
 // 换键让旧演示记录自然失效（配套金额改以 USDT 计，蟠桃仅暂扣召唤消耗）
 export const SUMMON_PREVIEW_KEY = 'wukong-summon-preview-v4'
 /** paid = 提交召唤时暂扣的召唤蟠桃（分）；amount = 本轮配套金额（USDT 分），不占用蟠桃 */
-export type Entry = { key: string; stage: Stage; date: string; deadline: number; paid: number; amount?: number; enteredAt: number; status: 'waiting' | 'success' | 'refunded' | 'forfeited'; settledAt?: number; adoptedAt?: number; summonFee?: number }
+export type Entry = { key: string; stage: Stage; date: string; deadline: number; paid: number; amount?: number; enteredAt: number; /** 召唤周期内玩家点下「召唤」的时刻 */ summonedAt?: number; status: 'waiting' | 'success' | 'refunded' | 'forfeited'; settledAt?: number; adoptedAt?: number; summonFee?: number }
 export type PreviewState = { version: 2; balance: number; offset: number; entries: Entry[] }
 export type PreviewAction = { type: 'join'; stage: Stage; now: number } | { type: 'settle'; key: string; result: 'success' | 'refunded'; now: number } | { type: 'clock'; offset: number } | { type: 'poor' } | { type: 'reset' }
 export const initialPreview = (): PreviewState => ({ version: 2, balance: 128650, offset: 0, entries: [] })
@@ -19,25 +19,28 @@ const DAY_MS = 86_400_000
 const ROUND_EPOCH = Date.UTC(2026, 8, 29) - 8 * 3600000
 export function roundNumber(now: number) { return Math.max(1, Math.floor((now - ROUND_EPOCH) / DAY_MS) + 1) }
 /**
- * 自动匹配在周期开始后进行，匹配完成立即公布结果，不必等到整点。
- * 目前没有接入真实撮合，用场次 key 确定性地给出 1–9 分钟的匹配耗时（例如 11:05 公布）。
+ * 没有接入真实撮合时，用场次 key 确定性地模拟「别的玩家在周期开始后 1–9 分钟点下召唤」，
+ * 用来给传承中的悟空匹配甲方。
  */
 export function matchDelay(key: string) {
   let hash = 0
   for (const ch of key) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0
   return (1 + hash % 9) * 60_000
 }
-/** 本场次公布结果的时刻 = 周期开始 + 匹配耗时 */
-export const matchAt = (entry: Pick<Entry, 'key' | 'deadline'>) => entry.deadline + matchDelay(entry.key)
-/** 匹配耗时上限，供演示时钟一步跳到「已公布」 */
-export const MATCH_MAX_MS = 10 * 60_000
+export const WINDOW_MS = MATCH_WINDOW_HOURS * 3600_000
+/**
+ * 本场次出结果的时刻。
+ * 玩家在召唤周期内点「召唤」，系统当场匹配并公布结果；
+ * 预约了但整个周期都没点的，周期结束时由系统按剩余名额处理（名额由后端决定，这里先按模拟结果处理）。
+ */
+export const matchAt = (entry: Pick<Entry, 'deadline' | 'summonedAt'>) => entry.summonedAt ?? entry.deadline + WINDOW_MS
 export function roundFor(stage: Stage, now: number) {
   const date = beijingDate(now)
   const deadline = todayOccurrence(LEVEL_BY_ID[stage].summonHour, new Date(now)).getTime()
   const cutoff = deadline - RESERVATION_CUTOFF_MINUTES * 60_000
   const open = now < cutoff
-  // deadline = 周期开始（自动匹配开始）；周期结束后本轮才算结束
-  const windowEnd = deadline + MATCH_WINDOW_HOURS * 3600_000
+  // deadline = 召唤周期开始；周期结束后本轮才算结束
+  const windowEnd = deadline + WINDOW_MS
   const matching = now >= deadline && now < windowEnd
   const ended = now >= windowEnd
   // 本轮结束后，下一轮自次日 00:00（北京时间）起可提交
@@ -79,16 +82,16 @@ export function transition(state: PreviewState, action: PreviewAction): { state:
     if (!LEVEL_BY_ID[action.stage].isOpen) return { state, message: `${LEVEL_BY_ID[action.stage].name}尚未开放，暂不可召唤。` }
     const round = roundFor(action.stage, action.now)
     if (!round.open) return { state, message: '本轮预约已截止，可继续参与后续召唤。' }
-    if (state.entries.some(e => e.key === round.key)) return { state, message: '已发起本轮召唤，无需重复参与。' }
+    if (state.entries.some(e => e.key === round.key)) return { state, message: '已预约本轮召唤，无需重复预约。' }
     const paid = Math.round(LEVEL_BY_ID[action.stage].summonCost * 100)
     const summonFee = paid
-    if (state.balance < paid) return { state, message: '蟠桃不足，无法提交本次召唤。' }
+    if (state.balance < paid) return { state, message: '蟠桃不足，无法预约本次召唤。' }
     const entry: Entry = { key: round.key, date: round.date, deadline: round.deadline, stage: action.stage, paid, amount: costCents(action.stage), summonFee, enteredAt: action.now, status: 'waiting' }
-    return { state: { ...state, balance: state.balance - paid, entries: [...state.entries, entry] }, message: `已提交召唤，${summonFee ? '召唤成功后自动扣除召唤蟠桃' : '本阶段不消耗蟠桃'}；失败全额退还。` }
+    return { state: { ...state, balance: state.balance - paid, entries: [...state.entries, entry] }, message: `已预约召唤，请在 ${LEVEL_BY_ID[action.stage].summonWindow} 召唤周期内点「召唤」；${summonFee ? '召唤成功扣除召唤蟠桃' : '本阶段不消耗蟠桃'}，失败全额退还。` }
   }
   const entry = state.entries.find(e => e.key === action.key)
   if (!entry || entry.status !== 'waiting') return { state, message: '没有召唤中的记录，或本轮已完成召唤。' }
-  if (action.now < matchAt(entry)) return { state, message: '自动匹配尚未完成，不能展示结果。' }
+  if (action.now < matchAt(entry)) return { state, message: '尚未召唤，不能展示结果。' }
   const success = action.result === 'success'
   const status = success ? 'success' as const : 'refunded' as const
   return { state: { ...state, balance: state.balance + (success ? 0 : entry.paid), entries: state.entries.map(e => e.key === entry.key ? { ...e, status, settledAt: action.now } : e) }, message: success ? `召唤成功，召唤蟠桃已自动扣除，${LEVEL_BY_ID[entry.stage].name}已进入猴舍，按日修炼即可。` : '本轮召唤未成功，本次召唤使用的蟠桃已全额退还，可继续参与后续召唤。' }
@@ -100,7 +103,7 @@ export function parsePreview(raw: string): PreviewState {
   for (const e of data.entries) {
     if (!e || !isStage(e.stage) || !Number.isFinite(e.enteredAt) || Math.abs(e.enteredAt) > 8e12) throw new Error('无效召唤记录')
     const round = roundFor(e.stage, e.enteredAt)
-    if (e.key !== round.key || e.date !== round.date || e.deadline !== round.deadline || e.enteredAt >= e.deadline || keys.has(e.key) || !Number.isSafeInteger(e.paid) || e.paid < 0 || (e.amount !== undefined && (!Number.isSafeInteger(e.amount) || e.amount < 0)) || (e.summonFee !== undefined && (!Number.isSafeInteger(e.summonFee) || e.summonFee < 0)) || !['waiting', 'success', 'refunded', 'forfeited'].includes(e.status) || (e.status !== 'waiting' && (!Number.isFinite(e.settledAt) || e.settledAt < e.deadline))) throw new Error('无效召唤记录')
+    if (e.key !== round.key || e.date !== round.date || e.deadline !== round.deadline || e.enteredAt >= e.deadline || keys.has(e.key) || !Number.isSafeInteger(e.paid) || e.paid < 0 || (e.summonedAt !== undefined && (!Number.isFinite(e.summonedAt) || e.summonedAt < e.deadline || e.summonedAt >= e.deadline + WINDOW_MS)) || (e.amount !== undefined && (!Number.isSafeInteger(e.amount) || e.amount < 0)) || (e.summonFee !== undefined && (!Number.isSafeInteger(e.summonFee) || e.summonFee < 0)) || !['waiting', 'success', 'refunded', 'forfeited'].includes(e.status) || (e.status !== 'waiting' && (!Number.isFinite(e.settledAt) || e.settledAt < e.deadline))) throw new Error('无效召唤记录')
     keys.add(e.key)
   }
   return { version: 2, balance: data.balance, offset: data.offset, entries: data.entries }

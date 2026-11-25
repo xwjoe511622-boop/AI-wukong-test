@@ -893,12 +893,12 @@
 .home-card-title { font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: .08em; color: var(--gold-200); }
 .home-label { font-size: 11px; color: #d2cbbf; }
 
-/* 悟空世界：按此刻状态区分仙境 */
-.realm-cover.is-open, .realm-cover.is-reserved { outline: 1px solid #ffcf5c99; outline-offset: 2px; box-shadow: 0 0 28px #ffcf5c2e; }
+/* 悟空世界：按此刻状态区分仙境，顺序不变 */
+.realm-cover.is-live, .realm-cover.is-live-reserved { outline: 2px solid #ffcf5c; outline-offset: 2px; box-shadow: 0 0 36px #ffcf5c55; }
+.realm-cover.is-reserved { outline: 1px solid #7fb06a99; outline-offset: 2px; }
 .realm-cover.is-ended { opacity: .62; filter: grayscale(.45); }
 .realm-state { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; border: 1px solid #b0904b80; padding: 2px 9px; font-size: 10px; letter-spacing: .08em; color: #e9cf9f; }
-.realm-state.is-open { border-color: #ffcf5c; background: #ffcf5c1f; color: #ffe39a; }
-.realm-state.is-open::before { content: ''; width: 5px; height: 5px; border-radius: 999px; background: #ffcf5c; box-shadow: 0 0 8px #ffcf5c; }
+.realm-state.is-live, .realm-state.is-live-reserved { border-color: #ffcf5c; background: #ffcf5c26; color: #ffe39a; }
+.realm-state.is-live::before, .realm-state.is-live-reserved::before { content: ''; width: 5px; height: 5px; border-radius: 999px; background: #e0703f; box-shadow: 0 0 8px #e0703f; }
 .realm-state.is-reserved { border-color: #7fb06a; background: #7fb06a1f; color: #c5e2b5; }
-.realm-state.is-matching { border-color: #e0703f; color: #ffd9a0; }
 .realm-state.is-ended, .realm-state.is-cutoff { color: #a59c8c; }
