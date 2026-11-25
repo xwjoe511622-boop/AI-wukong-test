@@ -963,3 +963,8 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .relation-toggle input:checked + span::after { transform: translateX(14px); background: #ffcf5c; }
 .relation-toggle input:focus-visible + span { outline: 2px solid #ffcf5c; outline-offset: 2px; }
 .relation-toggle em { font-style: normal; }
+
+/* 仙境页顶部返回条：贴顶固定，左右顶到屏幕边 */
+.stage-bar { position: sticky; top: 0; z-index: 30; display: grid; grid-template-columns: 72px 1fr 72px; align-items: center; margin: -16px -16px 0; padding: env(safe-area-inset-top) 16px 0; min-height: 52px; text-align: center; background: linear-gradient(180deg, #0b0a08f2, #0b0a08d9); border-bottom: 1px solid #c59b5255; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.stage-bar > a { justify-self: start; }
+.stage-bar + div .realm-hero { border-radius: 0 0 14px 14px; }

@@ -5,8 +5,7 @@ import { BottomNav } from './bottom-nav'
 import { SoundToggle } from './sound-toggle'
 import { useGame } from '@/lib/game-context'
 import { useDemoControls } from '@/lib/use-demo-controls'
-import { TRIAL_MODE } from '@/lib/game-data'
-import { TrialRibbon, TrialWelcome, TRIAL_RIBBON_HEIGHT } from './trial-notice'
+import { TrialRibbon, TrialWelcome } from './trial-notice'
 
 const sectionBackgrounds = {
   world: '/assets/wukong-world-daylight.png',
@@ -80,8 +79,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const isCultivationPreview = pathname === '/house' || pathname.startsWith('/house/') || pathname === '/world' || pathname.startsWith('/world/')
   return (
-    // 体验版顶部有一条固定标识，正文整体下移同样的高度
-    <div className="relative isolate min-h-dvh" style={TRIAL_MODE ? { paddingTop: TRIAL_RIBBON_HEIGHT } : undefined}>
+    <div className="relative isolate min-h-dvh">
       <TrialRibbon />
       <TrialWelcome />
       <SoundToggle />

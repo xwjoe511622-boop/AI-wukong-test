@@ -46,13 +46,14 @@ export function SummonPreview({ stage }: { stage: Stage }) {
   const position = rangePosition(stage)
 
   return <div className="flex flex-col gap-4">
-    <header className="hud-panel mr-12 flex items-center justify-between gap-2 rounded-xl px-3 py-2.5">
-      <Link href="/world" className="flex min-h-9 items-center text-xs text-[var(--gold-200)]">← 返回</Link>
+    {/* 返回条固定在最上面，往下翻也一直在；和下面的立绘之间不留空隙。右侧留给声音按钮 */}
+    <header className="stage-bar">
+      <Link href="/world" className="flex min-h-11 items-center text-xs text-[var(--gold-200)]">← 返回</Link>
       <h1 className="font-display text-base tracking-wider text-gold">{level.realm}</h1>
-      <span className="flex items-center gap-1 font-latin text-xs font-bold tabular-nums text-[var(--gold-100)]">{ready ? peachText(state.balance) : '—'}<PeachIcon size={14} /></span>
+      <span aria-hidden />
     </header>
 
-    <RealmCardHero key={stage} level={level} />
+    <div className="-mx-4 -mt-4"><RealmCardHero key={stage} level={level} /></div>
 
     <section aria-labelledby="round-title" className="hud-panel rounded-xl px-4 pb-4 pt-3">
       <p className="text-[10px] tracking-wider text-[var(--gold-200)]/70">第{round.number}轮召唤</p>

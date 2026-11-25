@@ -1,6 +1,5 @@
 'use client'
 
-import { TRIAL_MODE } from '@/lib/game-data'
 import { useState } from 'react'
 import { useSound } from '@/lib/sound'
 
@@ -10,7 +9,7 @@ export function SoundToggle() {
 
   return (
     <div
-      className={`pointer-events-auto fixed right-3 z-50 flex items-center gap-2 pt-[env(safe-area-inset-top)] ${TRIAL_MODE ? 'top-10' : 'top-3'}`}
+      className={`pointer-events-auto fixed right-3 z-50 flex items-center gap-2 pt-[env(safe-area-inset-top)] top-3`}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
