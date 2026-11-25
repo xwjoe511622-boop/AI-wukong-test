@@ -993,3 +993,24 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .stage-action { padding: 12px 12px 10px 16px; border-radius: 16px; border: 1px solid #d9b26a99; background: radial-gradient(130% 120% at 0% 0%, #3d2a10 0%, #17130d 55%, #100e0b 100%); box-shadow: 0 0 0 1px #ffe39a12 inset; }
 .stage-cta { flex: none; min-width: 148px; font-size: 14px; }
 .confirm-heading { margin: 18px 0 8px; padding-bottom: 6px; border-bottom: 1px solid #b0904b38; font-size: 11px; letter-spacing: .2em; color: #c9a866; }
+
+/* 资产卡：图标和数字要醒目 */
+.asset-card { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.asset-tile { position: relative; overflow: hidden; padding: 14px 14px 12px; border-radius: 16px; border: 1px solid #c59b5266; background: radial-gradient(120% 110% at 100% 0%, #3a2a12 0%, #17130d 55%, #0f0d0a 100%); box-shadow: 0 0 0 1px #ffe39a0f inset, 0 12px 28px #0008; }
+.asset-tile.is-usdt { background: radial-gradient(120% 110% at 100% 0%, #16302a 0%, #101613 55%, #0c0e0c 100%); border-color: #5fa58a66; }
+.asset-icon { position: absolute; top: 10px; right: 10px; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; }
+.asset-icon img { width: 44px; height: 44px; filter: drop-shadow(0 4px 12px #ff783c66); }
+.is-usdt .asset-icon { color: #7fd3b0; filter: drop-shadow(0 4px 12px #3fbf9066); }
+.asset-name { font-size: 12px; letter-spacing: .14em; color: #d9bb7c; }
+.is-usdt .asset-name { color: #9ad9c0; }
+.asset-number { margin-top: 26px; font-family: var(--font-sans, 'Noto Sans SC'), system-ui, sans-serif; font-size: clamp(22px, 6.6vw, 28px); font-weight: 700; line-height: 1.1; letter-spacing: 0; font-variant-numeric: tabular-nums; color: #fff2d6; white-space: nowrap; }
+.asset-note { margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10.5px; color: #a59c8c; }
+
+/* 站内通知 */
+.notice-bell { position: fixed; z-index: 45; top: calc(12px + env(safe-area-inset-top)); right: max(12px, calc(50% - 228px)); display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 999px; border: 1px solid #c59b5280; background: rgb(16 13 9 / 78%); color: #e9cf9f; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.notice-bell span { position: absolute; top: -4px; right: -4px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 999px; background: #d9502e; color: #fff; font-size: 10.5px; font-weight: 700; line-height: 17px; text-align: center; box-shadow: 0 0 0 2px #120d07; }
+.notice-toast { display: flex; align-items: center; gap: 10px; margin: 10px 12px 0; padding: 10px 12px; border-radius: 14px; border: 1px solid #ffcf5c; background: rgb(28 21 10 / 97%); box-shadow: 0 12px 32px #000c; transform: translateY(-140%); opacity: 0; transition: transform .45s ease, opacity .45s ease; }
+.notice-toast.is-shown { transform: none; opacity: 1; pointer-events: auto; }
+.notice-toast strong { display: block; font-size: 13px; color: #ffe9c2; }
+.notice-toast span span { display: block; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: #cfc6b4; }
+@media (prefers-reduced-motion: reduce) { .notice-toast { transition: none; } }

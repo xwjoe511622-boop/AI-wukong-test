@@ -55,7 +55,7 @@ export function TradeView({ id }: { id: string }) {
     {/* 操作区：只在需要我处理时出现 */}
     {payer && trade.status === 'awaiting_payment' && <section className="profile-surface" aria-label="打款">
       <p className="flex items-center justify-between text-xs text-[var(--profile-muted)]"><span>可用 USDT 余额</span><UsdtValue cents={state.usdt} size="sm" muted /></p>
-      {short ? <><p role="alert" className="mt-3 flex items-start gap-2 text-xs leading-5 text-[#f0b49a]"><AlertTriangle className="mt-0.5 size-4 shrink-0" />USDT 余额不足，还差 {money(trade.amountCents - state.usdt)} USDT。请先在个人地址接收 USDT，再回来打款。</p><div className="mt-3"><ProfileButtonLink href="/me/wallet?mode=in" size="large">去个人地址接收 USDT</ProfileButtonLink></div></>
+      {short ? <><p role="alert" className="mt-3 flex items-start gap-2 text-xs leading-5 text-[#f0b49a]"><AlertTriangle className="mt-0.5 size-4 shrink-0" />USDT 余额不足，还差 {money(trade.amountCents - state.usdt)} USDT。请先补足 USDT 余额，再回来打款。</p><div className="mt-3"><ProfileButtonLink href="/me/wallet" size="large">查看我的资产</ProfileButtonLink></div></>
         : confirming ? <div className="trade-confirm mt-3"><p className="text-xs leading-6">将从 USDT 余额向传承人 <code>{trade.counterparty.uid}</code> 打款 <strong className="text-[var(--gold-100)]">{money(trade.amountCents)} USDT</strong>。打款后无法撤回，系统会通知传承人核实到账。</p><div className="mt-3 grid grid-cols-2 gap-2"><ProfileButton secondary onClick={() => setConfirming(false)}>取消</ProfileButton><ProfileButton onClick={() => { act({ type: 'trade-pay', id: trade.id }); setConfirming(false) }}>确认打款</ProfileButton></div></div>
         : <div className="mt-3"><ProfileButton size="large" onClick={() => setConfirming(true)}>向传承人打款 {money(trade.amountCents)} USDT</ProfileButton></div>}
     </section>}
@@ -79,6 +79,7 @@ export function TradeView({ id }: { id: string }) {
     </section>}
 
     <p role="status" aria-live="polite" className="min-h-4 text-center text-[11px] leading-5 text-[var(--gold-200)]">{notice}</p>
+    <p className="text-center text-xs text-[var(--profile-muted)]">这笔交易有问题？<Link href="/me/support" className="ml-1 text-[var(--gold-200)] underline underline-offset-4">联系客服申诉</Link></p>
     <p className="text-center text-[10px] leading-5 text-[var(--profile-muted)]">{COUNTERPARTY_NOTE}</p>
   </div>
 }

@@ -16,6 +16,8 @@ export const walletAddress = (playerId: string) => { const hex = playerId.replac
 export const AVATAR_MAX_CHARS = 200_000
 export const isAvatar = (value: unknown): value is string => typeof value === 'string' && /^data:image\/(png|jpeg|webp);base64,/.test(value) && value.length <= AVATAR_MAX_CHARS
 export const isWalletAddress = (value: string) => /^0x[0-9a-fA-F]{40}$/.test(value)
+/** 站内通知：召唤结果、待打款、入舍、匹配到承接人、待确认收款、到账、违约 */
+export type Notice = { id: string; title: string; body: string; at: number; href: string; read?: boolean }
 export type ProductState = {
   version: 6; playerId: string; inviteCode: string; inviter?: string;
   /** 自己设置的头像（缩小后的图片 data URL）；未设置时显示默认图标 */
@@ -26,6 +28,7 @@ export type ProductState = {
   records: AccountRecord[]; rewards: RewardRecord[]; members: DemoMember[]; demoSettlements: string[];
   /** 承接人与传承人交易：召唤成功后的打款（承接人）与传承时的收款（传承人） */
   trades: Trade[];
+  notifications: Notice[];
 }
 export type ProductAction =
   | { type: 'summon'; action: PreviewAction }
@@ -33,6 +36,8 @@ export type ProductAction =
   | { type: 'summon-cast'; key: string }
   | { type: 'cultivate'; action: CultivationAction }
   | { type: 'invite'; code: string }
+  /** 把站内通知全部标为已读 */
+  | { type: 'read-notifications' }
   /** 设置头像；传 null 恢复默认图标 */
   | { type: 'set-avatar'; dataUrl: string | null }
   | { type: 'tick' }
@@ -75,11 +80,17 @@ function sampleMembers(now: number): DemoMember[] {
 export type ProductSeed = { balance: number; usdt: number; starters?: boolean }
 export const defaultSeed = (): ProductSeed => TRIAL_MODE ? { balance: TRIAL_PEACH * 100, usdt: TRIAL_USDT * 100 } : { balance: 0, usdt: 0 }
 export function createProduct(now: number, playerId: string, seed: ProductSeed = defaultSeed()): ProductState {
-  return { version: 6, playerId, inviteCode: `WK${playerId.replaceAll('-', '').slice(0, 16).toUpperCase()}`, balance: seed.balance, usdt: seed.usdt, entries: [], contracts: seed.starters ? starterContracts(now) : [], history: [], records: [], rewards: [], members: [], demoSettlements: [], trades: [], offset: 0, demoOutcome: 'success' }
+  return { version: 6, playerId, inviteCode: `WK${playerId.replaceAll('-', '').slice(0, 16).toUpperCase()}`, balance: seed.balance, usdt: seed.usdt, entries: [], contracts: seed.starters ? starterContracts(now) : [], history: [], records: [], rewards: [], members: [], demoSettlements: [], trades: [], notifications: [], offset: 0, demoOutcome: 'success' }
 }
 function record(state: ProductState, kind: string, amountCents: number, description: string, now: number, currency: Currency = 'peach'): ProductState {
   return { ...state, records: [{ id: `${now}-${state.records.length}-${kind}`, kind, amountCents, description, createdAt: new Date(now).toISOString(), ...(currency === 'usdt' ? { currency } : {}) }, ...state.records] }
 }
+/** 加一条站内通知；同一件事只通知一次，最多保留 60 条 */
+function notify(state: ProductState, id: string, title: string, body: string, at: number, href: string): ProductState {
+  if (state.notifications.some(n => n.id === id)) return state
+  return { ...state, notifications: [{ id, title, body, at, href }, ...state.notifications].slice(0, 60) }
+}
+const tradeLink = (id: string) => `/me/trades/${encodeURIComponent(id)}`
 function summonedContract(entry: Entry): Contract {
   // 修炼蟠桃已在预约时暂扣、进猴舍时一次扣除，所以进舍即视为修炼全部安排好，之后自动修炼到周期结束
   return { id: `summon-${entry.key}`, stage: entry.stage, principal: entry.amount ?? costCents(entry.stage), started: matchAt(entry), completed: RULES[entry.stage].days, trainingCompletedAt: matchAt(entry) }
@@ -96,18 +107,20 @@ function payeeConfirms(state: ProductState, trade: Trade, at: number): ProductSt
     const contract = summonedContract(entry)
     if (![...next.contracts, ...next.history].some(c => c.id === contract.id)) next = { ...next, contracts: [...next.contracts, contract] }
   }
+  next = notify(next, `housed-${trade.id}`, `${LEVEL_BY_ID[trade.stage].name}已进入猴舍`, '传承人已确认到账，悟空开始自动修炼。', at, `/house/room/${trade.stage}`)
   return record(next, 'summon', 0, `传承人已确认收到修炼值 ${money(trade.amountCents)} USDT，交易完成；${LEVEL_BY_ID[trade.stage].name}已进入猴舍，暂扣的召唤与修炼蟠桃正式扣除，自动修炼。`, at)
 }
 /** 承接人已打款：传承人需核实到账后确认收款 */
 function payerPays(state: ProductState, trade: Trade, at: number): ProductState {
-  const next = updateTrade(state, trade.id, { status: 'awaiting_confirm', paidAt: at })
+  let next = updateTrade(state, trade.id, { status: 'awaiting_confirm', paidAt: at })
+  if (trade.role === 'receiver') next = notify(next, `paid-${trade.id}`, `${LEVEL_BY_ID[trade.stage].name} · 承接人已打款`, `请核实到账 ${money(trade.amountCents)} USDT 后确认收款。`, at, tradeLink(trade.id))
   return { ...next, contracts: next.contracts.map(c => c.id === trade.contractId ? { ...c, finishedAt: at } : c) }
 }
 /** 传承人：传承中的悟空匹配到承接人，开始等待承接人打款 */
 function matchReceiver(state: ProductState, c: Contract, at: number): ProductState {
   const id = `inherit-${c.id}`
   const trade: Trade = { id, role: 'receiver', stage: c.stage, amountCents: settlement(c).received, matchedAt: at, deadline: at + PAYMENT_WINDOW_MS, counterparty: demoCounterparty(id), status: 'awaiting_payment', contractId: c.id }
-  return { ...state, trades: [...state.trades, trade] }
+  return notify({ ...state, trades: [...state.trades, trade] }, `matched-${id}`, `${RULES[c.stage].name} · 传承已匹配到承接人`, '等待对方打款，到账后会再通知你确认收款。', at, tradeLink(id))
 }
 /** 推进所有交易：匹配传承中的悟空、承接人逾期、模拟对方操作 */
 function advanceTrades(state: ProductState, now: number): { state: ProductState; message: string } {
@@ -131,6 +144,7 @@ function advanceTrades(state: ProductState, now: number): { state: ProductState;
       next = updateTrade(next, trade.id, { status: 'overdue', overdueAt: trade.deadline })
       next = { ...next, entries: next.entries.map(e => e.key === trade.entryKey ? { ...e, status: 'forfeited' as const } : e) }
       next = record(next, 'summon_forfeit', 0, `${LEVEL_BY_ID[trade.stage].name}召唤成功后 ${PAYMENT_WINDOW_HOURS} 小时内未完成修炼值 ${money(trade.amountCents)} USDT 打款，判定逾期违约，暂扣的召唤蟠桃与修炼蟠桃全部充公。`, trade.deadline)
+      next = notify(next, `overdue-${trade.id}`, `${LEVEL_BY_ID[trade.stage].name} · 逾期未打款`, '已判定违约，暂扣的召唤蟠桃与修炼蟠桃全部充公。', trade.deadline, tradeLink(trade.id))
       message = `${LEVEL_BY_ID[trade.stage].name}逾期未打款，判定违约，暂扣的蟠桃已全部充公。`
     } else if (trade.role === 'payer' && trade.status === 'awaiting_confirm' && now >= (trade.paidAt ?? now) + COUNTERPARTY_DELAY_MS) {
       next = payeeConfirms(next, trade, (trade.paidAt ?? now) + COUNTERPARTY_DELAY_MS)
@@ -191,8 +205,12 @@ export function productTransition(state: ProductState, action: ProductAction, no
         const id = `pay-${entry.key}`
         if (!next.trades.some(t => t.id === id)) next = { ...next, trades: [...next.trades, { id, role: 'payer', stage: entry.stage, amountCents: contract.principal, matchedAt: published, deadline: published + PAYMENT_WINDOW_MS, counterparty: demoCounterparty(id), status: 'awaiting_payment', entryKey: entry.key }] }
         next = record(next, 'summon', 0, `${level.name}召唤成功，${entry.paid ? `预约时暂扣的 ${money(entry.paid)} 蟠桃将在进猴舍时正式扣除` : '本阶段不消耗蟠桃'}；请在 ${PAYMENT_WINDOW_HOURS} 小时内向传承人打款修炼值 ${money(contract.principal)} USDT。`, published)
+        next = notify(next, `won-${id}`, `${level.name}召唤成功`, `请在 ${PAYMENT_WINDOW_HOURS} 小时内向传承人打款 ${money(contract.principal)} USDT，逾期暂扣的蟠桃全部充公。`, published, tradeLink(id))
         message = `${level.name}召唤成功！请在 ${PAYMENT_WINDOW_HOURS} 小时内完成修炼值打款。`
-      } else next = record(next, 'summon_return', entry.paid, '召唤未成功，暂扣的召唤蟠桃与修炼蟠桃全额退还，可继续参与后续召唤。', published)
+      } else {
+        next = record(next, 'summon_return', entry.paid, '召唤未成功，暂扣的召唤蟠桃与修炼蟠桃全额退还，可继续参与后续召唤。', published)
+        next = notify(next, `lost-${entry.key}`, `${level.name} · 本轮召唤未成功`, '暂扣的蟠桃已全额退还，可继续预约后续召唤。', published, `/world?stage=${entry.stage}`)
+      }
     }
     const advanced = advanceTrades(next, now)
     return { state: advanced.state, message: advanced.message || message }
@@ -208,7 +226,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
     const trade = state.trades.find(t => t.id === action.id)
     if (!trade || trade.role !== 'payer' || trade.status !== 'awaiting_payment') return { state, message: '这笔交易当前无需打款。' }
     if (now >= trade.deadline) return { state, message: '已超过打款期限。' }
-    if (state.usdt < trade.amountCents) return { state, message: 'USDT 余额不足，无法完成打款。可先在个人地址接收 USDT。' }
+    if (state.usdt < trade.amountCents) return { state, message: 'USDT 余额不足，无法完成打款。请先补足 USDT。' }
     let next = payerPays({ ...state, usdt: state.usdt - trade.amountCents }, trade, now)
     next = record(next, 'summon_pay', -trade.amountCents, `${LEVEL_BY_ID[trade.stage].name}召唤：向传承人 ${trade.counterparty.uid} 打款修炼值 ${money(trade.amountCents)} USDT，等待传承人确认到账（当前版本不产生真实转账）。`, now, 'usdt')
     return { state: next, message: `已打款 ${money(trade.amountCents)} USDT，等待传承人确认到账。` }
@@ -224,6 +242,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
     const amounts = settlement(contract)
     let next: ProductState = { ...state, usdt: state.usdt + amounts.received, contracts: result.state.contracts, history: result.state.history }
     next = updateTrade(next, trade.id, { status: 'completed', confirmedAt: now })
+    next = notify(next, `settled-${trade.id}`, `${RULES[contract.stage].name} · 传承所得已到账`, `${money(amounts.received)} USDT 已转入你的 USDT 余额。`, now, '/me/wallet')
     next = record(next, 'inherit', amounts.received, `${RULES[contract.stage].name} · ${dateTime(contract.started)}召唤。已确认收到承接人打款：修炼值 ${money(contract.principal)} USDT，修炼增长 ${money(amounts.profit)} USDT，平台手续费 ${money(amounts.fee)} USDT，本次传承所得 ${money(amounts.received)} USDT，已转入 USDT 余额。`, now, 'usdt')
     return { state: next, message: `已确认收款，传承所得 ${money(amounts.received)} USDT 已转入 USDT 余额，本次传承已归档。` }
   }
@@ -238,6 +257,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
     if (!c || c.completed !== RULES[c.stage].days || now < maturedAt(c) || state.trades.some(t => t.contractId === c.id)) return { state, message: '这只悟空当前不在等待匹配。' }
     return { state: matchReceiver(state, c, now), message: `仅演示：${RULES[c.stage].name}已匹配到承接人，等待对方打款。` }
   }
+  if (action.type === 'read-notifications') return state.notifications.some(n => !n.read) ? { state: { ...state, notifications: state.notifications.map(n => n.read ? n : { ...n, read: true }) }, message: '' } : { state, message: '' }
   if (action.type === 'set-avatar') {
     if (action.dataUrl === null) { const { avatar: _removed, ...rest } = state; return { state: rest, message: '已恢复默认头像。' } }
     if (!isAvatar(action.dataUrl)) return { state, message: '头像图片无效或过大，请换一张。' }
@@ -260,12 +280,12 @@ export function productTransition(state: ProductState, action: ProductAction, no
     return { state: next, message: result.message }
   }
   if (action.type === 'buy-peach') {
-    // 1 蟠桃 = 1 USDT：用 USDT 余额购买蟠桃，到账后显示在个人地址页
+    // 1 蟠桃 = 1 USDT：用 USDT 余额购买蟠桃，到账后显示在「我的资产」
     if (!Number.isSafeInteger(action.amountCents) || action.amountCents <= 0) return { state, message: '请输入有效的购买数量，最多两位小数。' }
     if (state.usdt < action.amountCents) return { state, message: 'USDT 余额不足，无法购买。' }
     let next: ProductState = { ...state, usdt: state.usdt - action.amountCents, balance: state.balance + action.amountCents }
     next = record(next, 'buy_pay', -action.amountCents, `购买 ${money(action.amountCents)} 蟠桃，支付 ${money(action.amountCents)} USDT（1蟠桃 = 1 USDT）。`, now, 'usdt')
-    next = record(next, 'recharge', action.amountCents, `购买到账 ${money(action.amountCents)} 蟠桃，已显示在个人地址页。`, now)
+    next = record(next, 'recharge', action.amountCents, `购买到账 ${money(action.amountCents)} 蟠桃，已显示在「我的资产」。`, now)
     return { state: next, message: `已购买 ${money(action.amountCents)} 蟠桃。` }
   }
   if (action.type === 'transfer' || action.type === 'demo-receive') {
@@ -317,5 +337,7 @@ export function parseProduct(raw: string): ProductState {
   if (!Array.isArray(data.demoSettlements) || !data.demoSettlements.every((id: unknown) => typeof id === 'string')) throw new Error('结算格式无效')
   if (!Array.isArray(data.trades) || !data.trades.every(isTrade)) throw new Error('交易格式无效')
   if (data.avatar !== undefined && !isAvatar(data.avatar)) delete data.avatar
+  // 旧存档没有站内通知
+  if (!Array.isArray(data.notifications) || !data.notifications.every((n: Notice) => n && typeof n.id === 'string' && typeof n.title === 'string' && typeof n.body === 'string' && Number.isFinite(n.at) && typeof n.href === 'string')) data.notifications = []
   return data
 }

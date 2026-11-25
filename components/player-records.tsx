@@ -20,7 +20,7 @@ export function PlayerRecords({ section }: { section: 'ledger' | 'inherit' | 'ru
       </h2>
       {section === 'rules' ? (
         <ul className="list-disc space-y-3 pl-4 text-xs leading-relaxed text-[var(--gold-200)]">
-          <li>蟠桃是召唤与修炼的消耗单位，1蟠桃 = 1 USDT；可在个人地址页用 USDT 购买。</li>
+          <li>蟠桃是召唤与修炼的消耗单位，1蟠桃 = 1 USDT；可在「我的资产」用 USDT 购买。</li>
           <li>召唤仪式于北京时间每日11:00起依次开启，每阶段一个1小时召唤周期，周期开始前30分钟预约截止，周期内点「召唤」，系统当场匹配并公布结果；召唤成功后承接人须在1小时内完成打款，逾期则暂扣的召唤蟠桃与修炼蟠桃全部充公。</li>
           <li>契约功能已取消。修炼值以 USDT 计，蟠桃只是召唤与修炼的消耗单位。召唤蟠桃与修炼蟠桃在预约时一起暂扣，召唤失败全额退还并可继续参与后续召唤；悟空进猴舍时一次扣除，之后自动修炼，不需要每天操作。</li>
           <li>修炼天数走完后方可传承。平台手续费仅以修炼增长的{INHERITANCE_FEE_PCT}%计算，不以修炼值计算。</li>
