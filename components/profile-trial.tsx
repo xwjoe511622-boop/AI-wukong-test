@@ -15,6 +15,6 @@ export function ProfileTrial() {
         {LEVELS.map(level => <div role="row" key={level.id} className="grid grid-cols-[1.4fr_1fr_1fr] gap-2 border-b border-[var(--gold-600)]/20 py-2.5 last:border-0"><span role="cell" className="text-[var(--gold-100)]">{level.name}</span><span role="cell" className="text-right tabular-nums text-stone-200">{level.cycleDays} 天</span><span role="cell" className="text-right tabular-nums text-[var(--gold-100)]">{TRIAL_CYCLE_DAYS} 天</span></div>)}
       </div>
     </section>
-    <section className="profile-surface profile-article"><h2>请注意</h2><p>正式版的周期更长，需要每天修炼一次、连续修炼到周期结束才能传承。体验版把周期统一缩短为 {TRIAL_CYCLE_DAYS} 天，只是为了让你更快看完一轮流程，不代表正式规则。</p><p>体验版的蟠桃和 U 都是体验数据，不可提现，也不会带到正式版。</p></section>
+    <section className="profile-surface profile-article"><h2>请注意</h2><p>正式版的周期更长，需要每天修炼一次、连续修炼到周期结束才能传承。体验版把周期统一缩短为 {TRIAL_CYCLE_DAYS} 天，只是为了让你更快看完一轮流程，不代表正式规则。</p><p>体验版的蟠桃和 USDT 都是体验数据，不可提现，也不会带到正式版。</p></section>
   </div>
 }

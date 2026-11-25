@@ -11,7 +11,7 @@ export const TRIAL_RIBBON_HEIGHT = 28
 
 /** 体验版与正式版只有这三点不同，全站共用同一份表述 */
 export const TRIAL_DIFFERENCES = [
-  { item: '初始余额', official: '自己购买', trial: `赠送 ${TRIAL_PEACH} 蟠桃 + ${TRIAL_USDT} U` },
+  { item: '初始余额', official: '自己购买', trial: `赠送 ${TRIAL_PEACH} 蟠桃 + ${TRIAL_USDT} USDT` },
   { item: '可参与阶段', official: '按开放情况', trial: '七个阶段全部开放' },
   { item: '周期', official: LEVELS.map(l => l.cycleDays).join(' / ') + ' 天', trial: `全部 ${TRIAL_CYCLE_DAYS} 天` },
 ]

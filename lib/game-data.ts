@@ -7,7 +7,7 @@ export const PEACH_UNIT_TEXT = '1蟠桃 = 1 USDT'
 /**
  * 两个独立版本，打包或启动时用环境变量选择，互不混用：
  * - 正式版（默认）：按正式规则运行，周期 1/3/5/8/12/15/20 天，第七阶段未开放，不赠送余额。
- * - 体验版（NEXT_PUBLIC_WUKONG_TRIAL=1）：只有三点不同——赠送 1000 蟠桃、赠送 10000 U、七个阶段全部开放且周期都是 1 天。
+ * - 体验版（NEXT_PUBLIC_WUKONG_TRIAL=1）：只有三点不同——赠送 1000 蟠桃、赠送 10000 USDT、七个阶段全部开放且周期都是 1 天。
  * 体验版不做任何额外加速，1 天就是真实的 1 天。
  */
 export const TRIAL_MODE = process.env.NEXT_PUBLIC_WUKONG_TRIAL === '1'
@@ -21,9 +21,9 @@ export const VALID_USER_MIN_PEACH = 50
 export const MATCH_WINDOW_HOURS = 1
 export const PLATFORM_PROFIT_FEE = 0.03
 export const INHERITANCE_FEE_PCT = PLATFORM_PROFIT_FEE * 100
-/** 同行奖励：第一代 10%、第二代 5%，返 U */
+/** 同行奖励：第一代 10%、第二代 5%，返 USDT */
 export const COMPANION_REWARD = { generation1: 10, generation2: 5 } as const
-/** 部族奖励：第一代有效同行者数与部族有效成员数同时达标，按部族总盈利比例返 U */
+/** 部族奖励：第一代有效同行者数与部族有效成员数同时达标，按部族总盈利比例返 USDT */
 export const TRIBE_REWARD = {
   level1: { direct: 5, members: 50, rate: 1 },
   level2: { direct: 15, members: 150, rate: 3 },
@@ -365,7 +365,7 @@ export const WUKONG_CONFIG: WukongLevel[] = SEEDS.map((seed, order) => {
 export const LEVELS = WUKONG_CONFIG
 /** 周期文案：正式版只显示正式周期；体验版显示实际的 1 天，并始终带上正式天数，避免误以为本来就是 1 天 */
 export const cycleText = (level: Pick<WukongLevel, 'cycleDays' | 'runDays'>) => TRIAL_MODE && level.runDays !== level.cycleDays ? `${level.runDays}天（正式版${level.cycleDays}天）` : `${level.runDays}天`
-export const TRIAL_NOTE = `体验版与正式版的区别：赠送 ${TRIAL_PEACH} 蟠桃和 ${TRIAL_USDT} U；七个阶段全部开放；周期统一缩短为 ${TRIAL_CYCLE_DAYS} 天（正式版为 1/3/5/8/12/15/20 天）。成长比例、蟠桃消耗和奖励比例与正式版相同。`
+export const TRIAL_NOTE = `体验版与正式版的区别：赠送 ${TRIAL_PEACH} 蟠桃和 ${TRIAL_USDT} USDT；七个阶段全部开放；周期统一缩短为 ${TRIAL_CYCLE_DAYS} 天（正式版为 1/3/5/8/12/15/20 天）。成长比例、蟠桃消耗和奖励比例与正式版相同。`
 /** 体验版实际消耗 = 召唤 + 每日修炼 × 实际运行天数；与正式周期消耗不同时用于页面标注 */
 export const runCost = (level: Pick<WukongLevel, 'summonCost' | 'perCycleCost' | 'runDays'>) => Math.round((level.summonCost + level.perCycleCost * level.runDays) * 100) / 100
 export const ALL_OPEN = WUKONG_CONFIG.every(level => level.isOpen)

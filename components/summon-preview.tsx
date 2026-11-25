@@ -91,7 +91,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
       : <section aria-label="发起召唤" className="hud-panel rounded-xl px-4 pb-4 pt-3 text-center">
         <p className="text-[10px] text-[var(--gold-200)]/70">{round.open || !ready ? '距本轮预约截止' : round.ended ? '本轮已结束 · 距下一轮开放预约' : round.matching ? '自动匹配中 · 距本周期结束' : '预约已截止 · 距自动匹配开始'}</p>
         <p className="mt-1 font-latin text-3xl font-bold leading-none tabular-nums text-[var(--gold-100)]">{h} : {m} : {s}</p>
-        <button type="button" className="btn-gold mt-4 w-full text-sm" disabled={!ready || !round.open || state.balance < totalLocked || usdt < cost} onClick={() => { setConfirmation(round.key); setError('') }}>{!ready ? '读取中…' : round.ended ? '本轮已结束' : !round.open ? '本轮预约已截止' : state.balance < totalLocked ? '蟠桃不足' : usdt < cost ? 'U 余额不足' : '发起召唤'}</button>
+        <button type="button" className="btn-gold mt-4 w-full text-sm" disabled={!ready || !round.open || state.balance < totalLocked || usdt < cost} onClick={() => { setConfirmation(round.key); setError('') }}>{!ready ? '读取中…' : round.ended ? '本轮已结束' : !round.open ? '本轮预约已截止' : state.balance < totalLocked ? '蟠桃不足' : usdt < cost ? 'USDT 余额不足' : '发起召唤'}</button>
         <p className="mt-2 flex items-center justify-center gap-1 text-[11px] text-[var(--gold-200)]">{round.open ? <>提交时暂扣召唤蟠桃 {peachText(totalLocked)}<PeachIcon size={12} /> · 失败全额退还</> : '可继续参与后续召唤：下一轮自次日 00:00 起预约'}</p>
         {error && <p role="alert" className="mt-2 text-xs text-[var(--gold-200)]">{error}</p>}
       </section>}

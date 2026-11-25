@@ -8,13 +8,13 @@ import { rewardParts, tribeTier, type AccountRecord, type MemberRecord, type Rew
 export const PRODUCT_KEY = TRIAL_MODE ? 'wukong-trial-v7' : 'wukong-official-v7'
 export type DemoMember = MemberRecord & { generation: number }
 export type Currency = 'peach' | 'usdt'
-export const CURRENCY_LABEL: Record<Currency, string> = { peach: '蟠桃', usdt: 'U' }
-/** 个人地址：由玩家 ID 派生的演示地址，用于接收蟠桃与 U */
+export const CURRENCY_LABEL: Record<Currency, string> = { peach: '蟠桃', usdt: 'USDT' }
+/** 个人地址：由玩家 ID 派生的演示地址，用于接收蟠桃与 USDT */
 export const walletAddress = (playerId: string) => { const hex = playerId.replace(/[^0-9a-f]/gi, '').toLowerCase() || '0'; return `0x${hex.repeat(Math.ceil(40 / hex.length)).slice(0, 40)}` }
 export const isWalletAddress = (value: string) => /^0x[0-9a-fA-F]{40}$/.test(value)
 export type ProductState = {
   version: 5; playerId: string; inviteCode: string; inviter?: string;
-  /** balance = 蟠桃（分）；usdt = U 余额（分） */
+  /** balance = 蟠桃（分）；usdt = USDT 余额（分） */
   balance: number; usdt: number; entries: Entry[]; offset: number; demoOutcome: 'success' | 'refunded';
   contracts: ReturnType<typeof createPreview>['contracts']; history: ReturnType<typeof createPreview>['history'];
   records: AccountRecord[]; rewards: RewardRecord[]; members: DemoMember[]; demoSettlements: string[];
@@ -91,9 +91,9 @@ export function productTransition(state: ProductState, action: ProductAction, no
     for (const part of rewardParts(profit, member.generation, tier?.level ?? 0)) {
       const reward: RewardRecord = { id: `${eventId}-${part.type}`, rewardType: part.type, relationshipGeneration: member.generation, tribeLevel: part.type === 'tribe' ? tier!.level : null, rewardRate: part.rate, sourceUserId: member.uid, sourceProfitCents: profit, amountCents: part.amountCents, createdAt: new Date(now).toISOString() }
       next = { ...next, usdt: next.usdt + part.amountCents, rewards: [reward, ...next.rewards] }
-      next = record(next, part.type, part.amountCents, `演示成员 ${member.uid} 传承完成，修炼盈利 ${money(profit)} USDT；${part.type === 'companion' ? '同行' : '部族'}奖励 ${part.rate}%，返 U，不扣成员盈利。`, now, 'usdt')
+      next = record(next, part.type, part.amountCents, `演示成员 ${member.uid} 传承完成，修炼盈利 ${money(profit)} USDT；${part.type === 'companion' ? '同行' : '部族'}奖励 ${part.rate}%，返 USDT，不扣成员盈利。`, now, 'usdt')
     }
-    return { state: next, message: '示例成员已完成传承，同行奖励与部族奖励已分别返到 U 余额（演示数据）。' }
+    return { state: next, message: '示例成员已完成传承，同行奖励与部族奖励已分别返到 USDT 余额（演示数据）。' }
   }
   if (action.type === 'tick') {
     let next = state
@@ -110,14 +110,14 @@ export function productTransition(state: ProductState, action: ProductAction, no
       if (settled.status === 'success') {
         const contract = summonedContract(entry)
         if (next.usdt < contract.principal) {
-          // U 余额不足以完成配套打款：按逾期违约处理，召唤蟠桃充公
+          // USDT 余额不足以完成配套打款：按逾期违约处理，召唤蟠桃充公
           next = { ...next, entries: next.entries.map(e => e.key === entry.key ? { ...e, status: 'forfeited' as const } : e) }
-          next = record(next, 'summon_forfeit', 0, `${level.name}召唤成功，但 U 余额不足以完成配套金额 ${money(contract.principal)} USDT 打款，判定逾期违约，已扣除的召唤蟠桃充公。`, published)
+          next = record(next, 'summon_forfeit', 0, `${level.name}召唤成功，但 USDT 余额不足以完成配套金额 ${money(contract.principal)} USDT 打款，判定逾期违约，已扣除的召唤蟠桃充公。`, published)
           message = `${level.name}召唤成功但未完成打款，判定逾期违约，召唤蟠桃已充公。`
           continue
         }
         if (![...next.contracts, ...next.history].some(c => c.id === contract.id)) next = { ...next, usdt: next.usdt - contract.principal, contracts: [...next.contracts, contract] }
-        next = record(next, 'summon_pay', -contract.principal, `${level.name}召唤成功，${TRIAL_MODE ? '体验版' : '当前版本'}自动完成甲方打款：配套金额 ${money(contract.principal)} USDT 已从 U 余额转给乙方。`, published, 'usdt')
+        next = record(next, 'summon_pay', -contract.principal, `${level.name}召唤成功，${TRIAL_MODE ? '体验版' : '当前版本'}自动完成甲方打款：配套金额 ${money(contract.principal)} USDT 已从 USDT 余额转给乙方。`, published, 'usdt')
         next = record(next, 'summon', 0, `${level.name}召唤成功，${entry.paid ? `提交时暂扣的 ${money(entry.paid)} 蟠桃已自动扣除` : '本阶段不消耗蟠桃'}；已进入猴舍，按日修炼。`, published)
       } else next = record(next, 'summon_return', entry.paid, '召唤未成功，本次召唤使用的蟠桃全额退还，可继续参与后续召唤。', published)
     }
@@ -134,7 +134,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
   }
   if (action.type === 'summon') {
     if (action.action.type !== 'join') return { state, message: '请使用演示控制选择结果，等待本轮结果公布。' }
-    if (LEVEL_BY_ID[action.action.stage].isOpen && state.usdt < costCents(action.action.stage)) return { state, message: 'U 余额不足以完成本轮配套金额打款，暂不能提交召唤。' }
+    if (LEVEL_BY_ID[action.action.stage].isOpen && state.usdt < costCents(action.action.stage)) return { state, message: 'USDT 余额不足以完成本轮配套金额打款，暂不能提交召唤。' }
     const result = summon({ ...initialPreview(), balance: state.balance, entries: state.entries }, { ...action.action, now })
     if (result.state.entries === state.entries) return { state, message: result.message }
     const entry = result.state.entries.at(-1)!
@@ -142,9 +142,9 @@ export function productTransition(state: ProductState, action: ProductAction, no
     return { state: next, message: result.message }
   }
   if (action.type === 'buy-peach') {
-    // 1 蟠桃 = 1 USDT：用 U 余额购买蟠桃，到账后显示在个人地址页
+    // 1 蟠桃 = 1 USDT：用 USDT 余额购买蟠桃，到账后显示在个人地址页
     if (!Number.isSafeInteger(action.amountCents) || action.amountCents <= 0) return { state, message: '请输入有效的购买数量，最多两位小数。' }
-    if (state.usdt < action.amountCents) return { state, message: 'U余额不足，无法购买。' }
+    if (state.usdt < action.amountCents) return { state, message: 'USDT 余额不足，无法购买。' }
     let next: ProductState = { ...state, usdt: state.usdt - action.amountCents, balance: state.balance + action.amountCents }
     next = record(next, 'buy_pay', -action.amountCents, `购买 ${money(action.amountCents)} 蟠桃，支付 ${money(action.amountCents)} USDT（1蟠桃 = 1 USDT）。`, now, 'usdt')
     next = record(next, 'recharge', action.amountCents, `购买到账 ${money(action.amountCents)} 蟠桃，已显示在个人地址页。`, now)
@@ -157,13 +157,13 @@ export function productTransition(state: ProductState, action: ProductAction, no
     if (!Number.isSafeInteger(action.amountCents) || action.amountCents <= 0) return { state, message: '请输入有效的数量，最多两位小数。' }
     if (action.type === 'demo-receive') {
       if (state[key] + action.amountCents > 1e12) return { state, message: '超出演示余额上限。' }
-      return { state: record({ ...state, [key]: state[key] + action.amountCents }, 'transfer_in', action.amountCents, `演示：个人地址收到 ${money(action.amountCents)} ${label === 'U' ? 'USDT' : label}。`, now, action.currency), message: `演示：已接收 ${money(action.amountCents)} ${label}。` }
+      return { state: record({ ...state, [key]: state[key] + action.amountCents }, 'transfer_in', action.amountCents, `演示：个人地址收到 ${money(action.amountCents)} ${label}。`, now, action.currency), message: `演示：已接收 ${money(action.amountCents)} ${label}。` }
     }
     const address = action.address.trim()
     if (!isWalletAddress(address)) return { state, message: '请输入有效的接收地址（0x 开头，共 42 位）。' }
     if (address.toLowerCase() === walletAddress(state.playerId)) return { state, message: '不能转给自己的地址。' }
     if (state[key] < action.amountCents) return { state, message: `${label}余额不足。` }
-    return { state: record({ ...state, [key]: state[key] - action.amountCents }, 'transfer_out', -action.amountCents, `转出 ${money(action.amountCents)} ${label === 'U' ? 'USDT' : label} 至 ${address.slice(0, 8)}…${address.slice(-6)}（${TRIAL_MODE ? '体验版' : '当前版本'}不产生真实转账）。`, now, action.currency), message: `已转出 ${money(action.amountCents)} ${label}。` }
+    return { state: record({ ...state, [key]: state[key] - action.amountCents }, 'transfer_out', -action.amountCents, `转出 ${money(action.amountCents)} ${label} 至 ${address.slice(0, 8)}…${address.slice(-6)}（${TRIAL_MODE ? '体验版' : '当前版本'}不产生真实转账）。`, now, action.currency), message: `已转出 ${money(action.amountCents)} ${label}。` }
   }
   // 未知或已下线的操作（例如旧版本的加速召唤）一律不处理
   if (action.type !== 'cultivate') return { state, message: '当前操作不可用。' }
@@ -183,12 +183,12 @@ export function productTransition(state: ProductState, action: ProductAction, no
     const identity = `${RULES[selected.stage].name} · ${dateTime(selected.started)}召唤`
     {
       const amounts = settlement(selected)
-      description = `${identity}。配套金额 ${money(selected.principal)} USDT，修炼盈利 ${money(amounts.profit)} USDT，平台手续费 ${money(amounts.fee)} USDT，本次传承结算 ${money(amounts.received)} USDT，已转入 U 余额。`
+      description = `${identity}。配套金额 ${money(selected.principal)} USDT，修炼盈利 ${money(amounts.profit)} USDT，平台手续费 ${money(amounts.fee)} USDT，本次传承结算 ${money(amounts.received)} USDT，已转入 USDT 余额。`
     }
   }
   if (operation.type === 'claim') {
     const received = settlement(state.contracts.find(c => c.id === operation.id)!).received
-    return { state: record({ ...next, usdt: next.usdt + received }, 'inherit', received, description, now, 'usdt'), message: `传承结算 ${money(received)} USDT 已转入 U 余额，本次传承已归档。` }
+    return { state: record({ ...next, usdt: next.usdt + received }, 'inherit', received, description, now, 'usdt'), message: `传承结算 ${money(received)} USDT 已转入 USDT 余额，本次传承已归档。` }
   }
   return { state: record(next, 'cycle', next.balance - state.balance, description, now), message: result.message }
 }

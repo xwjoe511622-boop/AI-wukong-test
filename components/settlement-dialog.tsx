@@ -25,7 +25,7 @@ export function SettlementDialog({ contract, busy, onClose, onClaim }: { contrac
       <button type="button" autoFocus onClick={onClose} aria-label="关闭结算弹窗" className="flex size-10 items-center justify-center text-stone-300"><X className="size-5" /></button>
     </div>
     <div className="my-5 border-y border-amber-200/15 py-4"><SettlementFacts contract={contract} /></div>
-    <p className="mb-4 text-xs leading-6 text-stone-300">配套金额不参与平台手续费；结算以 USDT 计，确认后转入 U 余额；已消耗的召唤与修炼蟠桃不退还。确认后本次传承归档至传承历史。</p>
+    <p className="mb-4 text-xs leading-6 text-stone-300">配套金额不参与平台手续费；结算以 USDT 计，确认后转入 USDT 余额；已消耗的召唤与修炼蟠桃不退还。确认后本次传承归档至传承历史。</p>
     <button type="button" className="cultivation-primary w-full" disabled={busy} onClick={onClaim}>{busy ? '处理中…' : '确认结算'}</button>
     <button type="button" className="cultivation-secondary mt-2 w-full" onClick={onClose}>稍后再看</button>
   </dialog>

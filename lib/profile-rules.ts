@@ -28,6 +28,6 @@ export type RewardRecord = {
   sourceProfitCents: number; amountCents: number; createdAt: string;
 }
 export type MemberRecord = { uid: string; joinedAt: string; days: number; valid?: boolean }
-/** currency 缺省为蟠桃；usdt 记录显示为 U */
+/** currency 缺省为蟠桃；usdt 记录显示为 USDT */
 export type AccountRecord = { id: string; kind: string; amountCents: number; createdAt: string; description: string; currency?: 'peach' | 'usdt' }
 export type ProfileList = { rewards: RewardRecord[]; members: MemberRecord[]; records: AccountRecord[]; hasMore: boolean }

@@ -14,7 +14,7 @@ const now = Date.parse('2026-09-19T10:00:00+08:00')
 const initial = createProduct(now, '01234567-89ab-cdef-0123-456789abcdef')
 const other = '0x' + 'ab'.repeat(20)
 
-test('体验版只有三点不同：赠送 1000 蟠桃和 10000 U、七阶段全部开放、周期都是 1 天', () => {
+test('体验版只有三点不同：赠送 1000 蟠桃和 10000 USDT、七阶段全部开放、周期都是 1 天', () => {
   assert.equal(TRIAL_MODE, true)
   assert.equal(initial.balance, 100_000)
   assert.equal(initial.usdt, 1_000_000)
@@ -43,7 +43,7 @@ test('体验版没有秒级加速：召唤按钟点匹配，修炼后要等满�
   assert.notEqual(done.contracts[0].finishedAt, undefined)
   assert.equal(transition(s, { type: 'trial-summon', stage: 'stone_spirit' }, pub).state, s)
 })
-test('体验版：第七阶段召唤成功扣 U，一天修炼一次后传承返 U', () => {
+test('体验版：第七阶段召唤成功扣 USDT，一天修炼一次后传承返 USDT', () => {
   const round = roundFor('infinite_sage', now)
   const pub = matchAt({ key: round.key, deadline: round.deadline })
   let s = transition(initial, { type: 'summon', action: { type: 'join', stage: 'infinite_sage', now } }, now).state
@@ -61,7 +61,7 @@ test('体验版：第七阶段召唤成功扣 U，一天修炼一次后传承返
   assert.equal(s.usdt, initial.usdt - 500_000 + 500_000 + 125_000 - 3_750)
   assert.equal(s.balance, initial.balance - 10_000 - 1_500)
 })
-test('U 余额不足以打款：判定逾期违约，召唤蟠桃充公', () => {
+test('USDT 余额不足以打款：判定逾期违约，召唤蟠桃充公', () => {
   const round = roundFor('infinite_sage', now)
   const pub = matchAt({ key: round.key, deadline: round.deadline })
   let s = transition(initial, { type: 'summon', action: { type: 'join', stage: 'infinite_sage', now } }, now).state
@@ -73,11 +73,11 @@ test('U 余额不足以打款：判定逾期违约，召唤蟠桃充公', () => 
   assert.equal(s.usdt, 100_000)
   assert.deepEqual(parseProduct(JSON.stringify(s)), JSON.parse(JSON.stringify(s)))
 })
-test('U 余额不足时不能提交召唤', () => {
+test('USDT 余额不足时不能提交召唤', () => {
   const poor = { ...initial, usdt: 100 }
   assert.equal(transition(poor, { type: 'summon', action: { type: 'join', stage: 'stone_spirit', now } }, now).state, poor)
 })
-test('蟠桃和 U 可以转出与接收，并分别记账', () => {
+test('蟠桃和 USDT 可以转出与接收，并分别记账', () => {
   let s = transition(initial, { type: 'transfer', currency: 'peach', amountCents: 5_000, address: other }, now).state
   assert.equal(s.balance, initial.balance - 5_000)
   s = transition(s, { type: 'transfer', currency: 'usdt', amountCents: 20_000, address: other }, now).state
@@ -99,7 +99,7 @@ test('转出校验：地址格式、不能转给自己、不能超额、数量�
   ]) assert.equal(transition(initial, action, now).state, initial)
   assert.match(walletAddress(initial.playerId), /^0x[0-9a-f]{40}$/)
 })
-test('用 U 购买蟠桃：1蟠桃 = 1 USDT，分别记账；U 不足或数量无效时不变', () => {
+test('用 USDT 购买蟠桃：1蟠桃 = 1 USDT，分别记账；USDT 不足或数量无效时不变', () => {
   const s = transition(initial, { type: 'buy-peach', amountCents: 25_050 }, now).state
   assert.equal(s.balance, initial.balance + 25_050)
   assert.equal(s.usdt, initial.usdt - 25_050)
