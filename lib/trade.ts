@@ -2,10 +2,10 @@ import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS, TRIAL_MODE, type Stage } from './gam
 import { matchDelay, roundFor } from './summon-preview'
 
 /**
- * 甲乙双方交易。
- * - 甲方（payer，打款方）：召唤成功后，在打款期内把配套金额打给系统匹配的乙方。
- * - 乙方（receiver，收款方/释放方）：悟空完成修炼且原周期结束后进入传承中，
- *   等下一轮同阶段召唤匹配到甲方；甲方打款后，乙方核实到账并确认，传承结算完成。
+ * 承接人与传承人交易。
+ * - 承接人（payer，打款方）：召唤成功后，在打款期内把修炼值打给系统匹配的传承人。
+ * - 传承人（receiver，收款方/释放方）：悟空完成修炼且原周期结束后进入传承中，
+ *   等下一轮同阶段召唤匹配到承接人；承接人打款后，传承人核实到账并确认，传承所得完成。
  *
  * 中心化撮合：匹配由平台完成，打款从平台内 USDT 余额划转，没有链上地址与付款凭证。
  * 当前没有接入后端撮合，对方的操作由本地模拟（见 COUNTERPARTY_DELAY_MS）。
@@ -17,11 +17,11 @@ export type Trade = {
   id: string
   role: TradeRole
   stage: Stage
-  /** 本笔交易金额（USDT 分）：甲方为配套金额，乙方为本次传承结算 */
+  /** 本笔交易金额（USDT 分）：承接人为修炼值，传承人为本次传承所得 */
   amountCents: number
   /** 系统匹配完成、交易开始的时刻 */
   matchedAt: number
-  /** 甲方打款截止时刻 */
+  /** 承接人打款截止时刻 */
   deadline: number
   /** 系统匹配的对方：只展示 UID，打款在平台内 USDT 余额间划转 */
   counterparty: { uid: string }
@@ -29,17 +29,17 @@ export type Trade = {
   paidAt?: number
   confirmedAt?: number
   overdueAt?: number
-  /** 甲方交易对应的召唤场次 */
+  /** 承接人交易对应的召唤场次 */
   entryKey?: string
-  /** 乙方交易对应的悟空 */
+  /** 传承人交易对应的悟空 */
   contractId?: string
 }
 
 export const PAYMENT_WINDOW_MS = PAYMENT_WINDOW_HOURS * 3600_000
-/** 模拟对方完成操作（甲方打款 / 乙方确认到账）所需时间 */
+/** 模拟对方完成操作（承接人打款 / 传承人确认到账）所需时间 */
 export const COUNTERPARTY_DELAY_MS = 2 * 60_000
 
-export const TRADE_ROLE_LABEL: Record<TradeRole, string> = { payer: '甲方 · 打款方', receiver: '乙方 · 收款方' }
+export const TRADE_ROLE_LABEL: Record<TradeRole, string> = { payer: '承接人 · 打款方', receiver: '传承人 · 收款方' }
 
 function hashOf(seed: string) {
   let hash = 2166136261
@@ -56,7 +56,7 @@ export function demoCounterparty(seed: string) {
   return { uid: `WK${hexOf(`uid:${seed}`, 16).toUpperCase()}` }
 }
 
-/** 时刻 t 之后（含）该阶段下一次有甲方召唤成功的时刻（模拟）：传承中的悟空在这一刻匹配到甲方 */
+/** 时刻 t 之后（含）该阶段下一次有承接人召唤成功的时刻（模拟）：传承中的悟空在这一刻匹配到承接人 */
 export function nextMatchAfter(stage: Stage, t: number) {
   for (let day = 0; day < 3; day++) {
     const round = roundFor(stage, t + day * 86_400_000)
@@ -66,7 +66,7 @@ export function nextMatchAfter(stage: Stage, t: number) {
   return t
 }
 
-/** 需要我本人处理的交易：甲方待打款、乙方待确认收款 */
+/** 需要我本人处理的交易：承接人待打款、传承人待确认收款 */
 export function needsMyAction(trade: Trade) {
   return (trade.role === 'payer' && trade.status === 'awaiting_payment') || (trade.role === 'receiver' && trade.status === 'awaiting_confirm')
 }
@@ -77,13 +77,13 @@ export function pendingTrades(trades: Trade[]) {
 export function tradeStatusText(trade: Trade) {
   if (trade.status === 'completed') return '交易完成'
   if (trade.status === 'overdue') return '逾期未打款'
-  if (trade.role === 'payer') return trade.status === 'awaiting_payment' ? '待打款' : '等待乙方确认'
-  return trade.status === 'awaiting_payment' ? '等待甲方打款' : '待确认收款'
+  if (trade.role === 'payer') return trade.status === 'awaiting_payment' ? '待打款' : '等待传承人确认'
+  return trade.status === 'awaiting_payment' ? '等待承接人打款' : '待确认收款'
 }
 export function tradeTitle(trade: Trade) {
   return `${LEVEL_BY_ID[trade.stage].name} · ${trade.role === 'payer' ? '召唤打款' : '传承收款'}`
 }
-export const COUNTERPARTY_NOTE = `${TRIAL_MODE ? '体验版' : '当前版本'}未接入真实撮合，对方为系统模拟，约 ${COUNTERPARTY_DELAY_MS / 60_000} 分钟内自动完成操作；不产生真实转账。`
+export const COUNTERPARTY_NOTE = `当前版本未接入真实撮合，对方为系统模拟，约 ${COUNTERPARTY_DELAY_MS / 60_000} 分钟内自动完成操作；不产生真实转账。`
 
 export function isTrade(value: unknown): value is Trade {
   if (!value || typeof value !== 'object') return false

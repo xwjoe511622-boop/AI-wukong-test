@@ -15,7 +15,7 @@ export function ProductProvider({ children }: { children: ReactNode }) {
   const save = useCallback((state: ProductState) => {
     current.current = state
     void mutate(state, false)
-    // 存到 localStorage：关闭标签页或浏览器后，体验版的余额与猴舍仍然保留
+    // 存到 localStorage：关闭标签页或浏览器后，余额与猴舍仍然保留
     try { localStorage.setItem(PRODUCT_KEY, JSON.stringify(state)) }
     catch { setWarning('浏览器未能保存本次记录，请勿关闭页面。') }
   }, [mutate])

@@ -5,7 +5,7 @@ import { BottomNav } from './bottom-nav'
 import { SoundToggle } from './sound-toggle'
 import { useGame } from '@/lib/game-context'
 import { useDemoControls } from '@/lib/use-demo-controls'
-import { TrialRibbon, TrialWelcome } from './trial-notice'
+import { TrialRibbon } from './trial-notice'
 
 const sectionBackgrounds = {
   world: '/assets/wukong-world-daylight.png',
@@ -81,7 +81,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative isolate min-h-dvh">
       <TrialRibbon />
-      <TrialWelcome />
       <SoundToggle />
       <AtmosphereBackground section={pathname.split('/')[1]} />
       <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col">

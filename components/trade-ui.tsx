@@ -19,8 +19,8 @@ export function TradeChip({ trade, className }: { trade: Trade; className?: stri
 }
 
 const STEPS = {
-  payer: ['召唤成功 · 匹配乙方', '向乙方打款', '乙方确认到账', '悟空进入猴舍'],
-  receiver: ['传承 · 匹配甲方', '甲方打款', '我确认到账', '传承结算完成'],
+  payer: ['召唤成功 · 匹配传承人', '向传承人打款', '传承人确认到账', '悟空进入猴舍'],
+  receiver: ['传承 · 匹配承接人', '承接人打款', '我确认到账', '传承所得完成'],
 } as const
 /** 交易进度：已完成的步骤打勾，当前步骤高亮 */
 export function TradeSteps({ trade }: { trade: Trade }) {
@@ -43,9 +43,9 @@ export function TradeRow({ trade, now }: { trade: Trade; now: number }) {
   const ticking = trade.status === 'awaiting_payment'
   return <li><Link href={`/me/trades/${encodeURIComponent(trade.id)}`} className={cn('trade-row', needsMyAction(trade) && 'is-todo')}>
     <div className="min-w-0 flex-1">
-      <div className="flex items-center gap-2"><TradeChip trade={trade} /><span className="text-[10px] text-[var(--profile-muted)]">{trade.role === 'payer' ? '甲方' : '乙方'} · {LEVEL_BY_ID[trade.stage].realm}</span></div>
+      <div className="flex items-center gap-2"><TradeChip trade={trade} /><span className="text-[10px] text-[var(--profile-muted)]">{trade.role === 'payer' ? '承接人' : '传承人'} · {LEVEL_BY_ID[trade.stage].realm}</span></div>
       <p className="mt-1.5 truncate font-display text-sm text-[var(--gold-100)]">{tradeTitle(trade)}</p>
-      <p className="mt-1 text-[11px] text-[var(--profile-muted)]">{ticking ? <>{trade.role === 'payer' ? '打款剩余' : '甲方打款剩余'} <Countdown ms={trade.deadline - now} /></> : dateTime(trade.confirmedAt ?? trade.overdueAt ?? trade.paidAt ?? trade.matchedAt)}</p>
+      <p className="mt-1 text-[11px] text-[var(--profile-muted)]">{ticking ? <>{trade.role === 'payer' ? '打款剩余' : '承接人打款剩余'} <Countdown ms={trade.deadline - now} /></> : dateTime(trade.confirmedAt ?? trade.overdueAt ?? trade.paidAt ?? trade.matchedAt)}</p>
     </div>
     <div className="shrink-0 text-right"><p className="font-latin text-base font-bold tabular-nums text-gold">{trade.role === 'payer' ? '−' : '+'}{money(trade.amountCents)}</p><p className="text-[10px] text-[var(--profile-muted)]">USDT</p></div>
     <ChevronRight className="size-4 shrink-0 text-[var(--gold-400)]" />

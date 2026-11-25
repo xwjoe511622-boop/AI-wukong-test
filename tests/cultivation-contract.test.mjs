@@ -23,14 +23,14 @@ test('契约功能已取消：契约操作不可用，不扣蟠桃', () => {
   assert.equal(result.state, product)
   assert.equal(result.message, '当前操作不可用。')
 })
-test('生命周期结束后补齐修炼进入传承，甲方打款前不能领取', () => {
+test('生命周期结束后补齐修炼进入传承，承接人打款前不能领取', () => {
   const late = endsAt(pending) + DAY
   let product = { ...createProduct(now, '1234567890abcdef', { balance: 100_000, usdt: 1_000_000, starters: true }), contracts: [pending], history: [] }
   assert.equal(phase(pending, late), '待完成修炼')
   product = productTransition(product, { type: 'cultivate', action: { type: 'train', ids: [pending.id], accelerate: false, expected: 500 } }, late).state
   assert.equal(phase(product.contracts[0], late), '传承中')
   assert.equal(productTransition(product, { type: 'cultivate', action: { type: 'claim', id: pending.id } }, late).state, product)
-  // 等下一轮同阶段召唤匹配到甲方，甲方打款后变为传承完成（待确认收款）
+  // 等下一轮同阶段召唤匹配到承接人，承接人打款后变为传承完成（待确认收款）
   const paidAt = nextMatchAfter('wukong', late) + COUNTERPARTY_DELAY_MS
   product = productTransition(product, { type: 'tick' }, paidAt - 1).state
   assert.equal(phase(product.contracts[0], paidAt - 1), '传承中')

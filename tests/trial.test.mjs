@@ -10,13 +10,13 @@ const { RULES, DAY, quote } = require('../lib/cultivation-preview.ts')
 const { roundFor, matchAt } = require('../lib/summon-preview.ts')
 const { createProduct, productTransition: transition, parseProduct, walletAddress } = require('../lib/product-state.ts')
 const { COUNTERPARTY_DELAY_MS, PAYMENT_WINDOW_MS, nextMatchAfter } = require('../lib/trade.ts')
-// 甲方打款后，乙方（模拟）确认到账，悟空入舍
+// 承接人打款后，传承人（模拟）确认到账，悟空入舍
 const payAndEnter = (s, at) => transition(transition(s, { type: 'trade-pay', id: s.trades.find(t => t.role === 'payer' && t.status === 'awaiting_payment').id }, at).state, { type: 'tick' }, at + COUNTERPARTY_DELAY_MS).state
 const now = Date.parse('2026-09-19T10:00:00+08:00')
 const initial = createProduct(now, '01234567-89ab-cdef-0123-456789abcdef')
 const other = '0x' + 'ab'.repeat(20)
 
-test('体验版只有三点不同：赠送 1000 蟠桃和 10000 USDT、七阶段全部开放、周期都是 1 天', () => {
+test('体验版：赠送 1000 蟠桃和 10000 USDT、七阶段全部开放、时间加速为 1 天', () => {
   assert.equal(TRIAL_MODE, true)
   assert.equal(initial.balance, 100_000)
   assert.equal(initial.usdt, 1_000_000)
@@ -41,7 +41,7 @@ test('体验版没有秒级加速：召唤按钟点匹配，修炼后要等满�
   const c = s.contracts[0]
   s = transition(s, { type: 'cultivate', action: { type: 'train', ids: [c.id], accelerate: false, expected: 10 } }, pub + COUNTERPARTY_DELAY_MS).state
   assert.equal(s.offset, 0)
-  // 原周期 1 天结束后，等下一轮同阶段召唤匹配到甲方
+  // 原周期 1 天结束后，等下一轮同阶段召唤匹配到承接人
   const matchTime = nextMatchAfter('stone_spirit', pub + DAY)
   const almost = transition(s, { type: 'tick' }, matchTime - 1).state
   assert.equal(almost.trades.filter(t => t.role === 'receiver').length, 0)
@@ -61,13 +61,14 @@ test('体验版：第七阶段召唤成功扣 USDT，一天修炼一次后传承
   assert.equal(s.usdt, initial.usdt - 500_000)
   const c = s.contracts.find(item => item.id.startsWith('summon-'))
   const q = quote([c], pub, false)
-  assert.equal(q.total, 1500)
-  s = transition(s, { type: 'cultivate', action: { type: 'train', ids: [c.id], accelerate: false, expected: 1500 } }, pub).state
+  // 时间加速：20 天压成 1 次修炼，这一次扣满正式周期的蟠桃 15 × 20 = 300
+  assert.equal(q.total, 30_000)
+  s = transition(s, { type: 'cultivate', action: { type: 'train', ids: [c.id], accelerate: false, expected: 30_000 } }, pub).state
   const end = nextMatchAfter('infinite_sage', pub + DAY) + COUNTERPARTY_DELAY_MS
   s = transition(parseProduct(JSON.stringify(s)), { type: 'tick' }, end).state
   s = transition(s, { type: 'cultivate', action: { type: 'claim', id: c.id } }, end).state
   assert.equal(s.usdt, initial.usdt - 500_000 + 500_000 + 125_000 - 3_750)
-  assert.equal(s.balance, initial.balance - 10_000 - 1_500)
+  assert.equal(s.balance, initial.balance - 10_000 - 30_000)
 })
 test('USDT 余额不足以打款，1 小时后判定逾期违约，召唤蟠桃充公', () => {
   const round = roundFor('infinite_sage', now)
@@ -118,9 +119,12 @@ test('用 USDT 购买蟠桃：1蟠桃 = 1 USDT，分别记账；USDT 不足或�
   assert.deepEqual(parseProduct(JSON.stringify(s)), JSON.parse(JSON.stringify(s)))
   for (const amountCents of [0, -5, 1.5, initial.usdt + 1]) assert.equal(transition(initial, { type: 'buy-peach', amountCents }, now).state, initial)
 })
-test('体验版实际消耗 = 召唤 + 1 天修炼', () => {
+test('体验版只是时间加速：各阶段蟠桃消耗与正式版相同', () => {
   const { runCost } = require('../lib/game-data.ts')
-  assert.deepEqual(LEVELS.map(runCost), [0.2, 1, 3.5, 7, 30, 60, 115])
+  assert.deepEqual(LEVELS.map(runCost), [0.2, 2, 7.5, 21, 85, 200, 400])
+  // 一次修炼扣满正式周期的修炼蟠桃；显示时按正式天数换算
+  assert.deepEqual(LEVELS.map(l => RULES[l.id].daily / 100), LEVELS.map(l => l.perCycleCost * l.cycleDays))
+  assert.deepEqual(LEVELS.map(l => RULES[l.id].dayFactor), [1, 3, 5, 8, 12, 15, 20])
   assert.equal(LEVELS[0].notes, undefined)
 })
 test('有效用户：未达标成员不产生奖励，自己未达标不能拿奖励，且都不补发', () => {

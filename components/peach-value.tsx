@@ -16,7 +16,7 @@ export function PeachValue({ cents, size = 'md', sign, className, muted }: { cen
   )
 }
 
-/** 配套金额、盈利与结算以 USDT 计；蟠桃仅用于召唤与修炼消耗。`cents` 为最小单位整数。 */
+/** 修炼值、修炼增长与传承所得以 USDT 计；蟠桃仅用于召唤与修炼消耗。`cents` 为最小单位整数。 */
 export function UsdtValue({ cents, size = 'md', sign, className, muted }: { cents: number; size?: keyof typeof SIZES; sign?: '+' | '-'; className?: string; muted?: boolean }) {
   const [font] = SIZES[size]
   return (

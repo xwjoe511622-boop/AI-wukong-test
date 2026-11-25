@@ -24,7 +24,7 @@ export type ProductState = {
   balance: number; usdt: number; entries: Entry[]; offset: number; demoOutcome: 'success' | 'refunded';
   contracts: ReturnType<typeof createPreview>['contracts']; history: ReturnType<typeof createPreview>['history'];
   records: AccountRecord[]; rewards: RewardRecord[]; members: DemoMember[]; demoSettlements: string[];
-  /** 甲乙双方交易：召唤成功后的打款（甲方）与传承时的收款（乙方） */
+  /** 承接人与传承人交易：召唤成功后的打款（承接人）与传承时的收款（传承人） */
   trades: Trade[];
 }
 export type ProductAction =
@@ -44,11 +44,11 @@ export type ProductAction =
   | { type: 'transfer'; currency: Currency; amountCents: number; address: string }
   | { type: 'demo-receive'; currency: Currency; amountCents: number }
   | { type: 'buy-peach'; amountCents: number }
-  /** 甲方：从 USDT 余额向乙方打款配套金额 */
+  /** 承接人：从 USDT 余额向传承人打款修炼值 */
   | { type: 'trade-pay'; id: string }
-  /** 乙方：核实到账后确认收款，完成传承结算 */
+  /** 传承人：核实到账后确认收款，完成传承所得 */
   | { type: 'trade-confirm'; id: string }
-  /** 仅演示：让对方立即完成操作（打款 / 确认到账），或让传承中的悟空立即匹配到甲方 */
+  /** 仅演示：让对方立即完成操作（打款 / 确认到账），或让传承中的悟空立即匹配到承接人 */
   | { type: 'demo-counterparty'; id: string }
   | { type: 'demo-match'; contractId: string }
 // 初始猴舍：除无极大圣外每个仙境各一只，刚完成第一天修炼。
@@ -84,10 +84,10 @@ function summonedContract(entry: Entry): Contract {
   return { id: `summon-${entry.key}`, stage: entry.stage, principal: entry.amount ?? costCents(entry.stage), started: matchAt(entry), completed: 0 }
 }
 const updateTrade = (state: ProductState, id: string, patch: Partial<Trade>): ProductState => ({ ...state, trades: state.trades.map(t => t.id === id ? { ...t, ...patch } : t) })
-/** 悟空修炼圆满且原周期结束的时刻：此后等下一轮同阶段召唤匹配甲方 */
+/** 悟空修炼圆满且原周期结束的时刻：此后等下一轮同阶段召唤匹配承接人 */
 const maturedAt = (c: Contract) => Math.max(endsAt(c), c.trainingCompletedAt ?? endsAt(c))
 
-/** 乙方已确认到账：甲方交易完成，悟空进入猴舍（生命周期仍从召唤成功时刻起算） */
+/** 传承人已确认到账：承接人交易完成，悟空进入猴舍（生命周期仍从召唤成功时刻起算） */
 function payeeConfirms(state: ProductState, trade: Trade, at: number): ProductState {
   const entry = state.entries.find(e => e.key === trade.entryKey)
   let next = updateTrade(state, trade.id, { status: 'completed', confirmedAt: at })
@@ -95,27 +95,27 @@ function payeeConfirms(state: ProductState, trade: Trade, at: number): ProductSt
     const contract = summonedContract(entry)
     if (![...next.contracts, ...next.history].some(c => c.id === contract.id)) next = { ...next, contracts: [...next.contracts, contract] }
   }
-  return record(next, 'summon', 0, `乙方已确认收到配套金额 ${money(trade.amountCents)} USDT，交易完成；${LEVEL_BY_ID[trade.stage].name}已进入猴舍，按日修炼。`, at)
+  return record(next, 'summon', 0, `传承人已确认收到修炼值 ${money(trade.amountCents)} USDT，交易完成；${LEVEL_BY_ID[trade.stage].name}已进入猴舍，按日修炼。`, at)
 }
-/** 甲方已打款：乙方需核实到账后确认收款 */
+/** 承接人已打款：传承人需核实到账后确认收款 */
 function payerPays(state: ProductState, trade: Trade, at: number): ProductState {
   const next = updateTrade(state, trade.id, { status: 'awaiting_confirm', paidAt: at })
   return { ...next, contracts: next.contracts.map(c => c.id === trade.contractId ? { ...c, finishedAt: at } : c) }
 }
-/** 乙方：传承中的悟空匹配到甲方，开始等待甲方打款 */
+/** 传承人：传承中的悟空匹配到承接人，开始等待承接人打款 */
 function matchReceiver(state: ProductState, c: Contract, at: number): ProductState {
   const id = `inherit-${c.id}`
   const trade: Trade = { id, role: 'receiver', stage: c.stage, amountCents: settlement(c).received, matchedAt: at, deadline: at + PAYMENT_WINDOW_MS, counterparty: demoCounterparty(id), status: 'awaiting_payment', contractId: c.id }
   return { ...state, trades: [...state.trades, trade] }
 }
-/** 推进所有交易：匹配传承中的悟空、甲方逾期、模拟对方操作 */
+/** 推进所有交易：匹配传承中的悟空、承接人逾期、模拟对方操作 */
 function advanceTrades(state: ProductState, now: number): { state: ProductState; message: string } {
   let next = state
   let message = ''
   for (const c of next.contracts) {
     if (c.completed !== RULES[c.stage].days || next.trades.some(t => t.contractId === c.id)) continue
     if (c.finishedAt) {
-      // 旧存档里已标记传承完成的悟空：视为甲方已打款，等待确认收款
+      // 旧存档里已标记传承完成的悟空：视为承接人已打款，等待确认收款
       next = matchReceiver(next, c, c.finishedAt)
       next = updateTrade(next, `inherit-${c.id}`, { status: 'awaiting_confirm', paidAt: c.finishedAt })
       continue
@@ -123,20 +123,20 @@ function advanceTrades(state: ProductState, now: number): { state: ProductState;
     const at = nextMatchAfter(c.stage, maturedAt(c))
     if (now < at) continue
     next = matchReceiver(next, c, at)
-    message = `${RULES[c.stage].name}已匹配到甲方，等待对方打款。`
+    message = `${RULES[c.stage].name}已匹配到承接人，等待对方打款。`
   }
   for (const trade of next.trades) {
     if (trade.role === 'payer' && trade.status === 'awaiting_payment' && now >= trade.deadline) {
       next = updateTrade(next, trade.id, { status: 'overdue', overdueAt: trade.deadline })
       next = { ...next, entries: next.entries.map(e => e.key === trade.entryKey ? { ...e, status: 'forfeited' as const } : e) }
-      next = record(next, 'summon_forfeit', 0, `${LEVEL_BY_ID[trade.stage].name}召唤成功后 ${PAYMENT_WINDOW_HOURS} 小时内未完成配套金额 ${money(trade.amountCents)} USDT 打款，判定逾期违约，已扣除的召唤蟠桃充公。`, trade.deadline)
+      next = record(next, 'summon_forfeit', 0, `${LEVEL_BY_ID[trade.stage].name}召唤成功后 ${PAYMENT_WINDOW_HOURS} 小时内未完成修炼值 ${money(trade.amountCents)} USDT 打款，判定逾期违约，已扣除的召唤蟠桃充公。`, trade.deadline)
       message = `${LEVEL_BY_ID[trade.stage].name}逾期未打款，判定违约，召唤蟠桃已充公。`
     } else if (trade.role === 'payer' && trade.status === 'awaiting_confirm' && now >= (trade.paidAt ?? now) + COUNTERPARTY_DELAY_MS) {
       next = payeeConfirms(next, trade, (trade.paidAt ?? now) + COUNTERPARTY_DELAY_MS)
-      message = `乙方已确认到账，${LEVEL_BY_ID[trade.stage].name}已进入猴舍。`
+      message = `传承人已确认到账，${LEVEL_BY_ID[trade.stage].name}已进入猴舍。`
     } else if (trade.role === 'receiver' && trade.status === 'awaiting_payment' && now >= trade.matchedAt + COUNTERPARTY_DELAY_MS) {
       next = payerPays(next, trade, trade.matchedAt + COUNTERPARTY_DELAY_MS)
-      message = `甲方已打款 ${money(trade.amountCents)} USDT，请核实到账后确认收款。`
+      message = `承接人已打款 ${money(trade.amountCents)} USDT，请核实到账后确认收款。`
     }
   }
   return { state: next, message }
@@ -168,7 +168,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
     for (const part of rewardParts(profit, member.generation, tier?.level ?? 0)) {
       const reward: RewardRecord = { id: `${eventId}-${part.type}`, rewardType: part.type, relationshipGeneration: member.generation, tribeLevel: part.type === 'tribe' ? tier!.level : null, rewardRate: part.rate, sourceUserId: member.uid, sourceProfitCents: profit, amountCents: part.amountCents, createdAt: new Date(now).toISOString() }
       next = { ...next, usdt: next.usdt + part.amountCents, rewards: [reward, ...next.rewards] }
-      next = record(next, part.type, part.amountCents, `演示成员 ${member.uid} 传承完成，修炼盈利 ${money(profit)} USDT；${part.type === 'companion' ? '同行' : '部族'}奖励 ${part.rate}%，返 USDT，不扣成员盈利。`, now, 'usdt')
+      next = record(next, part.type, part.amountCents, `演示成员 ${member.uid} 传承完成，修炼增长 ${money(profit)} USDT；${part.type === 'companion' ? '同行' : '部族'}奖励 ${part.rate}%，返 USDT，不扣成员的修炼增长。`, now, 'usdt')
     }
     return { state: next, message: '示例成员已完成传承，同行奖励与部族奖励已分别返到 USDT 余额（演示数据）。' }
   }
@@ -185,12 +185,12 @@ export function productTransition(state: ProductState, action: ProductAction, no
       next = { ...next, balance: result.state.balance, entries: result.state.entries }
       message = result.message
       if (settled.status === 'success') {
-        // 召唤成功即进入甲乙双方交易：甲方须在打款期内向系统匹配的乙方打款，乙方确认到账后悟空进入猴舍
+        // 召唤成功即进入承接人与传承人交易：承接人须在打款期内向系统匹配的传承人打款，传承人确认到账后悟空进入猴舍
         const contract = summonedContract(entry)
         const id = `pay-${entry.key}`
         if (!next.trades.some(t => t.id === id)) next = { ...next, trades: [...next.trades, { id, role: 'payer', stage: entry.stage, amountCents: contract.principal, matchedAt: published, deadline: published + PAYMENT_WINDOW_MS, counterparty: demoCounterparty(id), status: 'awaiting_payment', entryKey: entry.key }] }
-        next = record(next, 'summon', 0, `${level.name}召唤成功，${entry.paid ? `提交时暂扣的 ${money(entry.paid)} 蟠桃已自动扣除` : '本阶段不消耗蟠桃'}；请在 ${PAYMENT_WINDOW_HOURS} 小时内向乙方打款配套金额 ${money(contract.principal)} USDT。`, published)
-        message = `${level.name}召唤成功！请在 ${PAYMENT_WINDOW_HOURS} 小时内完成配套金额打款。`
+        next = record(next, 'summon', 0, `${level.name}召唤成功，${entry.paid ? `提交时暂扣的 ${money(entry.paid)} 蟠桃已自动扣除` : '本阶段不消耗蟠桃'}；请在 ${PAYMENT_WINDOW_HOURS} 小时内向传承人打款修炼值 ${money(contract.principal)} USDT。`, published)
+        message = `${level.name}召唤成功！请在 ${PAYMENT_WINDOW_HOURS} 小时内完成修炼值打款。`
       } else next = record(next, 'summon_return', entry.paid, '召唤未成功，本次召唤使用的蟠桃全额退还，可继续参与后续召唤。', published)
     }
     const advanced = advanceTrades(next, now)
@@ -209,8 +209,8 @@ export function productTransition(state: ProductState, action: ProductAction, no
     if (now >= trade.deadline) return { state, message: '已超过打款期限。' }
     if (state.usdt < trade.amountCents) return { state, message: 'USDT 余额不足，无法完成打款。可先在个人地址接收 USDT。' }
     let next = payerPays({ ...state, usdt: state.usdt - trade.amountCents }, trade, now)
-    next = record(next, 'summon_pay', -trade.amountCents, `${LEVEL_BY_ID[trade.stage].name}召唤：向乙方 ${trade.counterparty.uid} 打款配套金额 ${money(trade.amountCents)} USDT，等待乙方确认到账（${TRIAL_MODE ? '体验版' : '当前版本'}不产生真实转账）。`, now, 'usdt')
-    return { state: next, message: `已打款 ${money(trade.amountCents)} USDT，等待乙方确认到账。` }
+    next = record(next, 'summon_pay', -trade.amountCents, `${LEVEL_BY_ID[trade.stage].name}召唤：向传承人 ${trade.counterparty.uid} 打款修炼值 ${money(trade.amountCents)} USDT，等待传承人确认到账（当前版本不产生真实转账）。`, now, 'usdt')
+    return { state: next, message: `已打款 ${money(trade.amountCents)} USDT，等待传承人确认到账。` }
   }
   if (action.type === 'trade-confirm') {
     const trade = state.trades.find(t => t.id === action.id)
@@ -223,19 +223,19 @@ export function productTransition(state: ProductState, action: ProductAction, no
     const amounts = settlement(contract)
     let next: ProductState = { ...state, usdt: state.usdt + amounts.received, contracts: result.state.contracts, history: result.state.history }
     next = updateTrade(next, trade.id, { status: 'completed', confirmedAt: now })
-    next = record(next, 'inherit', amounts.received, `${RULES[contract.stage].name} · ${dateTime(contract.started)}召唤。已确认收到甲方打款：配套金额 ${money(contract.principal)} USDT，修炼盈利 ${money(amounts.profit)} USDT，平台手续费 ${money(amounts.fee)} USDT，本次传承结算 ${money(amounts.received)} USDT，已转入 USDT 余额。`, now, 'usdt')
-    return { state: next, message: `已确认收款，传承结算 ${money(amounts.received)} USDT 已转入 USDT 余额，本次传承已归档。` }
+    next = record(next, 'inherit', amounts.received, `${RULES[contract.stage].name} · ${dateTime(contract.started)}召唤。已确认收到承接人打款：修炼值 ${money(contract.principal)} USDT，修炼增长 ${money(amounts.profit)} USDT，平台手续费 ${money(amounts.fee)} USDT，本次传承所得 ${money(amounts.received)} USDT，已转入 USDT 余额。`, now, 'usdt')
+    return { state: next, message: `已确认收款，传承所得 ${money(amounts.received)} USDT 已转入 USDT 余额，本次传承已归档。` }
   }
   if (action.type === 'demo-counterparty') {
     const trade = state.trades.find(t => t.id === action.id)
-    if (trade?.role === 'payer' && trade.status === 'awaiting_confirm') return { state: payeeConfirms(state, trade, now), message: `仅演示：乙方已确认到账，${LEVEL_BY_ID[trade.stage].name}已进入猴舍。` }
-    if (trade?.role === 'receiver' && trade.status === 'awaiting_payment') return { state: payerPays(state, trade, now), message: '仅演示：甲方已打款，请核实到账后确认收款。' }
+    if (trade?.role === 'payer' && trade.status === 'awaiting_confirm') return { state: payeeConfirms(state, trade, now), message: `仅演示：传承人已确认到账，${LEVEL_BY_ID[trade.stage].name}已进入猴舍。` }
+    if (trade?.role === 'receiver' && trade.status === 'awaiting_payment') return { state: payerPays(state, trade, now), message: '仅演示：承接人已打款，请核实到账后确认收款。' }
     return { state, message: '这笔交易当前不需要对方操作。' }
   }
   if (action.type === 'demo-match') {
     const c = state.contracts.find(item => item.id === action.contractId)
     if (!c || c.completed !== RULES[c.stage].days || now < maturedAt(c) || state.trades.some(t => t.contractId === c.id)) return { state, message: '这只悟空当前不在等待匹配。' }
-    return { state: matchReceiver(state, c, now), message: `仅演示：${RULES[c.stage].name}已匹配到甲方，等待对方打款。` }
+    return { state: matchReceiver(state, c, now), message: `仅演示：${RULES[c.stage].name}已匹配到承接人，等待对方打款。` }
   }
   if (action.type === 'set-avatar') {
     if (action.dataUrl === null) { const { avatar: _removed, ...rest } = state; return { state: rest, message: '已恢复默认头像。' } }
@@ -251,7 +251,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
   }
   if (action.type === 'summon') {
     if (action.action.type !== 'join') return { state, message: '请在召唤周期内点「召唤」。' }
-    if (LEVEL_BY_ID[action.action.stage].isOpen && state.usdt < costCents(action.action.stage)) return { state, message: 'USDT 余额不足以完成本轮配套金额打款，暂不能预约召唤。' }
+    if (LEVEL_BY_ID[action.action.stage].isOpen && state.usdt < costCents(action.action.stage)) return { state, message: 'USDT 余额不足以完成本轮修炼值打款，暂不能预约召唤。' }
     const result = summon({ ...initialPreview(), balance: state.balance, entries: state.entries }, { ...action.action, now })
     if (result.state.entries === state.entries) return { state, message: result.message }
     const entry = result.state.entries.at(-1)!
@@ -280,15 +280,15 @@ export function productTransition(state: ProductState, action: ProductAction, no
     if (!isWalletAddress(address)) return { state, message: '请输入有效的接收地址（0x 开头，共 42 位）。' }
     if (address.toLowerCase() === walletAddress(state.playerId)) return { state, message: '不能转给自己的地址。' }
     if (state[key] < action.amountCents) return { state, message: `${label}余额不足。` }
-    return { state: record({ ...state, [key]: state[key] - action.amountCents }, 'transfer_out', -action.amountCents, `转出 ${money(action.amountCents)} ${label} 至 ${address.slice(0, 8)}…${address.slice(-6)}（${TRIAL_MODE ? '体验版' : '当前版本'}不产生真实转账）。`, now, action.currency), message: `已转出 ${money(action.amountCents)} ${label}。` }
+    return { state: record({ ...state, [key]: state[key] - action.amountCents }, 'transfer_out', -action.amountCents, `转出 ${money(action.amountCents)} ${label} 至 ${address.slice(0, 8)}…${address.slice(-6)}（当前版本不产生真实转账）。`, now, action.currency), message: `已转出 ${money(action.amountCents)} ${label}。` }
   }
   // 未知或已下线的操作（例如旧版本的加速召唤）一律不处理
   if (action.type !== 'cultivate') return { state, message: '当前操作不可用。' }
   const operation = action.action
   if (operation.type === 'claim') {
-    // 传承结算须甲方打款、乙方确认收款后完成
+    // 传承所得须承接人打款、传承人确认收款后完成
     const trade = state.trades.find(t => t.contractId === operation.id && t.role === 'receiver')
-    if (!trade || trade.status !== 'awaiting_confirm') return { state, message: '需等甲方打款后，才能确认收款完成传承。' }
+    if (!trade || trade.status !== 'awaiting_confirm') return { state, message: '需等承接人打款后，才能确认收款完成传承。' }
     return productTransition(state, { type: 'trade-confirm', id: trade.id }, now)
   }
   if (operation.type !== 'train') return { state, message: '当前操作不可用。' }

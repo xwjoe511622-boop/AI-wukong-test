@@ -1,9 +1,9 @@
 import { LEVELS, LEVEL_BY_ID, RESERVATION_CUTOFF_MINUTES, MATCH_WINDOW_HOURS, type Stage } from './game-data'
 import { todayOccurrence, splitDuration } from './schedule'
 
-// 换键让旧演示记录自然失效（配套金额改以 USDT 计，蟠桃仅暂扣召唤消耗）
+// 换键让旧演示记录自然失效（修炼值改以 USDT 计，蟠桃仅暂扣召唤消耗）
 export const SUMMON_PREVIEW_KEY = 'wukong-summon-preview-v4'
-/** paid = 提交召唤时暂扣的召唤蟠桃（分）；amount = 本轮配套金额（USDT 分），不占用蟠桃 */
+/** paid = 提交召唤时暂扣的召唤蟠桃（分）；amount = 本轮修炼值（USDT 分），不占用蟠桃 */
 export type Entry = { key: string; stage: Stage; date: string; deadline: number; paid: number; amount?: number; enteredAt: number; /** 召唤周期内玩家点下「召唤」的时刻 */ summonedAt?: number; status: 'waiting' | 'success' | 'refunded' | 'forfeited'; settledAt?: number; adoptedAt?: number; summonFee?: number }
 export type PreviewState = { version: 2; balance: number; offset: number; entries: Entry[] }
 export type PreviewAction = { type: 'join'; stage: Stage; now: number } | { type: 'settle'; key: string; result: 'success' | 'refunded'; now: number } | { type: 'clock'; offset: number } | { type: 'poor' } | { type: 'reset' }
@@ -20,7 +20,7 @@ const ROUND_EPOCH = Date.UTC(2026, 8, 29) - 8 * 3600000
 export function roundNumber(now: number) { return Math.max(1, Math.floor((now - ROUND_EPOCH) / DAY_MS) + 1) }
 /**
  * 没有接入真实撮合时，用场次 key 确定性地模拟「别的玩家在周期开始后 1–9 分钟点下召唤」，
- * 用来给传承中的悟空匹配甲方。
+ * 用来给传承中的悟空匹配承接人。
  */
 export function matchDelay(key: string) {
   let hash = 0

@@ -29,10 +29,10 @@ export function InheritComplete({ result, onClose }: { result: InheritResult | n
             <Row label="本轮修炼">
               <PeachAmount value={result.original} size="sm" />
             </Row>
-            <Row label="修炼盈利">
+            <Row label="修炼增长">
               <PeachAmount value={result.profit} size="sm" sign="+" />
             </Row>
-            <Row label={`平台手续费（盈利${INHERITANCE_FEE_PCT}%）`}>
+            <Row label={`平台手续费（修炼增长的 ${INHERITANCE_FEE_PCT}%）`}>
               <PeachAmount value={result.fee} size="sm" sign="-" />
             </Row>
           </dl>

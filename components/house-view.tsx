@@ -68,13 +68,13 @@ export function HouseView() {
       {summary.total > 0 && <p className="mt-2 text-center text-[10px] text-stone-500">{short ? <span className="text-[#e2a08a]">蟠桃不足，无法全部修炼</span> : summary.backlog ? '已包含此前未完成修炼，不产生额外费用' : '无待补修炼'}</p>}
     </section>
 
-    {/* ⑥ 甲方已打款、待确认收款（仅存在时出现） */}
+    {/* ⑥ 承接人已打款、待确认收款（仅存在时出现） */}
     {claimable.length > 0 && <section aria-labelledby="inherit-title" className="flex flex-col gap-2">
       <h2 id="inherit-title" className="sr-only">传承完成</h2>
       {claimable.map(c => <div key={c.id} className="house-inherit flex items-center justify-between gap-3 px-4 py-3.5">
         <div className="min-w-0">
           <p className="house-chip is-claim">待确认收款</p>
-          <p className="mt-1 font-display text-base font-semibold text-[var(--gold-100)]">{RULES[c.stage].name}<span className="ml-1.5 text-xs font-normal text-stone-300">· 甲方已打款</span></p>
+          <p className="mt-1 font-display text-base font-semibold text-[var(--gold-100)]">{RULES[c.stage].name}<span className="ml-1.5 text-xs font-normal text-stone-300">· 承接人已打款</span></p>
           <p className="mt-1.5 flex items-center gap-2 text-[11px] text-stone-400">本次结算 <UsdtValue cents={settlement(c).received} size="sm" /></p>
         </div>
         <Link href={`/me/trades/${encodeURIComponent(`inherit-${c.id}`)}`} className="cultivation-primary ornate-short btn-compact shrink-0">确认收款</Link>

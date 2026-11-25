@@ -32,13 +32,13 @@ export function RealmList() {
             <p className="mt-1 font-display text-base font-bold leading-none tracking-wider text-[var(--gold-100)]">第{round.number}轮</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] text-[var(--gold-200)]/70">本轮配套金额</p>
+            <p className="text-[10px] text-[var(--gold-200)]/70">本轮修炼值</p>
             <p className="mt-1 flex items-baseline justify-end gap-1 font-latin text-xl font-bold leading-none tabular-nums text-gold">{peachWhole(level.cost)}<span className="text-[max(10px,0.55em)] font-normal opacity-80">USDT</span></p>
           </div>
         </div>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-2.5">
-          <div><dt className="text-[10px] text-[var(--gold-200)]/70">配套金额</dt><dd className="mt-0.5 flex items-baseline gap-1 whitespace-nowrap font-latin text-sm font-bold leading-none sm:text-lg text-[var(--gold-100)]">{rangeText(level.id)}<span className="text-[max(10px,0.55em)] font-normal opacity-80">USDT</span></dd></div>
-          <div className="text-right"><dt className="text-[10px] text-[var(--gold-200)]/70">圆满增幅</dt><dd className="mt-0.5 font-latin text-lg font-bold leading-none text-gold">+{level.gainPct}%</dd></div>
+          <div><dt className="text-[10px] text-[var(--gold-200)]/70">修炼值</dt><dd className="mt-0.5 flex items-baseline gap-1 whitespace-nowrap font-latin text-sm font-bold leading-none sm:text-lg text-[var(--gold-100)]">{rangeText(level.id)}<span className="text-[max(10px,0.55em)] font-normal opacity-80">USDT</span></dd></div>
+          <div className="text-right"><dt className="text-[10px] text-[var(--gold-200)]/70">圆满加成</dt><dd className="mt-0.5 font-latin text-lg font-bold leading-none text-gold">+{level.gainPct}%</dd></div>
           <div><dt className="text-[10px] text-[var(--gold-200)]/70">修炼周期</dt><dd className="mt-0.5 whitespace-nowrap text-[12px] text-[var(--gold-100)]">{cycleText(level)}</dd></div>
           <div className="text-right"><dt className="text-[10px] text-[var(--gold-200)]/70">召唤时间</dt><dd className="mt-0.5 text-[12px] leading-5 text-[var(--gold-100)]"><span className="whitespace-nowrap"><span className="font-latin tabular-nums">{level.summonStopTime}</span> 预约截止</span><br /><span className="whitespace-nowrap text-[var(--gold-200)]/80"><span className="font-latin tabular-nums">{level.summonWindow}</span> 召唤</span></dd></div>
         </dl>

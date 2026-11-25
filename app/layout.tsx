@@ -11,7 +11,7 @@ import { SoundProvider } from '@/lib/sound'
 
 export const metadata: Metadata = {
   title: 'AI WUKONG · AI悟空数字生命',
-  description: `AI WUKONG${TRIAL_MODE ? ' 体验版' : ''}：AI 悟空数字生命的世界设定，经历召唤、修炼、圆满与传承。`,
+  description: `AI WUKONG$：AI 悟空数字生命的世界设定，经历召唤、修炼、圆满与传承。`,
   generator: 'v0.app',
 }
 

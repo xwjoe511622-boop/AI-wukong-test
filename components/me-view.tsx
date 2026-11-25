@@ -26,7 +26,7 @@ export function MeView() {
     <section className="profile-surface" aria-label="我的资产">
       <ProfileHeading title="我的资产" href="/me/wallet" action="个人地址" />
       <div className="mt-3 grid grid-cols-2 gap-3"><div><p className="mb-2 text-[11px] text-[var(--profile-muted)]">可用蟠桃</p><ProfileAmount cents={Math.round(balance * 100)} size="md" /></div><div className="border-l border-[var(--profile-border)] pl-4"><p className="mb-2 text-[11px] text-[var(--profile-muted)]">可用 USDT</p><ProfileAmount cents={state?.usdt ?? 0} size="md" currency="usdt" /></div></div>
-      <p className="mt-3 flex items-center gap-2 border-t border-[var(--profile-border)] pt-3 text-[11px] text-[var(--profile-muted)]">暂扣蟠桃 <ProfileAmount cents={lockedPeaches} size="sm" />{TRIAL_MODE && <span>· 体验版余额</span>}</p>
+      <p className="mt-3 flex items-center gap-2 border-t border-[var(--profile-border)] pt-3 text-[11px] text-[var(--profile-muted)]">暂扣蟠桃 <ProfileAmount cents={lockedPeaches} size="sm" /></p>
       <div className="mt-3 flex items-center justify-between gap-3"><div className="flex flex-wrap gap-2"><ProfileButtonLink href="/me/wallet" size="small">转出 / 接收</ProfileButtonLink><ProfileButtonLink href="/me/wallet?mode=buy" size="small" secondary>购买蟠桃</ProfileButtonLink></div></div>
     </section>
     <Link href={todo.length === 1 ? `/me/trades/${encodeURIComponent(todo[0].id)}` : '/me/trades'} className={`profile-surface flex items-center justify-between gap-3 ${todo.length ? '!border-[#e0a05a99]' : ''}`}><div><h2 className="font-display text-sm text-[var(--gold-100)]">我的交易</h2><p className="mt-2 text-xs text-[var(--profile-muted)]">{todo.length ? <span className="trade-chip is-todo">{todo.length} 笔待处理 · {todo.some(t => t.role === 'payer') ? '有打款即将到期' : '待确认收款'}</span> : active ? `进行中 ${active} 笔 · 等待对方` : '召唤打款与传承收款'}</p></div><ChevronRight className="size-4 shrink-0 text-[var(--gold-400)]" /></Link>
@@ -39,7 +39,7 @@ export function MeView() {
         <Link href="/me/companions" aria-label="我的同行者"><p className="flex items-center gap-1.5 text-[11px] text-[var(--profile-muted)]"><Users className="size-3.5 text-[var(--gold-400)]" />我的同行者<ChevronRight className="ml-auto size-3.5" /></p><p className="relation-count">{data?.companions ?? '—'}<small>人</small></p><p className="mt-1.5 text-[10px] text-[var(--profile-muted)]">第一代有效同行者</p></Link>
         <Link href="/me/tribe" aria-label="我的部族" className="border-l border-[var(--profile-border)] pl-4"><p className="flex items-center gap-1.5 text-[11px] text-[var(--profile-muted)]"><Flag className="size-3.5 text-[var(--gold-400)]" />我的部族<ChevronRight className="ml-auto size-3.5" /></p><p className="relation-count">{data?.members ?? '—'}<small>人</small></p><p className="mt-1.5 text-[10px] text-[var(--profile-muted)]">部族有效成员</p></Link>
       </div>
-      <p className="mt-2 border-t border-[var(--profile-border)] pt-2.5 text-[11px] text-[var(--gold-200)]">{data && data.level > 0 ? `${TRIBE_TIERS[data.level - 1].name} · 部族总盈利 ${TRIBE_TIERS[data.level - 1].rate}% 返 USDT` : '尚未达到部族Ⅰ阶'}</p>
+      <p className="mt-2 border-t border-[var(--profile-border)] pt-2.5 text-[11px] text-[var(--gold-200)]">{data && data.level > 0 ? `${TRIBE_TIERS[data.level - 1].name} · 部族修炼增长 ${TRIBE_TIERS[data.level - 1].rate}% 返 USDT` : '尚未达到部族Ⅰ阶'}</p>
     </section>
     <section className="profile-surface" aria-label="我的奖励">
       <ProfileHeading title="我的奖励" href="/me/rewards" action="奖励明细" />
@@ -53,7 +53,7 @@ export function MeView() {
       { label: '我的交易', href: '/me/trades', icon: ScrollText }, { label: '召唤记录', href: '/me/summons', icon: Sparkles }, { label: '修炼记录', href: '/me/cultivation', icon: Sprout }, { label: '传承记录', href: '/me/inheritance', icon: Swords }, { label: '奖励明细', href: '/me/rewards', icon: Award }, { label: '个人地址', href: '/me/wallet', icon: ArrowLeftRight }, { label: '资产明细', href: '/me/ledger', icon: Wallet },
     ]} />
     <ProfileMenu title="服务" items={[
-      ...(TRIAL_MODE ? [{ label: '体验版与正式版的区别', href: '/me/trial', icon: Info }] : []), { label: '公告中心', href: '/me/announcements', icon: Bell }, { label: '客服中心', href: '/me/support', icon: Headphones }, { label: '账户与安全', href: '/me/security', icon: ShieldCheck }, { label: '语言设置', href: '/me/language', icon: Globe }, { label: '关于 AI WUKONG', href: '/me/about', icon: Info },
+      { label: '公告中心', href: '/me/announcements', icon: Bell }, { label: '客服中心', href: '/me/support', icon: Headphones }, { label: '账户与安全', href: '/me/security', icon: ShieldCheck }, { label: '语言设置', href: '/me/language', icon: Globe }, { label: '关于 AI WUKONG', href: '/me/about', icon: Info },
     ]} />
     <p className="pb-2 text-center text-[10px] tracking-[.2em] text-[var(--profile-muted)]">AI WUKONG · 与君同行</p>
   </div>

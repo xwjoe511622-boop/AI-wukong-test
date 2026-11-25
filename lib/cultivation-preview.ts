@@ -3,12 +3,17 @@ import { LEVELS, INHERITANCE_FEE_PCT, type Stage } from './game-data'
 export const DAY = 86_400_000
 export const RULES = Object.fromEntries(LEVELS.map(level => [level.id, {
   ...level, days: level.runDays, gain: level.gainPct,
-  daily: Math.round(level.perCycleCost * 100),
-}])) as Record<Stage, (typeof LEVELS)[number] & { days: number; gain: number; daily: number }>
+  // 每次修炼实际扣的蟠桃（分）。体验版把正式周期压成 1 次修炼，这一次扣满全周期，所以总消耗与正式版相同
+  daily: Math.round(level.perCycleCost * level.cycleDays / level.runDays * 100),
+  // 一次修炼相当于正式版的几天：显示进度、次数时按正式版换算
+  dayFactor: level.cycleDays / level.runDays,
+}])) as Record<Stage, (typeof LEVELS)[number] & { days: number; gain: number; daily: number; dayFactor: number }>
+/** 把实际修炼次数换算成正式版的天数，用于显示 */
+export const shownDays = (stage: Stage, count: number) => Math.round(count * RULES[stage].dayFactor)
 /** 猴舍首页七间修炼室入口封面（静态图），素材路径来自各阶段 roomCover，便于后续逐个替换 */
 export const ROOMS = Object.fromEntries(LEVELS.map(level => [level.id, { room: `${level.name}修炼室`, cover: level.roomCover }])) as Record<Stage, { room: string; cover: string }>
 /** 一只悟空的生命周期记录。契约功能已取消；contractedAt 仅为兼容旧存档保留，不再参与任何判断。 */
-/* principal 为配套金额（USDT 分），不占用蟠桃余额；蟠桃仅用于召唤与每日修炼。 */
+/* principal 为修炼值（USDT 分），不占用蟠桃余额；蟠桃仅用于召唤与每日修炼。 */
 export type Contract = { id: string; stage: Stage; principal: number; started: number; completed: number; contractedAt?: number; trainingCompletedAt?: number; finishedAt?: number }
 export type HistoryEntry = Contract & { claimedAt: number }
 export type PreviewState = { version: 2; balance: number; contracts: Contract[]; history: HistoryEntry[] }
@@ -79,7 +84,7 @@ export function roomStatus(contracts: Contract[], now: number): { tone: 'due' | 
   const s = summarize(contracts, now)
   if (s.byPhase.待完成修炼) return { tone: 'due', text: `待完成修炼 ${s.byPhase.待完成修炼}只` }
   if (s.todayMonkeys) return { tone: 'due', text: `今日待修 ${s.todayMonkeys}只${s.backlog ? ` · 待补${s.backlog}次` : ''}` }
-  if (s.byPhase.传承完成) return { tone: 'ok', text: `甲方已打款 ${s.byPhase.传承完成}只 · 待确认收款` }
+  if (s.byPhase.传承完成) return { tone: 'ok', text: `承接人已打款 ${s.byPhase.传承完成}只 · 待确认收款` }
   if (s.byPhase.修炼中) return { tone: 'ok', text: '今日修炼已完成' }
   if (s.byPhase.等待传承) return { tone: 'idle', text: `修炼圆满 ${s.byPhase.等待传承}只 · 等待传承` }
   if (s.byPhase.修炼圆满) return { tone: 'idle', text: `修炼圆满 ${s.byPhase.修炼圆满}只` }
@@ -119,7 +124,7 @@ export function transition(state: PreviewState, action: Action, now: number): { 
   if (!c) return { state, message: '这只悟空已归档' }
   if (action.type === 'claim') {
     if (phase(c, now) !== '传承完成') return { state, message: '需原周期结束且全部修炼完成后方可传承' }
-    return { state: { ...state, contracts: state.contracts.filter(item => item.id !== c.id), history: [{ ...c, claimedAt: now }, ...state.history] }, message: '已确认传承结算（USDT），本次传承已归档' }
+    return { state: { ...state, contracts: state.contracts.filter(item => item.id !== c.id), history: [{ ...c, claimedAt: now }, ...state.history] }, message: '已确认传承所得（USDT），本次传承已归档' }
   }
   const days = RULES[c.stage].days
   const changed = { ...c, finishedAt: undefined, started: now - DAY * .2, completed: 0 } as Contract

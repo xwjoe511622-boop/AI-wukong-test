@@ -5,7 +5,6 @@ import { ProfileRecordList } from '@/components/profile-record-list'
 import { ProfileEncyclopedia } from '@/components/profile-encyclopedia'
 import { ProfileServicePage } from '@/components/profile-service-pages'
 import { ProfileWallet } from '@/components/profile-wallet'
-import { ProfileTrial } from '@/components/profile-trial'
 import { TRIAL_MODE } from '@/lib/game-data'
 
 export default async function ProfileSectionPage({ params, searchParams }: { params: Promise<{ section: string }>; searchParams: Promise<{ filter?: string; code?: string; mode?: string }> }) {
@@ -15,7 +14,6 @@ export default async function ProfileSectionPage({ params, searchParams }: { par
   if (section === 'companions' || section === 'tribe') return <ProfileRelations key={section} initial={section} />
   if (section === 'rewards') return <ProfileRewardList key={search.filter ?? 'all'} initialFilter={search.filter} />
   if (section === 'encyclopedia') return <ProfileEncyclopedia />
-  if (section === 'trial' && TRIAL_MODE) return <ProfileTrial />
   if (section === 'wallet') return <ProfileWallet key={search.mode ?? 'default'} initialMode={search.mode} />
   const records: Record<string, { title: string; kind: string }> = {
     ledger: { title: '资产明细', kind: 'all' }, summons: { title: '召唤记录', kind: 'summon' },

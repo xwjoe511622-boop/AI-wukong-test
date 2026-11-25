@@ -46,14 +46,14 @@ export function ProfileRelations({ initial = 'companions' }: { initial?: Section
         <div className="flex items-center justify-between"><h2 id="tribe-title" className="profile-heading">我的部族</h2><Flag className="size-5 text-[var(--gold-400)]" /></div>
         <div className="mt-3 grid grid-cols-2 gap-2">
           <div className="relation-stat"><span className="block text-[11px] text-[var(--profile-muted)]">部族有效成员</span><strong className="my-1 block text-2xl tabular-nums text-[var(--gold-100)]">{data.members}<small className="ml-1 text-xs font-normal text-[var(--profile-muted)]">人</small></strong><span className="text-[11px] text-[var(--profile-muted)]">共 {all.length} 人 · 未达标 {all.length - data.members}</span></div>
-          <div className="relation-stat"><span className="block text-[11px] text-[var(--profile-muted)]">当前等级</span><strong className="my-1 block font-display text-xl leading-8 text-[var(--gold-100)]">{level ? TRIBE_TIERS[level - 1].name : '初立部族'}</strong><span className="text-[11px] text-[var(--gold-200)]">部族总盈利 {TRIBE_TIERS.find(t => t.level === level)?.rate ?? 0}%</span></div>
+          <div className="relation-stat"><span className="block text-[11px] text-[var(--profile-muted)]">当前等级</span><strong className="my-1 block font-display text-xl leading-8 text-[var(--gold-100)]">{level ? TRIBE_TIERS[level - 1].name : '初立部族'}</strong><span className="text-[11px] text-[var(--gold-200)]">部族修炼增长 {TRIBE_TIERS.find(t => t.level === level)?.rate ?? 0}%</span></div>
         </div>
         {next ? <div className="mt-4 flex flex-col gap-3 border-t border-[var(--profile-border)] pt-3">
-          <p className="flex justify-between text-xs text-[var(--gold-200)]"><span>下一阶 · {next.name}</span><span>部族总盈利 {next.rate}%</span></p>
+          <p className="flex justify-between text-xs text-[var(--gold-200)]"><span>下一阶 · {next.name}</span><span>部族修炼增长 {next.rate}%</span></p>
           <Progress label="第一代有效同行者" value={data.companions} target={next.companions} />
           <Progress label="部族有效成员" value={data.members} target={next.members} />
           <p className="text-[11px] text-[var(--profile-muted)]">两个条件同时满足后自动晋升。</p>
-        </div> : <p className="mt-4 border-t border-[var(--profile-border)] pt-3 text-xs leading-6 text-[var(--gold-200)]">已达最高阶。部族奖励为部族总盈利的 {TRIBE_TIERS[2].rate}%，返 USDT。</p>}
+        </div> : <p className="mt-4 border-t border-[var(--profile-border)] pt-3 text-xs leading-6 text-[var(--gold-200)]">已达最高阶。部族奖励为部族修炼增长的 {TRIBE_TIERS[2].rate}%，返 USDT。</p>}
         <div className="mt-4 flex items-end justify-between gap-3 border-t border-[var(--profile-border)] pt-3"><div><p className="mb-1.5 text-[11px] text-[var(--profile-muted)]">累计部族奖励 · 返 USDT</p><ProfileAmount cents={data.tribeCents} currency="usdt" /></div><ProfileButtonLink href="/me/rewards?filter=tribe" size="small" secondary>部族奖励明细</ProfileButtonLink></div>
       </section>}
     </>}
@@ -67,9 +67,9 @@ export function ProfileRelations({ initial = 'companions' }: { initial?: Section
     <details className="profile-surface profile-article">
       <summary className="flex cursor-pointer list-none items-center justify-between font-display text-sm text-[var(--gold-200)]">奖励规则<ChevronDown className="size-4" aria-hidden /></summary>
       <p className="mt-3">同行奖励：第一代 {COMPANION_REWARD.generation1}% · 第二代 {COMPANION_REWARD.generation2}%，返 USDT。第三代及更深的关系不产生同行奖励，但仍计入部族。</p>
-      <p>部族奖励：第一代有效同行者人数与部族有效成员人数同时达标后，按部族总盈利的 {TRIBE_TIERS.map(t => `${t.rate}%`).join('、')} 产生奖励，返 USDT。</p>
+      <p>部族奖励：第一代有效同行者人数与部族有效成员人数同时达标后，按部族修炼增长的 {TRIBE_TIERS.map(t => `${t.rate}%`).join('、')} 产生奖励，返 USDT。</p>
       <ol className="my-2 flex flex-col gap-2">{TRIBE_TIERS.map(t => <li key={t.level} className="flex items-center justify-between gap-2 text-[11px]"><span>{t.name}{level >= t.level && <span className="ml-1.5 text-[var(--gold-200)]">已达成</span>}：第一代有效同行者 ≥ {t.companions} 人且部族有效成员 ≥ {t.members} 人</span><span className="shrink-0 text-[var(--gold-200)]">{t.rate}%</span></li>)}</ol>
-      <p>持有不少于 {VALID_USER_MIN_PEACH} 个蟠桃才算有效用户。未达标的成员完成传承不产生奖励；自己未达标时不能获得奖励。两种奖励可叠加、分别记账，计算基础为成员完成传承后实际产生的修炼盈利。</p>
+      <p>持有不少于 {VALID_USER_MIN_PEACH} 个蟠桃才算有效用户。未达标的成员完成传承不产生奖励；自己未达标时不能获得奖励。两种奖励可叠加、分别记账，计算基础为成员完成传承后实际产生的修炼增长。</p>
       <ProfileButtonLink href="/me/encyclopedia#rewards" size="small" secondary>查看完整规则</ProfileButtonLink>
     </details>
   </div>

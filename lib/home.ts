@@ -89,13 +89,13 @@ export function dailyTodos(state: DailyState, now: number): DailyTodo[] {
   else if (settled.length) { const ok = settled.filter(e => e.status !== 'refunded'); cast = { kind: 'cast', label: '召唤', status: 'done', title: '今日召唤已完成', sub: `${ok.length ? `成功 ${names(ok.map(e => e.stage))}` : ''}${ok.length && ok.length < settled.length ? ' · ' : ''}${ok.length < settled.length ? `未成功 ${settled.length - ok.length} 个，蟠桃已退还` : ''}`, href: '/me/summons' } }
   else cast = { kind: 'cast', label: '召唤', status: 'none', title: '今日没有预约', sub: '预约后，到点在这里点召唤', href: '/world' }
 
-  // 3. 打款（我是甲方）
+  // 3. 打款（我是承接人）
   const toPay = state.trades.filter(t => t.role === 'payer' && t.status === 'awaiting_payment').sort((a, b) => a.deadline - b.deadline)
   const paid = state.trades.filter(t => t.role === 'payer' && t.status === 'awaiting_confirm')
   let pay: DailyTodo
-  if (toPay.length) { const short = state.usdt < toPay[0].amountCents; pay = { kind: 'pay', label: '打款', status: 'todo', title: `${LEVEL_BY_ID[toPay[0].stage].name} · 向乙方打款${toPay.length > 1 ? `（共 ${toPay.length} 笔）` : ''}`, sub: short ? 'USDT 余额不足，请先接收 USDT' : `逾期 ${PAYMENT_WINDOW_HOURS} 小时，召唤蟠桃充公`, until: toPay[0].deadline, amountCents: toPay[0].amountCents, href: tradeHref(toPay), cta: '去打款', warn: short } }
-  else if (paid.length) pay = { kind: 'pay', label: '打款', status: 'wait', title: `已打款 · 等待乙方确认${paid.length > 1 ? `（${paid.length} 笔）` : ''}`, sub: `确认到账后，${names(paid.map(t => t.stage))}进入猴舍`, href: tradeHref(paid) }
-  else pay = { kind: 'pay', label: '打款', status: 'none', title: '无待打款', sub: '召唤成功后，在这里向乙方打款', href: '/me/trades' }
+  if (toPay.length) { const short = state.usdt < toPay[0].amountCents; pay = { kind: 'pay', label: '打款', status: 'todo', title: `${LEVEL_BY_ID[toPay[0].stage].name} · 向传承人打款${toPay.length > 1 ? `（共 ${toPay.length} 笔）` : ''}`, sub: short ? 'USDT 余额不足，请先接收 USDT' : `逾期 ${PAYMENT_WINDOW_HOURS} 小时，召唤蟠桃充公`, until: toPay[0].deadline, amountCents: toPay[0].amountCents, href: tradeHref(toPay), cta: '去打款', warn: short } }
+  else if (paid.length) pay = { kind: 'pay', label: '打款', status: 'wait', title: `已打款 · 等待传承人确认${paid.length > 1 ? `（${paid.length} 笔）` : ''}`, sub: `确认到账后，${names(paid.map(t => t.stage))}进入猴舍`, href: tradeHref(paid) }
+  else pay = { kind: 'pay', label: '打款', status: 'none', title: '无待打款', sub: '召唤成功后，在这里向传承人打款', href: '/me/trades' }
 
   // 4. 修炼
   const due = quote(state.contracts, now, false)
@@ -104,14 +104,14 @@ export function dailyTodos(state: DailyState, now: number): DailyTodo[] {
   else if (state.contracts.length) train = { kind: 'train', label: '修炼', status: 'done', title: '今日修炼已完成', sub: `猴舍共 ${state.contracts.length} 只悟空`, href: '/house' }
   else train = { kind: 'train', label: '修炼', status: 'none', title: '猴舍还没有悟空', sub: '召唤成功并打款后开始修炼', href: '/house' }
 
-  // 5. 收款（传承，我是乙方）
+  // 5. 收款（传承，我是传承人）
   const toConfirm = state.trades.filter(t => t.role === 'receiver' && t.status === 'awaiting_confirm')
   const matched = state.trades.filter(t => t.role === 'receiver' && t.status === 'awaiting_payment').sort((a, b) => a.deadline - b.deadline)
   const unmatched = state.contracts.filter(c => phase(c, now) === '传承中' && !state.trades.some(t => t.contractId === c.id))
   let receive: DailyTodo
-  if (toConfirm.length) receive = { kind: 'receive', label: '收款', status: 'todo', title: `${LEVEL_BY_ID[toConfirm[0].stage].name} · 确认收款${toConfirm.length > 1 ? `（共 ${toConfirm.length} 笔）` : ''}`, sub: '甲方已打款，核实到账后确认', amountCents: toConfirm[0].amountCents, href: tradeHref(toConfirm), cta: '去确认' }
-  else if (matched.length) receive = { kind: 'receive', label: '收款', status: 'wait', title: `${LEVEL_BY_ID[matched[0].stage].name} · 等待甲方打款`, sub: '传承已匹配到甲方', until: matched[0].deadline, amountCents: matched[0].amountCents, href: tradeHref(matched) }
-  else if (unmatched.length) receive = { kind: 'receive', label: '收款', status: 'wait', title: `${names(unmatched.map(c => c.stage))} · 传承中`, sub: '等待下一轮召唤匹配甲方', until: Math.min(...unmatched.map(c => nextMatchAfter(c.stage, Math.max(endsAt(c), c.trainingCompletedAt ?? endsAt(c), now)))), href: '/me/trades' }
+  if (toConfirm.length) receive = { kind: 'receive', label: '收款', status: 'todo', title: `${LEVEL_BY_ID[toConfirm[0].stage].name} · 确认收款${toConfirm.length > 1 ? `（共 ${toConfirm.length} 笔）` : ''}`, sub: '承接人已打款，核实到账后确认', amountCents: toConfirm[0].amountCents, href: tradeHref(toConfirm), cta: '去确认' }
+  else if (matched.length) receive = { kind: 'receive', label: '收款', status: 'wait', title: `${LEVEL_BY_ID[matched[0].stage].name} · 等待承接人打款`, sub: '传承已匹配到承接人', until: matched[0].deadline, amountCents: matched[0].amountCents, href: tradeHref(matched) }
+  else if (unmatched.length) receive = { kind: 'receive', label: '收款', status: 'wait', title: `${names(unmatched.map(c => c.stage))} · 传承中`, sub: '等待下一轮召唤匹配承接人', until: Math.min(...unmatched.map(c => nextMatchAfter(c.stage, Math.max(endsAt(c), c.trainingCompletedAt ?? endsAt(c), now)))), href: '/me/trades' }
   else receive = { kind: 'receive', label: '收款', status: 'none', title: '无待收款', sub: '悟空传承时，在这里确认收款', href: '/me/trades' }
 
   return [reserve, cast, pay, train, receive]

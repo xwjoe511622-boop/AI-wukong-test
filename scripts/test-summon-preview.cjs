@@ -25,7 +25,7 @@ check('契约功能已取消：阶段配置不再有契约消耗', () => assert.
 check('七境周期开始前30分钟停止提交，整点公布', () => { for (const level of LEVELS) { const r = roundFor(level.id, before); assert.equal(r.deadline - r.cutoff, 30 * 60000); assert.equal(roundFor(level.id, r.cutoff - 1).open, true); assert.equal(roundFor(level.id, r.cutoff).open, false) } })
 check('无极大圣未开放，不能发起召唤', () => assert.equal(apply(seed, { ...join, stage: 'infinite_sage', now: roundFor('infinite_sage', before).cutoff - 1 }), seed))
 check('停止召唤瞬间不扣费不受理', () => assert.equal(apply(seed, { ...join, now: round.cutoff }), seed))
-check('提交召唤仅暂扣召唤蟠桃，配套金额以USDT记录不占用蟠桃', () => { assert.equal(seed.balance - joined.balance, LEVELS[0].summonCost * 100); assert.equal(joined.entries[0].paid, 10); assert.equal(joined.entries[0].amount, LEVELS[0].cost * 100) })
+check('提交召唤仅暂扣召唤蟠桃，修炼值以USDT记录不占用蟠桃', () => { assert.equal(seed.balance - joined.balance, LEVELS[0].summonCost * 100); assert.equal(joined.entries[0].paid, 10); assert.equal(joined.entries[0].amount, LEVELS[0].cost * 100) })
 check('同境同日仅一次', () => assert.equal(apply(joined, join), joined))
 check('七境独立', () => assert.equal(apply(joined, { ...join, stage: 'spirit_monkey' }).entries.length, 2))
 check('余额不足不受理', () => assert.equal(apply({ ...seed, balance: 0 }, join).entries.length, 0))

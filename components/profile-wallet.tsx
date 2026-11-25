@@ -50,7 +50,7 @@ export function ProfileWallet({ initialMode }: { initialMode?: string }) {
     </section>
     <section className="grid grid-cols-2 gap-3" aria-label="资产余额">
       <div className="profile-surface"><p className="mb-2 text-[11px] text-[var(--profile-muted)]">蟠桃</p><ProfileAmount cents={state?.balance ?? 0} /><p className="mt-2 text-[10px] leading-5 text-[var(--profile-muted)]">召唤与修炼的消耗单位 · {PEACH_UNIT_TEXT}<br />持有 ≥ {VALID_USER_MIN_PEACH} 蟠桃为有效用户{state ? (state.balance >= VALID_USER_MIN_PEACH * 100 ? ' · 已达标' : ' · 未达标，不能拿奖励') : ''}</p></div>
-      <div className="profile-surface"><p className="mb-2 text-[11px] text-[var(--profile-muted)]">USDT</p><ProfileAmount cents={state?.usdt ?? 0} currency="usdt" /><p className="mt-2 text-[10px] leading-5 text-[var(--profile-muted)]">配套金额打款、传承结算<br />与同行、部族奖励</p></div>
+      <div className="profile-surface"><p className="mb-2 text-[11px] text-[var(--profile-muted)]">USDT</p><ProfileAmount cents={state?.usdt ?? 0} currency="usdt" /><p className="mt-2 text-[10px] leading-5 text-[var(--profile-muted)]">修炼值打款、传承所得<br />与同行、部族奖励</p></div>
     </section>
     <section className="profile-surface" aria-label="购买、转出与接收">
       <div role="group" aria-label="操作" className="profile-tabs">{([['buy', '购买蟠桃'], ['out', '转出'], ['in', '接收']] as const).map(([id, label]) => <ProfileButton key={id} size="small" secondary={mode !== id} aria-pressed={mode === id} onClick={() => pick(id)}>{label}</ProfileButton>)}</div>
@@ -68,7 +68,7 @@ export function ProfileWallet({ initialMode }: { initialMode?: string }) {
       <div className="mt-4 flex flex-col gap-2"><ProfileButton size="large" disabled={invalid} onClick={submit}>{mode === 'buy' ? '确认购买蟠桃' : mode === 'out' ? (confirming ? '确认无误，转出' : `转出${CURRENCY_LABEL[currency]}`) : `模拟接收${CURRENCY_LABEL[currency]}`}</ProfileButton>{confirming && <ProfileButton size="large" secondary onClick={() => setConfirming(false)}>返回修改</ProfileButton>}</div>
       </>}
       <p role="status" className="mt-3 min-h-4 text-xs leading-6 text-[var(--gold-200)]">{notice}</p>
-      <p className="text-[11px] leading-6 text-[var(--profile-muted)]">{TRIAL_MODE ? '体验版：购买与转出只改变本页的体验余额，不产生真实扣款或链上转账，请勿向任何地址真实付款。' : '当前版本尚未接入真实支付与链上转账，请勿向任何地址真实付款。'}</p>
+      <p className="text-[11px] leading-6 text-[var(--profile-muted)]">当前版本尚未接入真实支付与链上转账，请勿向任何地址真实付款。</p>
     </section>
     <section aria-label="转出与接收记录"><h2 className="profile-heading mb-3">购买、转出与接收记录</h2>
       {transfers.length ? <ul className="profile-list flex flex-col">{transfers.map(r => <li key={r.id} className="border-b border-[var(--profile-border)] py-4"><div className="flex items-center justify-between gap-2"><h3 className="font-display text-sm text-[var(--gold-100)]">{LEDGER_LABELS[r.kind] ?? '资产变动'}</h3><ProfileAmount cents={r.amountCents} signed size="md" currency={r.currency} /></div><p className="mt-2 text-xs text-[var(--profile-muted)]">{r.description}</p><time dateTime={r.createdAt} className="mt-2 block text-[10px] text-[var(--profile-muted)]">{profileTime(r.createdAt)}</time></li>)}</ul> : <ProfileEmpty title="暂无记录">购买、转出和接收的记录会显示在这里。</ProfileEmpty>}
