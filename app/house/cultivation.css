@@ -1,0 +1,70 @@
+.cultivation-preview { color: #ede6d9; }
+.cultivation-preview button, .cultivation-preview a, .cultivation-preview summary { -webkit-tap-highlight-color: transparent; }
+.cultivation-preview :is(button,a,summary):focus-visible { outline: 2px solid #e4bd6a; outline-offset: 4px; }
+.cultivation-daily :is(.cultivation-primary, .cultivation-secondary) { font-size: 11px; }
+.cultivation-preview [aria-label="按悟空类型筛选历史"] button { --action-art: url('/assets/action-button-short.png'); }
+.cultivation-preview button:disabled { cursor: not-allowed; opacity: .45; }
+.cultivation-daily { border: 1px solid #af8a443d; background: linear-gradient(135deg,rgba(22,21,19,.9),rgba(14,15,15,.94)); padding: 13px 12px; }
+.house-overview { --house-muted: #d2cbbf; }
+.house-overview :is(.text-stone-400, .text-stone-500) { color: var(--house-muted); }
+.cultivation-selector { min-width: 0; padding: 10px 0; border-bottom: 2px solid transparent; color: #d0c8bb; transition: background .2s; }
+.cultivation-selector.is-active { color: #f1d697; border-color: #c59b52; background: linear-gradient(0deg,#9f75222b,transparent); }
+.cultivation-selector.is-active > span:first-child { border-color: #d3ae65; box-shadow: 0 0 0 3px #bc93451c; }
+.cultivation-selector.is-locked img { filter: grayscale(1); }
+.cultivation-current { background: #11100ee6; border: 1px solid #99774054; box-shadow: 0 10px 35px #0003; }
+.cultivation-stage { position: relative; aspect-ratio: 16/9; overflow: hidden; isolation: isolate; background: #12110e; border-top: 1px solid #99774038; border-bottom: 1px solid #99774038; }
+.cultivation-stage video::-webkit-media-controls,
+.cultivation-stage video::-webkit-media-controls-start-playback-button { display: none !important; }
+.cultivation-status { padding: 16px 14px 10px; background: radial-gradient(ellipse at top,#4c37131c,transparent 80%); }
+.cultivation-progress { display: block; appearance: none; width: 100%; height: 3px; border: none; background: #363026; color: #cfaa60; }
+.cultivation-progress::-webkit-progress-bar { background: #363026; }
+.cultivation-progress::-webkit-progress-value { background: linear-gradient(90deg,#856124,#efd99e); }
+.cultivation-progress::-moz-progress-bar { background: #cfaa60; }
+.cultivation-details { margin: 0 14px; border-top: 1px solid #b5955833; }
+.cultivation-details summary::-webkit-details-marker, .cultivation-demo summary::-webkit-details-marker { display: none; }
+.cultivation-details[open] summary svg { transform: rotate(180deg); }
+.cultivation-demo { border-top: 1px dashed #a58b5330; }
+/* ---- 猴舍首页 ---- */
+.house-hud { border: 1px solid #a5843f3a; background: linear-gradient(120deg,#1d1811e6,#100f0df0 70%); box-shadow: inset 0 1px 0 #ffe39a14, 0 12px 30px #0006; }
+.house-divider { height: 1px; background: linear-gradient(90deg,transparent,#c59b5266 30%,#c59b5266 70%,transparent); }
+.house-stat { display: flex; flex-direction: column; gap: 4px; }
+.house-stat dt { font-size: 11px; color: var(--house-muted, #d2cbbf); }
+.house-stat dd { font-size: 13px; color: #f0e7d5; font-variant-numeric: tabular-nums; }
+.house-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: #d6cfc2; }
+.house-chip::before { content: ''; width: 5px; height: 5px; border-radius: 999px; background: #c59b52; }
+.house-chip.is-due { color: #f0c98a; }
+.house-chip.is-due::before { background: #d9633a; box-shadow: 0 0 8px #d9633a99; }
+.house-chip.is-claim { color: #ffe39a; }
+.house-chip.is-claim::before { background: #ffcf5c; box-shadow: 0 0 8px #ffcf5c99; }
+.house-inherit { border: 1px solid #d3ae6566; background: radial-gradient(120% 100% at 0% 0%,#4a3612cc,#14120ee6 60%); box-shadow: 0 0 0 1px #ffe39a12 inset, 0 14px 40px #0007; }
+
+/* 修炼室入口：门洞结构 —— 顶部横匾、左右门柱、门洞内看封面、底部门槛一行状态。封面本身不裁不改。 */
+.room-door { position: relative; display: flex; flex-direction: column; width: 100%; overflow: hidden; isolation: isolate; border: 1px solid #b8955366; background: linear-gradient(180deg,#171310,#0c0b09); box-shadow: 0 12px 32px #0008, inset 0 1px 0 #ffe39a14; text-align: left; }
+.room-door::before { content: ''; position: absolute; inset: 3px; pointer-events: none; border: 1px solid #ffe39a1c; z-index: 3; }
+.room-plaque { position: relative; display: flex; align-items: center; justify-content: center; min-height: 34px; padding: 6px 12px; background: linear-gradient(180deg,#2a2013,#16120c); border-bottom: 1px solid #c59b5266; }
+.room-plaque::before, .room-plaque::after { content: ''; position: absolute; top: 50%; width: 18px; height: 1px; background: linear-gradient(90deg,transparent,#d3ae65aa); transform: translateY(-50%); }
+.room-plaque::before { left: 12px; }
+.room-plaque::after { right: 12px; transform: translateY(-50%) scaleX(-1); }
+.room-opening { position: relative; display: block; margin: 0 12px; aspect-ratio: 16/10; overflow: hidden; background: #0e0d0b; border-left: 1px solid #c59b5255; border-right: 1px solid #c59b5255; box-shadow: inset 0 0 0 1px #00000080; }
+.room-opening img { transform: scale(1.02); }
+.room-door.is-live .room-opening img, .room-door.is-due .room-opening img { animation: room-push 30s ease-in-out infinite alternate; }
+.room-door.is-empty .room-opening img { filter: saturate(.3) brightness(.5); }
+.room-glow { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 36px #000a; }
+.room-door.is-live .room-glow { animation: room-breathe 5s ease-in-out infinite; }
+.room-door.is-due .room-glow { animation: room-breathe-due 3.2s ease-in-out infinite; }
+.room-dust { position: absolute; inset: 0; pointer-events: none; opacity: .45; background-image: radial-gradient(1px 1px at 20% 30%,#ffe39a,transparent 60%), radial-gradient(1.2px 1.2px at 70% 60%,#ffcf5c,transparent 60%), radial-gradient(1px 1px at 45% 80%,#fff4cf,transparent 60%), radial-gradient(1.4px 1.4px at 85% 25%,#ffe39a,transparent 60%); animation: room-dust 14s linear infinite; }
+.room-sill { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; padding: 8px 14px; border-top: 1px solid #c59b5233; background: linear-gradient(180deg,#14110d,#0c0b09); }
+.room-door.is-empty .room-plaque span { color: #8a8378; }
+@keyframes room-push { from { transform: scale(1.00); } to { transform: scale(1.04); } }
+@keyframes room-breathe { 0%,100% { box-shadow: inset 0 0 36px #000a, inset 0 0 0 0 #ffcf5c00; } 50% { box-shadow: inset 0 0 36px #000a, inset 0 0 26px 0 #ffcf5c33; } }
+@keyframes room-breathe-due { 0%,100% { box-shadow: inset 0 0 36px #000a, inset 0 0 0 0 #d9633a00; } 50% { box-shadow: inset 0 0 36px #000a, inset 0 0 26px 0 #d9633a4d; } }
+@keyframes room-dust { from { transform: translateY(0); } to { transform: translateY(-14px); } }
+@media (prefers-reduced-motion: reduce) { .room-opening img, .room-glow, .room-dust { animation: none !important; } }
+
+/* 契约签 */
+.contract-slip { position: relative; border: 1px solid #a5843f40; border-left: 3px solid #b48a3f; background: linear-gradient(100deg,#1c1711e8,#0f0e0cf2); box-shadow: 0 8px 24px #0005; }
+.contract-slip.is-due { border-left-color: #c96a3a; }
+.contract-slip.is-done { border-left-color: #6f5a2e; }
+.contract-slip-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px 16px; }
+.contract-slip-grid dt { font-size: 11px; color: #a9a49a; }
+.contract-slip-grid dd { margin-top: 2px; font-size: 13px; color: #f0e7d5; font-variant-numeric: tabular-nums; }

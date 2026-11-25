@@ -1,0 +1,9 @@
+pmOnFail: ignore
+
+minimumReleaseAgeExclude:
+  - '@next/*'
+  - next
+
+allowBuilds:
+  onnxruntime-node: set this to true or false
+  sharp: set this to true or false
