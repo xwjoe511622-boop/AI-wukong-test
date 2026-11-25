@@ -15,8 +15,8 @@ export function ProfileWallet({ initialMode }: { initialMode?: string }) {
   const { state, ready, act, notice } = useProduct()
   // 模拟到账只是调试手段，普通用户看不到
   const demo = useDemoControls()
-  const [currency, setCurrency] = useState<Currency>('peach')
-  const [mode, setMode] = useState<'buy' | 'out' | 'in'>(initialMode === 'buy' ? 'buy' : 'out')
+  const [currency, setCurrency] = useState<Currency>(initialMode === 'in' ? 'usdt' : 'peach')
+  const [mode, setMode] = useState<'buy' | 'out' | 'in'>(initialMode === 'buy' || initialMode === 'in' ? initialMode : 'out')
   const [confirming, setConfirming] = useState(false)
   const [amount, setAmount] = useState('')
   const [address, setAddress] = useState('')

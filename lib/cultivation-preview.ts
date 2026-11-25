@@ -79,7 +79,7 @@ export function roomStatus(contracts: Contract[], now: number): { tone: 'due' | 
   const s = summarize(contracts, now)
   if (s.byPhase.待完成修炼) return { tone: 'due', text: `待完成修炼 ${s.byPhase.待完成修炼}只` }
   if (s.todayMonkeys) return { tone: 'due', text: `今日待修 ${s.todayMonkeys}只${s.backlog ? ` · 待补${s.backlog}次` : ''}` }
-  if (s.byPhase.传承完成) return { tone: 'ok', text: `传承完成 ${s.byPhase.传承完成}只 · 待确认结算` }
+  if (s.byPhase.传承完成) return { tone: 'ok', text: `甲方已打款 ${s.byPhase.传承完成}只 · 待确认收款` }
   if (s.byPhase.修炼中) return { tone: 'ok', text: '今日修炼已完成' }
   if (s.byPhase.等待传承) return { tone: 'idle', text: `修炼圆满 ${s.byPhase.等待传承}只 · 等待传承` }
   if (s.byPhase.修炼圆满) return { tone: 'idle', text: `修炼圆满 ${s.byPhase.修炼圆满}只` }

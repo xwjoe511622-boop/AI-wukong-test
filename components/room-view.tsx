@@ -9,14 +9,12 @@ import { useCultivationPreview } from './cultivation-preview-provider'
 import { CultivationVideo } from './cultivation-video'
 import { CultivationConfirm } from './cultivation-confirm'
 import { ContractSlip } from './contract-slip'
-import { SettlementDialog } from './settlement-dialog'
 import { PeachValue, PeachText } from './peach-value'
 import { SummonDemoControls } from './summon-demo-controls'
 
 export function RoomView({ stage }: { stage: Stage }) {
   const { state, now, act, message, busy } = useCultivationPreview()
   const [confirmation, setConfirmation] = useState<ReturnType<typeof quote> | null>(null)
-  const [settling, setSettling] = useState<Contract | null>(null)
   const rule = RULES[stage]
   const room = ROOMS[stage]
   const contracts = sortContracts(state.contracts.filter(c => c.stage === stage), now)
@@ -41,7 +39,7 @@ export function RoomView({ stage }: { stage: Stage }) {
 
     <section aria-label={`${rule.name}修炼之境`} className="cultivation-current">
       <CultivationVideo key={`${stage}-${contracts.length > 0}`} stage={stage} locked={!contracts.length} empty={!state.contracts.length} />
-      {immersive && <ContractSlip contract={contracts[0]} onSettle={() => setSettling(contracts[0])} />}
+      {immersive && <ContractSlip contract={contracts[0]} />}
     </section>
 
     {contracts.length > 0 && !immersive && <>
@@ -57,7 +55,7 @@ export function RoomView({ stage }: { stage: Stage }) {
         </>}
       </section>
       <section aria-label="本室悟空" className="flex flex-col gap-3">
-        {contracts.map(c => <ContractSlip key={c.id} contract={c} onSettle={() => setSettling(c)} />)}
+        {contracts.map(c => <ContractSlip key={c.id} contract={c} />)}
       </section>
     </>}
 
@@ -67,6 +65,5 @@ export function RoomView({ stage }: { stage: Stage }) {
 
     <SummonDemoControls />
     {confirmation && <CultivationConfirm estimate={confirmation} balance={state.balance} busy={busy} title="一键完成修炼" onClose={() => setConfirmation(null)} onConfirm={() => { act({ type: 'train', ids: confirmation.items.map(i => i.id), accelerate: false, expected: confirmation.total }); setConfirmation(null) }} />}
-    {settling && <SettlementDialog contract={settling} busy={busy} onClose={() => setSettling(null)} onClaim={() => { act({ type: 'claim', id: settling.id }); setSettling(null) }} />}
   </div>
 }

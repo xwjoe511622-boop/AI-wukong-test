@@ -29,7 +29,6 @@ export const TRIBE_REWARD = {
   level2: { direct: 15, members: 150, rate: 3 },
   level3: { direct: 30, members: 300, rate: 5 },
 } as const
-export const PREVIEW_INHERITANCE_DELAY_MS = 60_000
 /** 打款期：召唤成功后 1 小时内完成打款；逾期判定违约，本次召唤蟠桃充公 */
 export const PAYMENT_WINDOW_HOURS = 1
 

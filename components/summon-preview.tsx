@@ -105,7 +105,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
         <li>{free ? '本阶段不需要消耗蟠桃：召唤与修炼均不扣费。' : `蟠桃消耗：召唤 ${peachWhole(level.summonCost)}，一次性扣除；修炼每日 ${peachWhole(level.perCycleCost)}，共 ${level.runDays} 天；本阶段合计 ${peachWhole(runCost(level))}${trialDiff ? `（正式版 ${level.cycleDays} 天，合计 ${peachWhole(level.lifecycleCost)}）` : ''}。`}{PEACH_UNIT_TEXT}。契约功能已取消，不再参与任何召唤流程。</li>
         <li>召唤成功后立即进入甲乙双方交易：甲方（打款方）须在 {PAYMENT_WINDOW_HOURS} 小时内向系统匹配的乙方完成打款并提交付款凭证；乙方（释放方）确认实际到账后立即释放对应权益。</li>
         <li>甲方超过 {PAYMENT_WINDOW_HOURS} 小时仍未完成打款，判定为逾期违约：本次召唤所扣除的蟠桃直接充公、不予退还，系统保留违约记录。</li>
-        <li>召唤成功即进入猴舍，开始 {level.runDays} 天生命周期，不需要再次购买或领养。</li>
+        <li>乙方确认到账后悟空进入猴舍，生命周期从召唤成功时刻起算，共 {level.runDays} 天，不需要再次购买或领养。</li>
         {TRIAL_MODE && <li>{TRIAL_NOTE}</li>}
         <li>每日修炼一次，漏修可补。全部修炼完成且原生命周期结束后才可传承；未完成的悟空仍留在猴舍。</li>
         <li>圆满增幅 +{level.gainPct}%，每 {level.runDays} 天一期{trialDiff ? `（正式版 ${level.cycleDays} 天）` : ''}；传承平台手续费仅针对本次修炼盈利收取{INHERITANCE_FEE_PCT}%。</li>

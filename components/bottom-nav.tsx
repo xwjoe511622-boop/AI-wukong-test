@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useSound } from '@/lib/sound'
+import { pendingTrades } from '@/lib/trade'
+import { useProduct } from './product-provider'
 
 const ITEMS = [
   { href: '/', label: '首页', asset: 'home' },
@@ -16,6 +18,8 @@ const ITEMS = [
 export function BottomNav() {
   const pathname = usePathname()
   const { play } = useSound()
+  const { state } = useProduct()
+  const todo = pendingTrades(state?.trades ?? []).length
 
   return (
     <nav
@@ -40,7 +44,7 @@ export function BottomNav() {
                 key={href}
                 href={href}
                 onClick={() => { if (!active) play('nav') }}
-                aria-label={label}
+                aria-label={href === '/me' && todo ? `${label}，${todo} 笔交易待处理` : label}
                 aria-current={active ? 'page' : undefined}
                 className="pointer-events-auto relative block w-1/4 max-w-[104px] rounded-xl outline-offset-2 focus-visible:outline-2 focus-visible:outline-[var(--gold-300)]"
               >
@@ -60,6 +64,7 @@ export function BottomNav() {
                   priority
                   className={cn('absolute inset-0 h-auto w-full transition-opacity duration-200 motion-reduce:transition-none', active ? 'opacity-100' : 'opacity-0')}
                 />
+                {href === '/me' && todo > 0 && <span className="nav-badge" aria-hidden="true">{todo > 9 ? '9+' : todo}</span>}
               </Link>
             )
           })}

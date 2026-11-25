@@ -9,7 +9,9 @@ const { LEVELS, TRIAL_MODE } = require('../lib/game-data.ts')
 const { RULES, DAY, quote } = require('../lib/cultivation-preview.ts')
 const { roundFor, matchAt } = require('../lib/summon-preview.ts')
 const { createProduct, productTransition: transition, parseProduct, walletAddress } = require('../lib/product-state.ts')
-const { PREVIEW_INHERITANCE_DELAY_MS } = require('../lib/game-data.ts')
+const { COUNTERPARTY_DELAY_MS, PAYMENT_WINDOW_MS, nextMatchAfter } = require('../lib/trade.ts')
+// 甲方打款后，乙方（模拟）确认到账，悟空入舍
+const payAndEnter = (s, at) => transition(transition(s, { type: 'trade-pay', id: s.trades.find(t => t.role === 'payer' && t.status === 'awaiting_payment').id }, at).state, { type: 'tick' }, at + COUNTERPARTY_DELAY_MS).state
 const now = Date.parse('2026-09-19T10:00:00+08:00')
 const initial = createProduct(now, '01234567-89ab-cdef-0123-456789abcdef')
 const other = '0x' + 'ab'.repeat(20)
@@ -24,7 +26,6 @@ test('体验版只有三点不同：赠送 1000 蟠桃和 10000 USDT、七阶段
   // 不预置悟空和成员，也没有任何额外加速
   assert.equal(initial.contracts.length, 0)
   assert.equal(initial.members.length, 0)
-  assert.equal(PREVIEW_INHERITANCE_DELAY_MS, 60_000)
   assert.equal(initial.offset, 0)
 })
 test('体验版没有秒级加速：召唤按钟点匹配，修炼后要等满真实的 1 天才能传承', () => {
@@ -34,12 +35,17 @@ test('体验版没有秒级加速：召唤按钟点匹配，修炼后要等满�
   assert.equal(s.offset, 0)
   assert.equal(transition(s, { type: 'tick' }, pub - 1).state.entries[0].status, 'waiting')
   s = transition(s, { type: 'tick' }, pub).state
+  // 打款期与正式版相同：1 小时
+  assert.equal(s.trades[0].deadline - pub, PAYMENT_WINDOW_MS)
+  s = payAndEnter(s, pub)
   const c = s.contracts[0]
-  s = transition(s, { type: 'cultivate', action: { type: 'train', ids: [c.id], accelerate: false, expected: 10 } }, pub).state
+  s = transition(s, { type: 'cultivate', action: { type: 'train', ids: [c.id], accelerate: false, expected: 10 } }, pub + COUNTERPARTY_DELAY_MS).state
   assert.equal(s.offset, 0)
-  const almost = transition(s, { type: 'tick' }, pub + DAY - 1).state
-  assert.equal(almost.contracts[0].finishedAt, undefined)
-  const done = transition(s, { type: 'tick' }, pub + DAY + PREVIEW_INHERITANCE_DELAY_MS).state
+  // 原周期 1 天结束后，等下一轮同阶段召唤匹配到甲方
+  const matchTime = nextMatchAfter('stone_spirit', pub + DAY)
+  const almost = transition(s, { type: 'tick' }, matchTime - 1).state
+  assert.equal(almost.trades.filter(t => t.role === 'receiver').length, 0)
+  const done = transition(s, { type: 'tick' }, matchTime + COUNTERPARTY_DELAY_MS).state
   assert.notEqual(done.contracts[0].finishedAt, undefined)
   assert.equal(transition(s, { type: 'trial-summon', stage: 'stone_spirit' }, pub).state, s)
 })
@@ -50,24 +56,29 @@ test('体验版：第七阶段召唤成功扣 USDT，一天修炼一次后传承
   assert.equal(s.balance, initial.balance - 10_000)
   assert.equal(s.usdt, initial.usdt)
   s = transition(s, { type: 'tick' }, pub).state
+  assert.equal(s.usdt, initial.usdt)
+  s = payAndEnter(s, pub)
   assert.equal(s.usdt, initial.usdt - 500_000)
   const c = s.contracts.find(item => item.id.startsWith('summon-'))
   const q = quote([c], pub, false)
   assert.equal(q.total, 1500)
   s = transition(s, { type: 'cultivate', action: { type: 'train', ids: [c.id], accelerate: false, expected: 1500 } }, pub).state
-  const end = pub + DAY + PREVIEW_INHERITANCE_DELAY_MS
+  const end = nextMatchAfter('infinite_sage', pub + DAY) + COUNTERPARTY_DELAY_MS
   s = transition(parseProduct(JSON.stringify(s)), { type: 'tick' }, end).state
   s = transition(s, { type: 'cultivate', action: { type: 'claim', id: c.id } }, end).state
   assert.equal(s.usdt, initial.usdt - 500_000 + 500_000 + 125_000 - 3_750)
   assert.equal(s.balance, initial.balance - 10_000 - 1_500)
 })
-test('USDT 余额不足以打款：判定逾期违约，召唤蟠桃充公', () => {
+test('USDT 余额不足以打款，1 小时后判定逾期违约，召唤蟠桃充公', () => {
   const round = roundFor('infinite_sage', now)
   const pub = matchAt({ key: round.key, deadline: round.deadline })
   let s = transition(initial, { type: 'summon', action: { type: 'join', stage: 'infinite_sage', now } }, now).state
   s = transition(s, { type: 'transfer', currency: 'usdt', amountCents: 900_000, address: other }, now).state
   s = transition(s, { type: 'tick' }, pub).state
+  assert.equal(transition(s, { type: 'trade-pay', id: s.trades[0].id }, pub).state, s)
+  s = transition(s, { type: 'tick' }, pub + PAYMENT_WINDOW_MS).state
   assert.equal(s.entries[0].status, 'forfeited')
+  assert.equal(s.trades[0].status, 'overdue')
   assert.equal(s.contracts.length, initial.contracts.length)
   assert.equal(s.balance, initial.balance - 10_000)
   assert.equal(s.usdt, 100_000)
