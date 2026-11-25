@@ -922,3 +922,18 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .relation-search input::placeholder { color: #8f8778; }
 .relation-search input::-webkit-search-cancel-button { display: none; }
 .relation-search button { color: #d2cbbf; }
+.relation-quick { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid #b0904b55; background: linear-gradient(135deg,rgba(22,21,19,.9),rgba(14,15,15,.94)); font-size: 12px; color: #d2cbbf; text-align: left; }
+.relation-quick strong { margin-left: auto; font-size: 17px; font-variant-numeric: tabular-nums; color: #ffe9c2; }
+.relation-quick strong small { margin-left: 3px; font-size: 10px; font-weight: 400; color: #a9a294; }
+.relation-quick svg { color: #c59b52; }
+.relation-sort { display: flex; flex: none; align-items: center; gap: 4px; min-height: 42px; padding: 0 10px; border-radius: 10px; border: 1px solid #b0904b55; background: #00000059; }
+.relation-sort select { max-width: 7.5em; appearance: none; background: transparent; font-size: 12px; color: #ece6da; outline: none; }
+.relation-sort select option { background: #17140f; color: #ece6da; }
+.relation-toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; color: #d2cbbf; }
+.relation-toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.relation-toggle span { position: relative; width: 34px; height: 20px; border-radius: 999px; border: 1px solid #b0904b80; background: #0000008c; transition: background .15s; }
+.relation-toggle span::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 999px; background: #a59c8c; transition: transform .15s, background .15s; }
+.relation-toggle input:checked + span { background: #ffcf5c33; border-color: #ffcf5c; }
+.relation-toggle input:checked + span::after { transform: translateX(14px); background: #ffcf5c; }
+.relation-toggle input:focus-visible + span { outline: 2px solid #ffcf5c; outline-offset: 2px; }
+.relation-toggle em { font-style: normal; }

@@ -27,7 +27,7 @@ export type RewardRecord = {
   tribeLevel: number | null; rewardRate: number; sourceUserId: string;
   sourceProfitCents: number; amountCents: number; createdAt: string;
 }
-export type MemberRecord = { uid: string; joinedAt: string; days: number; valid?: boolean; generation?: number; /** 成员自己设置的头像；没有则显示默认图标 */ avatar?: string }
+export type MemberRecord = { uid: string; joinedAt: string; days: number; valid?: boolean; generation?: number; /** 成员自己设置的头像；没有则显示默认图标 */ avatar?: string; /** 这位成员累计为我带来的奖励（分） */ rewardCents?: number }
 /** currency 缺省为蟠桃；usdt 记录显示为 USDT */
 export type AccountRecord = { id: string; kind: string; amountCents: number; createdAt: string; description: string; currency?: 'peach' | 'usdt' }
 export type ProfileList = { rewards: RewardRecord[]; members: MemberRecord[]; records: AccountRecord[]; hasMore: boolean }

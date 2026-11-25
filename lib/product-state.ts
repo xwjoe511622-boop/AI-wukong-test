@@ -67,9 +67,9 @@ function starterContracts(now: number): Contract[] {
     }
   })
 }
-/** 示例部族 160 人：第一代 16、第二代 44、更深层 100；每 16 人中 1 人持有蟠桃不足，不算有效用户 */
+/** 示例部族 160 人：第一代 16、第二代 44、更深层 100；每 16 人中 1 人持有蟠桃不足，不算有效用户。加入时间错开在近 30 天内，方便看排序 */
 function sampleMembers(now: number): DemoMember[] {
-  return Array.from({ length: 160 }, (_, index) => ({ uid: `demo-member-${String(index + 1).padStart(3, '0')}`, generation: index < 16 ? 1 : index < 60 ? 2 : 3, joinedAt: new Date(now).toISOString(), days: 0, valid: index % 16 !== 15 }))
+  return Array.from({ length: 160 }, (_, index) => ({ uid: `demo-member-${String(index + 1).padStart(3, '0')}`, generation: index < 16 ? 1 : index < 60 ? 2 : 3, joinedAt: new Date(now - ((index * 37) % 30) * 86400000 - ((index * 53) % 24) * 3600000).toISOString(), days: (index * 37) % 30, valid: index % 16 !== 15 }))
 }
 /** 新存档的初始内容。正式版从零开始；体验版只多赠送余额，不预置悟空和成员 */
 export type ProductSeed = { balance: number; usdt: number; starters?: boolean }
