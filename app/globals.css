@@ -884,3 +884,21 @@
 .trade-copy { display: inline-flex; flex: none; align-items: center; gap: 4px; min-height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid #b0904b66; font-size: 11px; color: #e9cf9f; }
 .trade-confirm { padding: 12px; border-radius: 10px; border: 1px solid #e0a05a66; background: #2a1d0e88; }
 .nav-badge { position: absolute; top: 6%; right: 16%; z-index: 2; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #d9502e; color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #120d07, 0 0 10px #d9502e99; pointer-events: none; }
+
+/* 首页总览 */
+.home-page { min-height: 100dvh; background: #050506; }
+.home-body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 480px; margin: -28px auto 0; padding: 0 16px calc(150px + env(safe-area-inset-bottom)); }
+.home-card { display: block; padding: 14px; border-radius: 14px; border: 1px solid #b0904b38; background: linear-gradient(135deg,rgba(22,21,19,.94),rgba(14,15,15,.97)); color: #ece6da; }
+.home-card.is-todo { border-color: #e0a05a99; background: radial-gradient(120% 120% at 0% 0%,#4a3214,#14120e 65%); box-shadow: 0 0 0 1px #ffe39a14 inset, 0 14px 36px #0009; }
+.home-card-title { font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: .08em; color: var(--gold-200); }
+.home-label { font-size: 11px; color: #d2cbbf; }
+
+/* 悟空世界：按此刻状态区分仙境 */
+.realm-cover.is-open, .realm-cover.is-reserved { outline: 1px solid #ffcf5c99; outline-offset: 2px; box-shadow: 0 0 28px #ffcf5c2e; }
+.realm-cover.is-ended { opacity: .62; filter: grayscale(.45); }
+.realm-state { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; border: 1px solid #b0904b80; padding: 2px 9px; font-size: 10px; letter-spacing: .08em; color: #e9cf9f; }
+.realm-state.is-open { border-color: #ffcf5c; background: #ffcf5c1f; color: #ffe39a; }
+.realm-state.is-open::before { content: ''; width: 5px; height: 5px; border-radius: 999px; background: #ffcf5c; box-shadow: 0 0 8px #ffcf5c; }
+.realm-state.is-reserved { border-color: #7fb06a; background: #7fb06a1f; color: #c5e2b5; }
+.realm-state.is-matching { border-color: #e0703f; color: #ffd9a0; }
+.realm-state.is-ended, .realm-state.is-cutoff { color: #a59c8c; }

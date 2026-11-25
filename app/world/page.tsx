@@ -1,7 +1,6 @@
 import { ALL_OPEN } from '@/lib/game-data'
 import Link from 'next/link'
 import { RealmList } from '@/components/realm-list'
-import { WorldBanner } from '@/components/world-banner'
 import { SummonPreview } from '@/components/summon-preview'
 import { SummonDemoControls } from '@/components/summon-demo-controls'
 import { GoldDivider, TitlePlaque } from '@/components/ornate'
@@ -14,7 +13,6 @@ export default async function WorldPage({ searchParams }: { searchParams: Promis
     return <SummonPreview key={stage} stage={stage} />
   }
   return <div className="flex flex-col gap-5">
-    <WorldBanner />
     <SummonDemoControls />
     <div className="hud-panel rounded-xl px-3 py-3"><TitlePlaque zh="七大仙境" en="SEVEN IMMORTAL REALMS" /><p className="mt-2 text-center text-xs text-[var(--gold-200)]">选择仙境 · 发起召唤 · 每日修炼</p><GoldDivider className="mx-auto mt-3 w-40" /></div>
     <RealmList />

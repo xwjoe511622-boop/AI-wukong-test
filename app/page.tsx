@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { HomeHero } from '@/components/home-hero'
+import { HomeView } from '@/components/home-view'
 
 export const metadata: Metadata = {
   title: 'AI 悟空 · 神话正在醒来',
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 }
 
 export default function HomePage() {
-  return <HomeHero />
+  return <HomeView />
 }

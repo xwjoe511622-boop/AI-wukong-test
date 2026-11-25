@@ -5,17 +5,22 @@ import Link from 'next/link'
 import { LEVELS, starText, cycleText } from '@/lib/game-data'
 import { roundFor, rangeText, durationParts, peachWhole } from '@/lib/summon-preview'
 import { useSummonPreview } from './summon-preview-provider'
+import { REALM_STATUS_LABEL, realmStatus } from '@/lib/home'
 
 export function RealmList() {
-  const { now, ready } = useSummonPreview()
+  const { now, ready, state } = useSummonPreview()
   return <ul className="flex flex-col gap-6">{LEVELS.map((level, index) => {
     const round = roundFor(level.id, now)
-    const [h, m, s] = ready ? durationParts(round.left) : ['--', '--', '--']
-    return <li key={level.id}><article aria-label={`${level.realm} · ${level.name}${level.isOpen ? '' : ' · 未开放'}`} className={`realm-cover flex flex-col overflow-hidden rounded-b-xl ${level.isOpen ? '' : 'grayscale-[.7]'}`}>
+    // 顺序固定为成长顺序，只用高亮区分此刻状态
+    const status = ready && level.isOpen ? realmStatus(level.id, state.entries, now) : null
+    // 已预约的仙境不再看预约截止，直接看离匹配开始还有多久
+    const left = status === 'reserved' ? (round.matching ? round.windowEnd : round.deadline) - now : round.left
+    const [h, m, s] = ready ? durationParts(Math.max(0, left)) : ['--', '--', '--']
+    return <li key={level.id}><article aria-label={`${level.realm} · ${level.name}${level.isOpen ? '' : ' · 未开放'}`} className={`realm-cover flex flex-col overflow-hidden rounded-b-xl ${level.isOpen ? '' : 'grayscale-[.7]'} ${status ? `is-${status}` : ''}`}>
       <RealmCoverArt level={level} index={index} />
       <div className="realm-hud flex flex-col gap-3 px-4 pb-4 pt-3">
         <header className="flex items-start justify-between gap-3">
-          <p className="flex flex-wrap items-center gap-2 font-display text-[13px] tracking-wider text-[var(--gold-100)]">{level.realm} · {level.name}{!level.isOpen && <span className="rounded-full border border-[var(--gold-600)]/50 px-2 py-0.5 text-[10px] tracking-widest text-[var(--gold-200)]">未开放</span>}</p>
+          <p className="flex flex-wrap items-center gap-2 font-display text-[13px] tracking-wider text-[var(--gold-100)]">{level.realm} · {level.name}{status && <span className={`realm-state is-${status}`}>{REALM_STATUS_LABEL[status]}</span>}{!level.isOpen && <span className="rounded-full border border-[var(--gold-600)]/50 px-2 py-0.5 text-[10px] tracking-widest text-[var(--gold-200)]">未开放</span>}</p>
           <div className="flex flex-col items-end">
             <span aria-label={`难度 ${level.stars} 星`} className="text-[12px] leading-none tracking-[0.15em] text-[var(--gold-400)]">{starText(level.stars)}</span>
             <span className="mt-1 text-[10px] text-[var(--gold-200)]/80">{level.tier}</span>
@@ -41,7 +46,7 @@ export function RealmList() {
         <div className="gold-line h-px w-full opacity-60" />
         {level.isOpen ? <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-[10px] text-[var(--gold-200)]/70">{!ready || round.open ? '距本轮预约截止' : round.ended ? '本轮已结束 · 距下一轮开放预约' : round.matching ? '自动匹配中 · 距本周期结束' : '预约已截止 · 距自动匹配开始'}</p>
+            <p className="text-[10px] text-[var(--gold-200)]/70">{status === 'reserved' ? (round.matching ? '已预约 · 自动匹配中 · 距本周期结束' : '已预约 · 距自动匹配开始') : !ready || round.open ? '距本轮预约截止' : round.ended ? '本轮已结束 · 距下一轮开放预约' : round.matching ? '自动匹配中 · 距本周期结束' : '预约已截止 · 距自动匹配开始'}</p>
             <p className="mt-0.5 font-latin text-base font-bold leading-none tabular-nums text-[var(--gold-100)]" aria-live="off">{h} : {m} : {s}</p>
           </div>
           <Link href={`/world?stage=${level.id}`} className="btn-gold ornate-short inline-flex w-36 shrink-0 items-center justify-center whitespace-nowrap text-[11px]">进入{level.realm}</Link>

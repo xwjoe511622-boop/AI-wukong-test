@@ -1,180 +1,25 @@
-.scene {
-  --intro-ivory: #fff4df;
-  --intro-gold: #e9cf9f;
+.hero {
   position: relative;
   isolation: isolate;
-  height: 100svh;
-  height: 100dvh;
   width: 100%;
+  height: clamp(180px, 26dvh, 260px);
   overflow: hidden;
   background: #050506;
-  color: var(--intro-ivory);
 }
 
-.video,
-.shade,
-.story {
+.video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-}
-
-.video {
   object-fit: cover;
-  object-position: center;
+  /* 只露出画面最上面的悟空与云海 */
+  object-position: center top;
 }
 
-.shade {
-  background: linear-gradient(180deg, rgb(0 0 0 / 8%) 20%, rgb(0 0 0 / 5%) 40%, rgb(0 0 0 / 44%) 77%, rgb(0 0 0 / 65%) 100%);
+.fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(5 5 6 / 28%) 0%, rgb(5 5 6 / 0%) 30%, rgb(5 5 6 / 0%) 55%, rgb(5 5 6 / 100%) 100%);
   pointer-events: none;
-}
-
-.story {
-  height: calc(100% - 130px - env(safe-area-inset-bottom));
-  pointer-events: none;
-  text-align: center;
-  text-shadow: 0 2px 18px rgb(0 0 0 / 80%);
-}
-
-.intro,
-.identity,
-.encounter,
-.journey {
-  position: absolute;
-  inset-inline: 20px;
-  margin: 0;
-  opacity: 0;
-  animation-play-state: paused !important;
-}
-
-.scene[data-started='true'] .story > * {
-  animation-play-state: running !important;
-}
-
-.intro {
-  top: 65%;
-  font-family: 'Noto Serif SC', serif;
-  font-size: clamp(20px, 5.8vw, 32px);
-  font-weight: 700;
-  line-height: 1.9;
-  letter-spacing: .09em;
-  animation: passing 6s ease-in-out both;
-}
-
-.first { animation-delay: 1.5s; }
-.second { top: 62%; animation-delay: 7.5s; }
-
-.identity {
-  top: 55%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  animation: emerge 3.5s ease-out 13.5s both;
-}
-
-.title {
-  width: min(78vw, 330px);
-  height: auto;
-  object-fit: contain;
-}
-
-.edition {
-  margin: 0;
-  color: var(--intro-gold);
-  font-size: clamp(11px, 3.2vw, 14px);
-  letter-spacing: .16em;
-  line-height: 1.8;
-}
-
-.edition span { font-variant-numeric: tabular-nums; }
-
-.encounter {
-  top: 84%;
-  font-size: clamp(12px, 3.5vw, 16px);
-  letter-spacing: .08em;
-  line-height: 1.9;
-  animation: passing 6.5s ease-in-out 17.5s both;
-}
-
-.journey {
-  top: 87%;
-  color: var(--intro-gold);
-  font-size: clamp(11px, 3.2vw, 14px);
-  line-height: 2;
-  letter-spacing: .12em;
-  animation: emerge 3s ease-out 24s both;
-}
-
-.notice {
-  position: absolute;
-  bottom: calc(130px + env(safe-area-inset-bottom));
-  right: max(12px, env(safe-area-inset-right));
-  color: var(--intro-ivory);
-  font-size: 10px;
-  letter-spacing: .15em;
-}
-
-.notice { left: 12px; text-align: center; }
-
-.scene[data-static='true'] .story > * { animation: none; }
-.scene[data-static='true'] .identity,
-.scene[data-static='true'] .journey { opacity: 1; }
-
-/* 有待办：不播文字动画，只保留 Logo；视频压暗，突出底部待办卡片 */
-.scene[data-todo='true'] .video { filter: brightness(.5) saturate(.85); transition: filter .6s ease; }
-.scene[data-todo='true'] .shade { background: linear-gradient(180deg, rgb(0 0 0 / 30%) 0%, rgb(0 0 0 / 20%) 35%, rgb(0 0 0 / 60%) 70%, rgb(0 0 0 / 82%) 100%); }
-.scene[data-todo='true'] .story > * { animation: none; opacity: 0; }
-.scene[data-todo='true'] .identity { opacity: 1; top: 30%; }
-
-.todo {
-  position: absolute;
-  z-index: 2;
-  left: max(16px, env(safe-area-inset-left));
-  right: max(16px, env(safe-area-inset-right));
-  bottom: calc(118px + env(safe-area-inset-bottom));
-  max-width: 448px;
-  margin-inline: auto;
-  padding: 16px;
-  border-radius: 14px;
-  border: 1px solid #d9b26a99;
-  background: rgb(16 13 9 / 90%);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 0 1px #ffe39a14 inset, 0 18px 48px rgb(0 0 0 / 60%);
-  color: #f3eadb;
-  animation: emerge .5s ease-out both;
-}
-.todoTag { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 11px; color: #ffd9a0; letter-spacing: .06em; }
-.todoTag::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: #e0703f; box-shadow: 0 0 8px #e0703faa; }
-.todoTitle { margin: 6px 0 0; font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 700; color: #ffe9c2; }
-.todoMeta { margin: 6px 0 0; font-size: 12px; color: #d2cbbf; }
-.todoAmount { margin: 0; font-family: 'Cinzel', serif; font-size: 22px; font-weight: 700; color: #ffd27a; font-variant-numeric: tabular-nums; }
-.todoUnit { margin: 0; font-size: 10px; color: #d2cbbf; }
-.todoActions { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
-.todoAll { display: inline-flex; align-items: center; gap: 2px; flex: none; font-size: 12px; color: #e9cf9f; }
-
-@keyframes passing {
-  0% { opacity: 0; transform: translateY(12px); }
-  32%, 70% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-5px); }
-}
-
-@keyframes emerge {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-height: 480px) and (orientation: landscape) {
-  .identity { top: 30%; gap: 4px; }
-  .intro { top: 52%; }
-  .title { width: 140px; }
-  .encounter { top: 77%; font-size: 12px; }
-  .journey { top: 86%; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .scene .story > * { animation: none; }
-  .identity, .journey { opacity: 1; }
 }

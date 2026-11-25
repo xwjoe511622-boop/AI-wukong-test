@@ -9,7 +9,7 @@
     "build": "next build",
     "build:trial": "NEXT_PUBLIC_WUKONG_TRIAL=1 next build",
     "start": "next start",
-    "test": "node scripts/test-summon-preview.cjs && node scripts/test-cultivation.cjs && node scripts/test-product-state.cjs && node --test tests/cultivation-contract.test.mjs tests/profile-rules.test.mjs tests/trial.test.mjs"
+    "test": "node scripts/test-summon-preview.cjs && node scripts/test-cultivation.cjs && node scripts/test-product-state.cjs && node --test tests/cultivation-contract.test.mjs tests/profile-rules.test.mjs tests/trial.test.mjs tests/home.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
