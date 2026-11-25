@@ -902,3 +902,13 @@
 .realm-state.is-live::before, .realm-state.is-live-reserved::before { content: ''; width: 5px; height: 5px; border-radius: 999px; background: #e0703f; box-shadow: 0 0 8px #e0703f; }
 .realm-state.is-reserved { border-color: #7fb06a; background: #7fb06a1f; color: #c5e2b5; }
 .realm-state.is-ended, .realm-state.is-cutoff { color: #a59c8c; }
+
+/* 同行与部族 */
+.relation-stat { display: block; width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #b0904b38; background: #0000004d; text-align: left; }
+button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ffcf5c14; }
+.relation-filter { display: flex; gap: 6px; overflow-x: auto; }
+.relation-filter button { display: inline-flex; flex: none; align-items: center; gap: 5px; min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #b0904b55; font-size: 12px; color: #d2cbbf; }
+.relation-filter button small { font-size: 10px; opacity: .7; }
+.relation-filter button[aria-pressed=true] { border-color: #ffcf5c; background: #ffcf5c1f; color: #ffe9c2; }
+.relation-count { margin-top: 8px; font-size: 27px; font-weight: 500; line-height: 1; font-variant-numeric: tabular-nums; }
+.relation-count small { font-size: 11px; margin-left: 6px; color: #a9a294; }
