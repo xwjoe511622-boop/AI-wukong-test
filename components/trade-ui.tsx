@@ -19,7 +19,7 @@ export function TradeChip({ trade, className }: { trade: Trade; className?: stri
   return <span className={cn('trade-chip', `is-${tradeTone(trade)}`, className)}>{tradeStatusText(trade)}</span>
 }
 
-/** 一行可复制的长文本：地址、交易哈希 */
+/** 一行可复制的长文本：收款地址 */
 export function CopyField({ label, value }: { label: string; value: string }) {
   const [copied, setCopied] = useState(false)
   const copy = async () => {

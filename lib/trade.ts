@@ -25,7 +25,6 @@ export type Trade = {
   counterparty: { uid: string; address: string }
   status: TradeStatus
   paidAt?: number
-  txHash?: string
   confirmedAt?: number
   overdueAt?: number
   /** 甲方交易对应的召唤场次 */
@@ -54,7 +53,6 @@ function hexOf(seed: string, length: number) {
 export function demoCounterparty(seed: string) {
   return { uid: `WK${hexOf(`uid:${seed}`, 16).toUpperCase()}`, address: `0x${hexOf(`addr:${seed}`, 40)}` }
 }
-export function demoTxHash(seed: string) { return `0x${hexOf(`tx:${seed}`, 64)}` }
 export const shortAddress = (value: string) => `${value.slice(0, 8)}…${value.slice(-6)}`
 
 /** 时刻 t 之后（含）该阶段下一次召唤匹配完成的时刻：传承中的悟空在这一刻匹配到甲方 */

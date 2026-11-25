@@ -48,7 +48,6 @@ export function TradeView({ id }: { id: string }) {
       <dl className="flex flex-col gap-3">
         <div className="trade-field"><dt>{payer ? '乙方' : '甲方'} UID</dt><dd><code>{trade.counterparty.uid}</code></dd></div>
         <CopyField label={payer ? '收款地址（USDT）' : '付款地址'} value={trade.counterparty.address} />
-        {trade.txHash && <CopyField label="交易哈希 · 付款凭证" value={trade.txHash} />}
         {trade.paidAt && <div className="trade-field"><dt>打款时间</dt><dd>{dateTime(trade.paidAt)}</dd></div>}
         {trade.confirmedAt && <div className="trade-field"><dt>确认到账时间</dt><dd>{dateTime(trade.confirmedAt)}</dd></div>}
       </dl>
@@ -60,7 +59,7 @@ export function TradeView({ id }: { id: string }) {
     {payer && trade.status === 'awaiting_payment' && <section className="profile-surface" aria-label="打款">
       <p className="flex items-center justify-between text-xs text-[var(--profile-muted)]"><span>可用 USDT 余额</span><UsdtValue cents={state.usdt} size="sm" muted /></p>
       {short ? <><p role="alert" className="mt-3 flex items-start gap-2 text-xs leading-5 text-[#f0b49a]"><AlertTriangle className="mt-0.5 size-4 shrink-0" />USDT 余额不足，还差 {money(trade.amountCents - state.usdt)} USDT。请先在个人地址接收 USDT，再回来打款。</p><div className="mt-3"><ProfileButtonLink href="/me/wallet?mode=in" size="large">去个人地址接收 USDT</ProfileButtonLink></div></>
-        : confirming ? <div className="trade-confirm mt-3"><p className="text-xs leading-6">将从 USDT 余额向乙方 <code>{shortAddress(trade.counterparty.address)}</code> 打款 <strong className="text-[var(--gold-100)]">{money(trade.amountCents)} USDT</strong>。打款后无法撤回，交易哈希将作为付款凭证提交给乙方。</p><div className="mt-3 grid grid-cols-2 gap-2"><ProfileButton secondary onClick={() => setConfirming(false)}>取消</ProfileButton><ProfileButton onClick={() => { act({ type: 'trade-pay', id: trade.id }); setConfirming(false) }}>确认打款</ProfileButton></div></div>
+        : confirming ? <div className="trade-confirm mt-3"><p className="text-xs leading-6">将从 USDT 余额向乙方 <code>{shortAddress(trade.counterparty.address)}</code> 打款 <strong className="text-[var(--gold-100)]">{money(trade.amountCents)} USDT</strong>。打款后无法撤回，系统会通知乙方核实到账。</p><div className="mt-3 grid grid-cols-2 gap-2"><ProfileButton secondary onClick={() => setConfirming(false)}>取消</ProfileButton><ProfileButton onClick={() => { act({ type: 'trade-pay', id: trade.id }); setConfirming(false) }}>确认打款</ProfileButton></div></div>
         : <div className="mt-3"><ProfileButton size="large" onClick={() => setConfirming(true)}>向乙方打款 {money(trade.amountCents)} USDT</ProfileButton></div>}
     </section>}
 

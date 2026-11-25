@@ -1,7 +1,7 @@
 import { createPreview, isPreview, transition as cultivate, endsAt, quote, settlement, money, dateTime, RULES, type Action as CultivationAction, type Contract } from './cultivation-preview'
 import { initialPreview, parsePreview, transition as summon, costCents, matchAt, type PreviewAction, type Entry } from './summon-preview'
 import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS, TRIAL_MODE, TRIAL_PEACH, TRIAL_USDT, VALID_USER_MIN_PEACH } from './game-data'
-import { COUNTERPARTY_DELAY_MS, PAYMENT_WINDOW_MS, demoCounterparty, demoTxHash, isTrade, nextMatchAfter, shortAddress, type Trade } from './trade'
+import { COUNTERPARTY_DELAY_MS, PAYMENT_WINDOW_MS, demoCounterparty, isTrade, nextMatchAfter, shortAddress, type Trade } from './trade'
 import { rewardParts, tribeTier, type AccountRecord, type MemberRecord, type RewardRecord } from './profile-rules'
 
 // 换键：契约功能取消后旧存档不再载入，新存档以预置猴舍开始。
@@ -90,7 +90,7 @@ function payeeConfirms(state: ProductState, trade: Trade, at: number): ProductSt
 }
 /** 甲方已打款：乙方需核实到账后确认收款 */
 function payerPays(state: ProductState, trade: Trade, at: number): ProductState {
-  const next = updateTrade(state, trade.id, { status: 'awaiting_confirm', paidAt: at, txHash: demoTxHash(trade.id) })
+  const next = updateTrade(state, trade.id, { status: 'awaiting_confirm', paidAt: at })
   return { ...next, contracts: next.contracts.map(c => c.id === trade.contractId ? { ...c, finishedAt: at } : c) }
 }
 /** 乙方：传承中的悟空匹配到甲方，开始等待甲方打款 */
@@ -108,7 +108,7 @@ function advanceTrades(state: ProductState, now: number): { state: ProductState;
     if (c.finishedAt) {
       // 旧存档里已标记传承完成的悟空：视为甲方已打款，等待确认收款
       next = matchReceiver(next, c, c.finishedAt)
-      next = updateTrade(next, `inherit-${c.id}`, { status: 'awaiting_confirm', paidAt: c.finishedAt, txHash: demoTxHash(`inherit-${c.id}`) })
+      next = updateTrade(next, `inherit-${c.id}`, { status: 'awaiting_confirm', paidAt: c.finishedAt })
       continue
     }
     const at = nextMatchAfter(c.stage, maturedAt(c))
