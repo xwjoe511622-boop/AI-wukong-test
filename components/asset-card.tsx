@@ -20,19 +20,18 @@ export function AssetCard() {
   const locked = lockedTotal(lockedItems(state))
   const valid = balance >= VALID_USER_MIN_PEACH * 100
   return <div className="asset-card">
-    <div className="asset-row is-peach">
+    <div className="asset-cols">
       <Link href="/me/wallet" className="asset-main" aria-label="我的资产：蟠桃">
-        <p className="asset-name">蟠桃<span className={`asset-tag ${valid ? 'is-on' : ''}`}>{valid ? '有效用户' : `满 ${VALID_USER_MIN_PEACH} 为有效用户`}</span></p>
+        <p className="asset-name"><Image src="/assets/peach.png" alt="" width={26} height={26} />蟠桃</p>
         <p className="asset-number">{state ? fmt(balance) : '—'}</p>
+        <p className={`asset-note ${valid ? 'is-on' : ''}`}>{valid ? '有效用户' : `满 ${VALID_USER_MIN_PEACH} 为有效用户`}</p>
       </Link>
-      <Image src="/assets/peach.png" alt="" width={84} height={84} className="asset-art" />
-      {locked > 0 && <Link href="/me/locked" className="asset-locked"><span>暂扣中</span><strong>{fmt(locked)}</strong><em>查看<ChevronRight className="size-3.5" aria-hidden /></em></Link>}
-    </div>
-    <div className="asset-row">
       <Link href="/me/wallet" className="asset-main" aria-label="我的资产：USDT">
-        <p className="asset-name is-usdt">USDT<span className="asset-tag">可用余额</span></p>
+        <p className="asset-name is-usdt">USDT</p>
         <p className="asset-number">{state ? fmt(usdt) : '—'}</p>
+        <p className="asset-note">可用余额</p>
       </Link>
     </div>
+    {locked > 0 && <Link href="/me/locked" className="asset-locked"><span>暂扣中</span><strong>{fmt(locked)}</strong><em>查看<ChevronRight className="size-3.5" aria-hidden /></em></Link>}
   </div>
 }

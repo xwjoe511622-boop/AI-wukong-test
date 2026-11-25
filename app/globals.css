@@ -1011,19 +1011,18 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .confirm-heading { margin: 18px 0 8px; padding-bottom: 6px; border-bottom: 1px solid #b0904b38; font-size: 11px; letter-spacing: .2em; color: #c9a866; }
 
 /* 资产卡：图标和数字要醒目 */
-.asset-card { position: relative; overflow: hidden; border-radius: 20px; border: 1px solid #e3c07a; background: radial-gradient(80% 70% at 100% 0%, #5a3d12 0%, transparent 62%), radial-gradient(70% 60% at 0% 100%, #3a2a10 0%, transparent 65%), linear-gradient(165deg, #231a0d, #0f0c08); box-shadow: 0 0 0 1px #ffe39a1f inset, 0 0 0 4px #0b0906, 0 0 0 5px #c59b5255, 0 18px 36px #000a; }
-.asset-card::before { content: ''; position: absolute; inset: 6px; border-radius: 15px; border: 1px solid #ffe39a1c; pointer-events: none; }
-.asset-row { position: relative; padding: 20px 20px 18px; }
-.asset-row + .asset-row { border-top: 1px solid transparent; border-image: linear-gradient(90deg, transparent, #e3c07a99 20%, #e3c07a99 80%, transparent) 1; }
-.asset-main { display: block; position: relative; z-index: 1; }
-.asset-name { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 16px; font-weight: 700; letter-spacing: .12em; color: #f3c969; }
-.asset-name.is-usdt { font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: 17px; letter-spacing: .1em; }
-.asset-tag { padding: 2px 9px; border-radius: 999px; border: 1px solid #b0904b66; font-family: var(--font-sans, 'Noto Sans SC'), sans-serif; font-size: 11px; font-weight: 400; letter-spacing: 0; color: #cfc6b4; }
-.asset-tag.is-on { border-color: #8fc98a80; color: #a9dba3; }
-.asset-number { margin-top: 10px; font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: clamp(34px, 10.4vw, 44px); font-weight: 700; line-height: 1.05; font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; color: #fff1cf; text-shadow: 0 0 22px #ffcf5c40, 0 2px 0 #0008 !important; }
-.asset-art { position: absolute; top: 10px; right: 14px; width: 84px; height: 84px; filter: drop-shadow(0 6px 18px #ff783c80); pointer-events: none; }
-.asset-locked { position: relative; z-index: 1; display: flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 14px; padding: 0 12px 0 14px; border-radius: 12px; border: 1px solid #e0a05a99; background: linear-gradient(90deg, #4a2c10cc, #2a1a0acc); font-size: 14px; color: #f3d6a8; }
-.asset-locked strong { font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; color: #ffd27a; }
+.asset-card { position: relative; overflow: hidden; border-radius: 18px; border: 1px solid #e3c07a; background: radial-gradient(80% 90% at 100% 0%, #4a3310 0%, transparent 62%), radial-gradient(70% 80% at 0% 100%, #33250e 0%, transparent 65%), linear-gradient(165deg, #211a0d, #0f0c08); box-shadow: 0 0 0 1px #ffe39a1f inset, 0 0 0 3px #0b0906, 0 0 0 4px #c59b5255, 0 12px 26px #0009; }
+.asset-cols { display: grid; grid-template-columns: 1fr 1fr; }
+.asset-main { display: block; min-width: 0; padding: 14px 14px 12px 16px; }
+.asset-main + .asset-main { border-left: 1px solid #e3c07a40; }
+.asset-name { display: flex; align-items: center; gap: 6px; height: 26px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: .1em; color: #f3c969; }
+.asset-name img { width: 26px; height: 26px; filter: drop-shadow(0 2px 6px #ff783c80); }
+.asset-name.is-usdt { font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: 15px; }
+.asset-number { margin-top: 8px; font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: clamp(22px, 6.6vw, 28px); font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; color: #fff1cf; text-shadow: 0 0 18px #ffcf5c40, 0 2px 0 #0008 !important; }
+.asset-note { margin-top: 5px; font-size: 11px; color: #a59c8c; }
+.asset-note.is-on { color: #a9dba3; }
+.asset-locked { display: flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 12px 0 16px; border-top: 1px solid #e0a05a80; background: linear-gradient(90deg, #4a2c10cc, #2a1a0acc); font-size: 13px; color: #f3d6a8; }
+.asset-locked strong { font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; color: #ffd27a; }
 .asset-locked em { display: inline-flex; align-items: center; gap: 2px; margin-left: auto; font-style: normal; font-size: 13px; color: #f3c969; }
 .locked-hero { padding: 22px 20px; border-radius: 18px; border: 1px solid #e0a05a99; background: radial-gradient(90% 120% at 50% 0%, #4a2c10 0%, #17110a 70%); text-align: center; box-shadow: 0 0 0 1px #ffe39a14 inset; }
 .locked-hero-label { font-size: 13px; letter-spacing: .2em; color: #f3d6a8; }

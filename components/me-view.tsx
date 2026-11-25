@@ -5,11 +5,10 @@ import { Bell, BookOpen, ChevronRight, Headphones, Info, Megaphone, ScrollText, 
 import { useGame } from '@/lib/game-context'
 import { useProduct } from './product-provider'
 import { useProfile } from '@/lib/use-profile'
-import { TRIBE_TIERS } from '@/lib/profile-rules'
 import { PlayerIdentity } from './player-identity'
 import { ProfileInvite } from './profile-invite'
 import { AssetCard } from './asset-card'
-import { ProfileAmount, ProfileMenu } from './profile-ui'
+import { ProfileMenu } from './profile-ui'
 import { needsMyAction } from '@/lib/trade'
 
 /**
@@ -50,10 +49,6 @@ export function MeView() {
           <Link href="/me/companions" className="p-4" aria-label="我的同行者"><p className="flex items-center justify-between text-[11px] text-[var(--profile-muted)]">我的同行者<ChevronRight className="size-3.5" /></p><p className="relation-count num">{data?.companions ?? '—'}<small>人</small></p></Link>
           <Link href="/me/tribe" className="border-l border-[var(--profile-border)] p-4" aria-label="我的部族"><p className="flex items-center justify-between text-[11px] text-[var(--profile-muted)]">我的部族<ChevronRight className="size-3.5" /></p><p className="relation-count num">{data?.members ?? '—'}<small>人</small></p></Link>
         </div>
-        <Link href="/me/rewards" className="flex items-center justify-between gap-3 border-t border-[var(--profile-border)] px-4 py-3" aria-label="奖励明细">
-          <span className="text-[11px] text-[var(--profile-muted)]">累计奖励{data && data.level > 0 ? ` · ${TRIBE_TIERS[data.level - 1].name}` : ''}</span>
-          <span className="flex items-center gap-2"><ProfileAmount cents={data?.totalCents ?? 0} size="md" currency="usdt" /><ChevronRight className="size-3.5 text-[var(--gold-400)]" /></span>
-        </Link>
       </div>
       <ProfileInvite code={data?.inviteCode} />
     </section>
