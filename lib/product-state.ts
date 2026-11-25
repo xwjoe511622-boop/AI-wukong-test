@@ -6,7 +6,7 @@ import { rewardParts, tribeTier, type AccountRecord, type MemberRecord, type Rew
 
 // 换键：契约功能取消后旧存档不再载入，新存档以预置猴舍开始。
 // 正式版与体验版各用各的存档，互不影响
-export const PRODUCT_KEY = TRIAL_MODE ? 'wukong-trial-v7' : 'wukong-official-v7'
+export const PRODUCT_KEY = TRIAL_MODE ? 'wukong-trial-v8' : 'wukong-official-v8'
 export type DemoMember = MemberRecord & { generation: number }
 export type Currency = 'peach' | 'usdt'
 export const CURRENCY_LABEL: Record<Currency, string> = { peach: '蟠桃', usdt: 'USDT' }

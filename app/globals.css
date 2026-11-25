@@ -1023,6 +1023,7 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .asset-note.is-on { color: #a9dba3; }
 .asset-locked { display: flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 12px 0 16px; border-top: 1px solid #e0a05a80; background: linear-gradient(90deg, #4a2c10cc, #2a1a0acc); font-size: 13px; color: #f3d6a8; }
 .asset-locked strong { font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; color: #ffd27a; }
+.asset-locked img { width: 20px; height: 20px; margin-left: -3px; filter: drop-shadow(0 2px 5px #ff783c80); }
 .asset-locked em { display: inline-flex; align-items: center; gap: 2px; margin-left: auto; font-style: normal; font-size: 13px; color: #f3c969; }
 .locked-hero { padding: 22px 20px; border-radius: 18px; border: 1px solid #e0a05a99; background: radial-gradient(90% 120% at 50% 0%, #4a2c10 0%, #17110a 70%); text-align: center; box-shadow: 0 0 0 1px #ffe39a14 inset; }
 .locked-hero-label { font-size: 13px; letter-spacing: .2em; color: #f3d6a8; }
