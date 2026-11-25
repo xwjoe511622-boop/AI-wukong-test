@@ -4,7 +4,7 @@ import { createRequire } from 'node:module'
 process.env.NEXT_PUBLIC_WUKONG_TRIAL = '1'
 const require = createRequire(import.meta.url)
 require('../scripts/register-typescript.cjs')
-const { currentSummon, realmStatus } = require('../lib/home.ts')
+const { currentSummon, realmStatus, todayTodos } = require('../lib/home.ts')
 const { createProduct, productTransition: transition } = require('../lib/product-state.ts')
 const at = time => Date.parse(`2026-09-19T${time}:00+08:00`)
 const initial = createProduct(at('09:00'), '01234567-89ab-cdef-0123-456789abcdef')
@@ -39,4 +39,27 @@ test('仙境状态：可预约 → 预约已截止 → 召唤中 → 今日已�
   const s = reserve(initial, 'stone_spirit', '09:00')
   assert.equal(realmStatus('stone_spirit', s.entries, at('09:30')), 'reserved')
   assert.equal(realmStatus('stone_spirit', s.entries, at('11:30')), 'live-reserved')
+})
+test('今日待办：按紧急程度排序，随流程推进而变化', () => {
+  // 新用户：只有一条「预约召唤」
+  const fresh = todayTodos(initial, at('09:00'))
+  assert.deepEqual(fresh.map(t => [t.tone, t.cta]), [['action', '去预约']])
+  // 预约后：等待召唤开始，不再提示预约
+  let s = reserve(initial, 'stone_spirit', '09:00')
+  assert.deepEqual(todayTodos(s, at('09:30')).map(t => t.tone), ['wait'])
+  // 召唤周期内：可以当场召唤
+  const live = todayTodos(s, at('11:10'))
+  assert.equal(live[0].castKey, s.entries[0].key); assert.equal(live[0].cta, '召唤')
+  // 召唤成功：待打款排第一，带倒计时
+  s = transition(s, { type: 'summon-cast', key: s.entries[0].key }, at('11:10')).state
+  const pay = todayTodos(s, at('11:11'))
+  assert.equal(pay[0].tone, 'urgent'); assert.equal(pay[0].cta, '去打款'); assert.equal(pay[0].until, at('12:10')); assert.equal(pay[0].amountCents, 1000)
+  // 打款后：等乙方确认；确认入舍后：今日修炼
+  s = transition(s, { type: 'trade-pay', id: s.trades[0].id }, at('11:12')).state
+  assert.ok(todayTodos(s, at('11:13')).some(t => t.tone === 'wait' && t.title.includes('等待乙方确认')))
+  s = transition(s, { type: 'tick' }, at('11:20')).state
+  const after = todayTodos(s, at('11:20'))
+  assert.ok(after.some(t => t.id === 'train' && t.tone === 'action'))
+  assert.ok(after.some(t => t.tone === 'done' && t.title.includes('召唤成功')))
+  assert.deepEqual(after.map(t => t.tone), [...after.map(t => t.tone)].sort((a, b) => ['urgent', 'action', 'wait', 'done'].indexOf(a) - ['urgent', 'action', 'wait', 'done'].indexOf(b)))
 })

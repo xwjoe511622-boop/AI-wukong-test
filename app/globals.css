@@ -885,13 +885,41 @@
 .trade-confirm { padding: 12px; border-radius: 10px; border: 1px solid #e0a05a66; background: #2a1d0e88; }
 .nav-badge { position: absolute; top: 6%; right: 16%; z-index: 2; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #d9502e; color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #120d07, 0 0 10px #d9502e99; pointer-events: none; }
 
-/* 首页总览 */
+/* 首页：今日待办。一屏看完，克制用色：只有最要紧的一件事用金色按钮 */
 .home-page { min-height: 100dvh; background: #050506; }
-.home-body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 480px; margin: -28px auto 0; padding: 0 16px calc(150px + env(safe-area-inset-bottom)); }
-.home-card { display: block; padding: 14px; border-radius: 14px; border: 1px solid #b0904b38; background: linear-gradient(135deg,rgba(22,21,19,.94),rgba(14,15,15,.97)); color: #ece6da; }
-.home-card.is-todo { border-color: #e0a05a99; background: radial-gradient(120% 120% at 0% 0%,#4a3214,#14120e 65%); box-shadow: 0 0 0 1px #ffe39a14 inset, 0 14px 36px #0009; }
-.home-card-title { font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: .08em; color: var(--gold-200); }
-.home-label { font-size: 11px; color: #d2cbbf; }
+.home-body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 480px; margin: -34px auto 0; padding: 0 20px calc(140px + env(safe-area-inset-bottom)); }
+.home-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.home-date { min-height: 16px; font-size: 11px; letter-spacing: .28em; color: #c9a866; }
+.home-title { margin-top: 4px; font-family: var(--font-display); font-size: 28px; font-weight: 900; letter-spacing: .12em; line-height: 1.1; color: #fff2d6; text-shadow: 0 2px 18px #000c; }
+.home-count { padding-bottom: 4px; font-size: 12px; color: #a59c8c; }
+.home-count strong { margin-right: 2px; font-family: var(--font-latin); font-size: 20px; color: #ffd27a; }
+.home-sub { display: block; margin-top: 3px; font-size: 11.5px; line-height: 1.5; color: #a59c8c; }
+.home-feature { position: relative; padding: 16px; border-radius: 16px; border: 1px solid #d9b26a80; background: radial-gradient(130% 120% at 0% 0%, #3d2a10 0%, #17130d 55%, #100e0b 100%); box-shadow: 0 0 0 1px #ffe39a12 inset, 0 18px 44px #000a; }
+.home-feature.is-urgent { border-color: #e0a05aa6; }
+.home-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; letter-spacing: .2em; color: #ffd9a0; }
+.home-tag::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: #ffcf5c; box-shadow: 0 0 8px #ffcf5c; }
+.is-urgent .home-tag::before { background: #e0703f; box-shadow: 0 0 8px #e0703f; }
+.home-feature-title { margin-top: 6px; font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: .04em; color: #ffe9c2; }
+.home-amount { font-family: var(--font-latin); font-size: 24px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; color: #ffd27a; }
+/* 其余事项：一条竖线串起来的时间轴，不用卡片 */
+.home-list { position: relative; display: flex; flex-direction: column; padding-left: 4px; }
+.home-list::before { content: ''; position: absolute; left: 12px; top: 22px; bottom: 22px; width: 1px; background: linear-gradient(180deg, #c59b5200, #c59b5266 12%, #c59b5266 88%, #c59b5200); }
+.home-list li { position: relative; display: flex; align-items: center; gap: 14px; }
+.home-list li + li .home-row { border-top: 1px solid #b0904b1f; }
+.home-node { position: relative; z-index: 1; display: inline-flex; flex: none; align-items: center; justify-content: center; width: 17px; height: 17px; border-radius: 999px; border: 1px solid #c59b52; background: #0b0a08; color: #1a140b; }
+.is-action .home-node { border-color: #ffcf5c; box-shadow: 0 0 10px #ffcf5c80; }
+.is-action .home-node::after { content: ''; width: 7px; height: 7px; border-radius: 999px; background: #ffcf5c; }
+.is-urgent .home-node { border-color: #e0703f; box-shadow: 0 0 10px #e0703f99; }
+.is-urgent .home-node::after { content: ''; width: 7px; height: 7px; border-radius: 999px; background: #e0703f; }
+.is-wait .home-node { border-color: #8f8574; }
+.is-done .home-node { border-color: #8a7a52; background: #8a7a52; }
+.home-row { display: flex; flex: 1; min-width: 0; align-items: center; gap: 12px; min-height: 62px; padding: 10px 0; text-align: left; }
+.home-row-title { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14.5px; font-weight: 500; color: #efe7d8; }
+.is-wait .home-row-title { color: #cfc6b4; }
+.is-done .home-row-title { color: #8f8778; }
+.is-done .home-sub { color: #6f695f; }
+.home-cta { display: inline-flex; align-items: center; gap: 1px; font-size: 12.5px; color: #ffd27a; }
+.home-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 44px 0; text-align: center; }
 
 /* 悟空世界：按此刻状态区分仙境，顺序不变 */
 .realm-cover.is-live, .realm-cover.is-live-reserved { outline: 2px solid #ffcf5c; outline-offset: 2px; box-shadow: 0 0 36px #ffcf5c55; }
