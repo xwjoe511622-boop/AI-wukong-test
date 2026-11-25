@@ -11,8 +11,8 @@ import { TRIAL_MODE } from '@/lib/game-data'
 export default async function ProfileSectionPage({ params, searchParams }: { params: Promise<{ section: string }>; searchParams: Promise<{ filter?: string; code?: string; mode?: string }> }) {
   const { section } = await params
   const search = await searchParams
-  // 同行者与部族合成一页；/me/tribe 保留为旧链接
-  if (section === 'companions' || section === 'tribe') return <ProfileRelations />
+  // 同行者与部族在同一页，/me/tribe 直接打开部族板块
+  if (section === 'companions' || section === 'tribe') return <ProfileRelations key={section} initial={section} />
   if (section === 'rewards') return <ProfileRewardList key={search.filter ?? 'all'} initialFilter={search.filter} />
   if (section === 'encyclopedia') return <ProfileEncyclopedia />
   if (section === 'trial' && TRIAL_MODE) return <ProfileTrial />

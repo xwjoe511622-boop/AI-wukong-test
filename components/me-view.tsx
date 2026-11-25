@@ -33,14 +33,14 @@ export function MeView() {
     <Link href="/house" className="profile-surface flex items-center justify-between gap-3"><div><h2 className="font-display text-sm text-[var(--gold-100)]">我的数字生命</h2><p className="mt-2 text-xs text-[var(--profile-muted)]">当前悟空 {state?.contracts.length ?? 0}只</p></div><ChevronRight className="size-4 shrink-0 text-[var(--gold-400)]" /></Link>
     <ProfileInvite code={data?.inviteCode} />
     {error && <div role="alert" className="profile-surface text-xs"><p>{error.message}</p><ProfileButton size="small" onClick={() => mutate()}>重试连接</ProfileButton></div>}
-    <Link href="/me/companions" className="profile-surface block" aria-label="同行与部族">
-      <div className="flex items-center justify-between"><h2 className="profile-heading">同行与部族</h2><span className="profile-inline-link">查看成员<ChevronRight className="size-3" /></span></div>
+    <section className="profile-surface" aria-label="同行与部族">
+      <h2 className="profile-heading">同行与部族</h2>
       <div className="mt-3 grid grid-cols-2 gap-3">
-        <div><p className="flex items-center gap-1.5 text-[11px] text-[var(--profile-muted)]"><Users className="size-3.5 text-[var(--gold-400)]" />第一代有效同行者</p><p className="relation-count">{data?.companions ?? '—'}<small>人</small></p></div>
-        <div className="border-l border-[var(--profile-border)] pl-4"><p className="flex items-center gap-1.5 text-[11px] text-[var(--profile-muted)]"><Flag className="size-3.5 text-[var(--gold-400)]" />部族有效成员</p><p className="relation-count">{data?.members ?? '—'}<small>人</small></p></div>
+        <Link href="/me/companions" aria-label="我的同行者"><p className="flex items-center gap-1.5 text-[11px] text-[var(--profile-muted)]"><Users className="size-3.5 text-[var(--gold-400)]" />我的同行者<ChevronRight className="ml-auto size-3.5" /></p><p className="relation-count">{data?.companions ?? '—'}<small>人</small></p><p className="mt-1.5 text-[10px] text-[var(--profile-muted)]">第一代有效同行者</p></Link>
+        <Link href="/me/tribe" aria-label="我的部族" className="border-l border-[var(--profile-border)] pl-4"><p className="flex items-center gap-1.5 text-[11px] text-[var(--profile-muted)]"><Flag className="size-3.5 text-[var(--gold-400)]" />我的部族<ChevronRight className="ml-auto size-3.5" /></p><p className="relation-count">{data?.members ?? '—'}<small>人</small></p><p className="mt-1.5 text-[10px] text-[var(--profile-muted)]">部族有效成员</p></Link>
       </div>
       <p className="mt-2 border-t border-[var(--profile-border)] pt-2.5 text-[11px] text-[var(--gold-200)]">{data && data.level > 0 ? `${TRIBE_TIERS[data.level - 1].name} · 部族总盈利 ${TRIBE_TIERS[data.level - 1].rate}% 返 USDT` : '尚未达到部族Ⅰ阶'}</p>
-    </Link>
+    </section>
     <section className="profile-surface" aria-label="我的奖励">
       <ProfileHeading title="我的奖励" href="/me/rewards" action="奖励明细" />
       {data ? <><div className="mt-3 flex flex-wrap items-end justify-between gap-3"><div><p className="mb-2 text-[11px] text-[var(--profile-muted)]">累计奖励</p><ProfileAmount cents={data.totalCents} size="lg" currency="usdt" /></div><div className="pb-1 text-right"><p className="mb-2 text-[11px] text-[var(--profile-muted)]">今日奖励</p><ProfileAmount cents={data.todayCents} size="sm" signed currency="usdt" /></div></div><div className="mt-4 grid grid-cols-2 gap-3 border-t border-[var(--profile-border)] pt-3"><Link href="/me/rewards?filter=companion"><p className="mb-2 text-[11px] text-[var(--profile-muted)]">同行奖励</p><ProfileAmount cents={data.companionCents} currency="usdt" /></Link><Link href="/me/rewards?filter=tribe" className="border-l border-[var(--profile-border)] pl-4"><p className="mb-2 text-[11px] text-[var(--profile-muted)]">部族奖励</p><ProfileAmount cents={data.tribeCents} currency="usdt" /></Link></div></> : <p role="status" className="py-6 text-xs text-[var(--profile-muted)]">{error ? '奖励数据暂不可用' : '正在读取奖励…'}</p>}
