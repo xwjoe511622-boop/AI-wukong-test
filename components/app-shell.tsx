@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation'
 import { BottomNav } from './bottom-nav'
 import { SoundToggle } from './sound-toggle'
 import { useGame } from '@/lib/game-context'
-import { useDemoControls } from '@/lib/use-demo-controls'
 import { TrialRibbon } from './trial-notice'
 
 const sectionBackgrounds = {
@@ -65,8 +64,6 @@ function AtmosphereBackground({ section }: { section: string }) {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { loading, error, retry } = useGame()
   const pathname = usePathname()
-  // 在外壳里读取一次 ?demo=1 / ?demo=0，这样从任何页面（包括首页）进入都能生效
-  useDemoControls()
 
   if (pathname === '/') return (
     <div className="relative isolate min-h-dvh">

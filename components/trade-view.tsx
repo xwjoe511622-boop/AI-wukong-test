@@ -6,7 +6,6 @@ import { AlertTriangle, ShieldCheck } from 'lucide-react'
 import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS } from '@/lib/game-data'
 import { dateTime, money } from '@/lib/cultivation-preview'
 import { COUNTERPARTY_NOTE, TRADE_ROLE_LABEL, tradeTitle } from '@/lib/trade'
-import { useDemoControls } from '@/lib/use-demo-controls'
 import { useProduct } from './product-provider'
 import { SettlementFacts } from './settlement-dialog'
 import { UsdtValue } from './peach-value'
@@ -15,7 +14,6 @@ import { Countdown, TradeChip, TradeSteps } from './trade-ui'
 
 export function TradeView({ id }: { id: string }) {
   const { state, ready, now, act, notice } = useProduct()
-  const demo = useDemoControls()
   const [confirming, setConfirming] = useState(false)
   if (!ready || !state) return <p role="status" className="py-12 text-center text-sm text-[var(--profile-muted)]">正在读取交易…</p>
   const trade = state.trades.find(t => t.id === id)
@@ -80,7 +78,6 @@ export function TradeView({ id }: { id: string }) {
       <div className="mt-3 flex justify-center"><Link href="/world" className="btn-ghost-gold profile-button inline-flex items-center justify-center">返回悟空世界</Link></div>
     </section>}
 
-    {demo && ((payer && trade.status === 'awaiting_confirm') || (!payer && trade.status === 'awaiting_payment')) && <ProfileButton secondary size="large" onClick={() => act({ type: 'demo-counterparty', id: trade.id })}>演示：让对方立即{payer ? '确认到账' : '打款'}</ProfileButton>}
     <p role="status" aria-live="polite" className="min-h-4 text-center text-[11px] leading-5 text-[var(--gold-200)]">{notice}</p>
     <p className="text-center text-[10px] leading-5 text-[var(--profile-muted)]">{COUNTERPARTY_NOTE}</p>
   </div>

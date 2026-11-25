@@ -5,7 +5,6 @@ import { useProduct } from './product-provider'
 import { walletAddress, CURRENCY_LABEL, type Currency } from '@/lib/product-state'
 import { LEDGER_LABELS, profileTime } from '@/lib/profile-rules'
 import { VALID_USER_MIN_PEACH, PEACH_UNIT_TEXT, TRIAL_MODE } from '@/lib/game-data'
-import { useDemoControls } from '@/lib/use-demo-controls'
 import { ProfileAmount, ProfileButton, ProfileButtonLink, ProfileEmpty, ProfilePageHeader } from './profile-ui'
 
 const toCents = (text: string) => /^\d{1,9}(\.\d{1,2})?$/.test(text.trim()) ? Math.round(Number(text) * 100) : NaN
@@ -14,7 +13,6 @@ const toCents = (text: string) => /^\d{1,9}(\.\d{1,2})?$/.test(text.trim()) ? Ma
 export function ProfileWallet({ initialMode }: { initialMode?: string }) {
   const { state, ready, act, notice } = useProduct()
   // 模拟到账只是调试手段，普通用户看不到
-  const demo = useDemoControls()
   const [currency, setCurrency] = useState<Currency>(initialMode === 'in' ? 'usdt' : 'peach')
   const [mode, setMode] = useState<'buy' | 'out' | 'in'>(initialMode === 'buy' || initialMode === 'in' ? initialMode : 'out')
   const [confirming, setConfirming] = useState(false)
@@ -58,14 +56,14 @@ export function ProfileWallet({ initialMode }: { initialMode?: string }) {
       {mode === 'buy' ? <p className="mt-4 text-xs leading-6 text-[var(--profile-muted)]">用 USDT 余额购买蟠桃，{PEACH_UNIT_TEXT}。购买的蟠桃立即到账并显示在本页。</p> : mode === 'out' ? <>
         <label htmlFor="wallet-address" className="mb-2 mt-4 block text-xs text-[var(--profile-muted)]">接收地址</label>
         <input id="wallet-address" value={address} onChange={e => { setAddress(e.target.value); setConfirming(false) }} placeholder="0x 开头的 42 位地址" autoComplete="off" spellCheck={false} className="w-full rounded-lg border border-[var(--profile-border)] bg-[var(--profile-surface)] px-3 py-3 font-mono text-xs text-[var(--gold-100)]" />
-      </> : <p className="mt-4 text-xs leading-6 text-[var(--profile-muted)]">把上方地址发给对方即可接收，到账后余额和记录会显示在本页。{demo ? '演示控制已开启，可用下方按钮模拟一笔到账。' : ''}</p>}
-      {(mode !== 'in' || demo) && <>
-      <label htmlFor="wallet-amount" className="mb-2 mt-4 block text-xs text-[var(--profile-muted)]">{mode === 'buy' ? '购买' : mode === 'out' ? '转出' : '模拟到账'}数量 · {CURRENCY_LABEL[active]}</label>
+      </> : <p className="mt-4 text-xs leading-6 text-[var(--profile-muted)]">把上方地址发给对方即可接收，到账后余额和记录会显示在本页。</p>}
+      {mode !== 'in' && <>
+      <label htmlFor="wallet-amount" className="mb-2 mt-4 block text-xs text-[var(--profile-muted)]">{mode === 'buy' ? '购买' : '转出'}数量 · {CURRENCY_LABEL[active]}</label>
       <input id="wallet-amount" value={amount} onChange={e => { setAmount(e.target.value); setConfirming(false) }} inputMode="decimal" placeholder="0.00" className="w-full rounded-lg border border-[var(--profile-border)] bg-[var(--profile-surface)] px-3 py-3 font-latin text-sm text-[var(--gold-100)]" />
-      {mode !== 'in' && <p className="mt-2 flex items-center gap-2 text-[11px] text-[var(--profile-muted)]">{mode === 'buy' ? '可用 USDT' : '可用'} <ProfileAmount cents={available} size="sm" currency={mode === 'buy' ? 'usdt' : currency} /><button type="button" className="underline underline-offset-4" onClick={() => { setAmount((available / 100).toFixed(2)); setConfirming(false) }}>全部</button></p>}
+      {<p className="mt-2 flex items-center gap-2 text-[11px] text-[var(--profile-muted)]">{mode === 'buy' ? '可用 USDT' : '可用'} <ProfileAmount cents={available} size="sm" currency={mode === 'buy' ? 'usdt' : currency} /><button type="button" className="underline underline-offset-4" onClick={() => { setAmount((available / 100).toFixed(2)); setConfirming(false) }}>全部</button></p>}
       {mode === 'buy' && Number.isFinite(cents) && cents > 0 && <p className="mt-3 flex flex-wrap items-center gap-2 text-xs text-[var(--gold-200)]">支付 <ProfileAmount cents={cents} size="sm" currency="usdt" /> → 到账 <ProfileAmount cents={cents} size="sm" /></p>}
       {confirming && <div role="alert" className="mt-4 rounded-lg border border-[var(--gold-500)]/50 bg-black/40 p-3 text-xs leading-6 text-[var(--gold-100)]"><p className="font-display text-sm text-[var(--gold-200)]">请核对后再确认，转出后无法撤回</p><p className="mt-2 flex flex-wrap items-center gap-2">转出 <ProfileAmount cents={cents} size="sm" currency={currency} /></p><p className="mt-1 break-all font-mono text-[11px]">至 {address.trim()}</p>{belowValid && <p className="mt-2 text-[#f0c98a]">转出后蟠桃将少于 {VALID_USER_MIN_PEACH} 个，你将不再是有效用户，无法获得同行与部族奖励。</p>}</div>}
-      <div className="mt-4 flex flex-col gap-2"><ProfileButton size="large" disabled={invalid} onClick={submit}>{mode === 'buy' ? '确认购买蟠桃' : mode === 'out' ? (confirming ? '确认无误，转出' : `转出${CURRENCY_LABEL[currency]}`) : `模拟接收${CURRENCY_LABEL[currency]}`}</ProfileButton>{confirming && <ProfileButton size="large" secondary onClick={() => setConfirming(false)}>返回修改</ProfileButton>}</div>
+      <div className="mt-4 flex flex-col gap-2"><ProfileButton size="large" disabled={invalid} onClick={submit}>{mode === 'buy' ? '确认购买蟠桃' : confirming ? '确认无误，转出' : `转出${CURRENCY_LABEL[currency]}`}</ProfileButton>{confirming && <ProfileButton size="large" secondary onClick={() => setConfirming(false)}>返回修改</ProfileButton>}</div>
       </>}
       <p role="status" className="mt-3 min-h-4 text-xs leading-6 text-[var(--gold-200)]">{notice}</p>
       <p className="text-[11px] leading-6 text-[var(--profile-muted)]">当前版本尚未接入真实支付与链上转账，请勿向任何地址真实付款。</p>

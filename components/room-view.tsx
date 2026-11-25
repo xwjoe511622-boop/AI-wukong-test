@@ -10,7 +10,6 @@ import { CultivationVideo } from './cultivation-video'
 import { CultivationConfirm } from './cultivation-confirm'
 import { ContractSlip } from './contract-slip'
 import { PeachValue, PeachText } from './peach-value'
-import { SummonDemoControls } from './summon-demo-controls'
 
 export function RoomView({ stage }: { stage: Stage }) {
   const { state, now, act, message, busy } = useCultivationPreview()
@@ -63,7 +62,6 @@ export function RoomView({ stage }: { stage: Stage }) {
     <p role="status" aria-live="polite" className="min-h-4 text-center text-[11px] leading-5 text-amber-100/80"><PeachText>{message || `${room.room} · 修炼有时，传承有序。`}</PeachText></p>
 
 
-    <SummonDemoControls />
     {confirmation && <CultivationConfirm estimate={confirmation} balance={state.balance} busy={busy} title="一键完成修炼" onClose={() => setConfirmation(null)} onConfirm={() => { act({ type: 'train', ids: confirmation.items.map(i => i.id), accelerate: false, expected: confirmation.total }); setConfirmation(null) }} />}
   </div>
 }

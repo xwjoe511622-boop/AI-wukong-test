@@ -2,7 +2,6 @@ import { ALL_OPEN } from '@/lib/game-data'
 import Link from 'next/link'
 import { RealmList } from '@/components/realm-list'
 import { SummonPreview } from '@/components/summon-preview'
-import { SummonDemoControls } from '@/components/summon-demo-controls'
 import { GoldDivider, TitlePlaque } from '@/components/ornate'
 import { isStage } from '@/lib/summon-preview'
 
@@ -13,7 +12,6 @@ export default async function WorldPage({ searchParams }: { searchParams: Promis
     return <SummonPreview key={stage} stage={stage} />
   }
   return <div className="flex flex-col gap-5">
-    <SummonDemoControls />
     <div className="hud-panel rounded-xl px-3 py-3"><TitlePlaque zh="七大仙境" en="SEVEN IMMORTAL REALMS" /><p className="mt-2 text-center text-xs text-[var(--gold-200)]">选择仙境 · 发起召唤 · 每日修炼</p><GoldDivider className="mx-auto mt-3 w-40" /></div>
     <RealmList />
     <p className="hud-panel rounded-lg px-3 py-3 text-center text-[11px] leading-relaxed text-[var(--gold-200)]">每日北京时间 11:00—17:00，{ALL_OPEN ? '七' : '前六'}阶段依次召唤<br />周期前 30 分钟预约截止 · 周期内点召唤、当场出结果 · 成功后 1 小时内打款{ALL_OPEN ? '' : ' · 无极大圣未开放'}</p>

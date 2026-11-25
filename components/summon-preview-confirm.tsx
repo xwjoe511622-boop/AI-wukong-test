@@ -6,7 +6,7 @@ import { money } from '@/lib/cultivation-preview'
 import { peachWhole } from '@/lib/summon-preview'
 import { PeachValue, UsdtValue } from './peach-value'
 
-/** 确认预约：把这一轮怎么算的摆出来——修炼值、圆满加成、手续费、预计传承所得，以及蟠桃消耗 */
+/** 确认预约：把这一轮怎么算的摆出来——修炼值、修炼加成、手续费、预计传承所得，以及蟠桃消耗 */
 export function SummonPreviewConfirm({ level, cost, balance, usdt, expired, onClose, onConfirm }: { level: WukongLevel; cost: number; balance: number; usdt: number; expired: boolean; onClose: () => void; onConfirm: () => void }) {
   const ref = useRef<HTMLDialogElement>(null)
   useEffect(() => { const node = ref.current; node?.showModal(); return () => node?.close() }, [])
@@ -21,7 +21,7 @@ export function SummonPreviewConfirm({ level, cost, balance, usdt, expired, onCl
     <h3 className="confirm-heading">修炼值怎么算</h3>
     <dl className="cultivation-facts">
       <div><dt>本轮修炼值 · 成功后向传承人打款</dt><dd><UsdtValue cents={cost} size="sm" /></dd></div>
-      <div><dt>修炼增长 · {money(cost)} × {level.gainPct}%（圆满加成）</dt><dd><UsdtValue cents={growth} size="sm" sign="+" /></dd></div>
+      <div><dt>修炼增长 · {money(cost)} × {level.gainPct}%（修炼加成）</dt><dd><UsdtValue cents={growth} size="sm" sign="+" /></dd></div>
       <div><dt>手续费 · 修炼增长的 {INHERITANCE_FEE_PCT}%</dt><dd><UsdtValue cents={fee} size="sm" sign="-" /></dd></div>
       <div className="border-t border-[var(--gold-600)]/25 pt-3"><dt className="!text-[var(--gold-100)]">预计传承所得</dt><dd><UsdtValue cents={cost + growth - fee} size="lg" /></dd></div>
     </dl>

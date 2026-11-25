@@ -88,7 +88,7 @@ export interface WukongLevel {
   cycleDays: number
   /** 实际运行天数（真实时间）：体验版时间加速，统一 1 天；正式版等于 cycleDays。只用于计时，不用于显示 */
   runDays: number
-  /** 圆满加成 (%)，完整修炼周期后获得 */
+  /** 修炼加成 (%)，完整修炼周期后获得 */
   growthRate: number
   /** @deprecated 请使用 growthRate */
   gainPct: number

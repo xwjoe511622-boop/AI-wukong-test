@@ -6,24 +6,15 @@ import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { LEVEL_BY_ID, INHERITANCE_FEE_PCT, PEACH_UNIT_TEXT, PAYMENT_WINDOW_HOURS, isFreeStage, type Stage } from '@/lib/game-data'
 import { roundFor, durationText, peachText, peachWhole, rangePosition, costCents, matchAt } from '@/lib/summon-preview'
-import { money } from '@/lib/cultivation-preview'
 import { useSummonPreview } from './summon-preview-provider'
-import { SummonDemoControls } from './summon-demo-controls'
 import { SummonPreviewConfirm } from './summon-preview-confirm'
 import { SummonPreviewEntry } from './summon-preview-entry'
 import { PeachIcon } from './peach'
 import { useProduct } from './product-provider'
 import { useSound } from '@/lib/sound'
 
-/** 一只悟空按本轮修炼值算下来的预计传承所得（USDT 分） */
-export function expectedSettlement(costCentsValue: number, gainPct: number) {
-  const growth = Math.round(costCentsValue * gainPct / 100)
-  const fee = Math.round(growth * INHERITANCE_FEE_PCT / 100)
-  return { growth, fee, received: costCentsValue + growth - fee }
-}
-
 /**
- * 仙境页：先回答「承接多少、修炼多久、预计传承所得多少」，再讲流程；
+ * 仙境页：本轮修炼值、修炼天数、修炼加成、每日修炼消耗、修炼范围，然后是预约/召唤按钮和流程；
  * 页面少字：三个数、一条范围、一个按钮、一条流程线，细则收起。数值一律按正式版显示。
  */
 export function SummonPreview({ stage }: { stage: Stage }) {
@@ -41,7 +32,6 @@ export function SummonPreview({ stage }: { stage: Stage }) {
   const lockCents = Math.round(level.summonCost * 100)
   const previous = state.entries.filter(e => e.stage === stage && e.key !== round.key).slice().reverse()
   const position = rangePosition(stage)
-  const settle = expectedSettlement(cost, level.gainPct)
   const settled = !!entry && entry.status !== 'waiting'
   const steps = [
     ['预约', `${level.summonStopTime} 前`],
@@ -64,18 +54,19 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     {/* 本轮已出结果：成功待打款 / 已入舍 / 未成功 */}
     {ready && settled && <div id="summon-action" className="scroll-mt-20"><SummonPreviewEntry entry={entry} /></div>}
 
-    {/* 算账卡：只留三个数和修炼范围，怎么算的放在确认预约弹窗里 */}
+    {/* 本轮数据：修炼值、修炼天数、修炼加成、每日修炼消耗、修炼范围 */}
     <section aria-labelledby="round-title" className="hud-panel rounded-xl px-4 py-4">
       <h2 id="round-title" className="text-[11px] tracking-wider text-[var(--gold-200)]/80">第{round.number}轮 · {level.name}</h2>
       <dl className="stage-sum mt-3">
-        <div><dt>承接</dt><dd className="font-latin text-gold">{peachText(cost)}<small>USDT</small></dd><p>本轮修炼值</p></div>
-        <div><dt>修炼</dt><dd className="text-[var(--gold-100)]">{level.cycleDays}<small>天</small></dd><p className="flex items-center justify-center gap-1">{free ? '不消耗蟠桃' : <>每日 {peachWhole(level.perCycleCost)}<PeachIcon size={11} /></>}</p></div>
-        <div><dt>预计传承所得</dt><dd className="font-latin text-gold">{money(settle.received)}<small>USDT</small></dd><p>圆满加成 +{level.gainPct}%</p></div>
+        <div><dt>本轮修炼值</dt><dd className="font-latin text-gold">{peachText(cost)}<small>USDT</small></dd></div>
+        <div><dt>修炼天数</dt><dd className="text-[var(--gold-100)]">{level.cycleDays}<small>天</small></dd></div>
+        <div><dt>本轮修炼加成</dt><dd className="font-latin text-gold">+{level.gainPct}<small>%</small></dd></div>
+        <div><dt>每日修炼消耗</dt><dd className="flex items-center justify-center gap-1.5 text-[var(--gold-100)]">{free ? <span className="text-base font-normal">不消耗</span> : <>{peachWhole(level.perCycleCost)}<PeachIcon size={16} /></>}</dd></div>
       </dl>
       <div className="mt-4 border-t border-[var(--gold-600)]/25 pt-3">
-        <p className="flex items-baseline justify-between text-[11px] text-[var(--gold-200)]/80"><span>修炼范围</span><span>每圆满一轮 +{level.gainPct}%，至 {peachWhole(level.rangeMax)} 封顶</span></p>
+        <p className="flex items-baseline justify-between text-[11px] text-[var(--gold-200)]/80"><span>修炼范围</span><span>{peachWhole(level.rangeMin)} – {peachWhole(level.rangeMax)} USDT</span></p>
         <div className="stage-range mt-2" role="img" aria-label={`修炼范围 ${level.rangeMin} 到 ${level.rangeMax}，本轮修炼值 ${level.cost}`}><span style={{ width: `${Math.max(3, position * 100)}%` }} /></div>
-        <p className="mt-1.5 flex justify-between font-latin text-[10px] tabular-nums text-[var(--gold-200)]/70"><span>{peachWhole(level.rangeMin)}</span><span>{peachWhole(level.rangeMax)} USDT</span></p>
+        <p className="mt-1.5 flex justify-between text-[10px] text-[var(--gold-200)]/70"><span>起点</span><span>上限</span></p>
       </div>
       {level.notes && <ul className="mt-4 flex flex-col gap-1 rounded-lg border border-[var(--gold-600)]/40 bg-black/30 px-3 py-2 text-[11px] leading-5 text-[var(--gold-100)]">{level.notes.map(note => <li key={note}>· {note}</li>)}</ul>}
     </section>
@@ -97,7 +88,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
         <li>每个召唤周期每人预约一次。召唤失败不产生交易，可继续参与后续召唤。</li>
         <li>召唤成功后，承接人须在 {PAYMENT_WINDOW_HOURS} 小时内向系统匹配的传承人完成打款（从 USDT 余额扣除）；传承人确认到账后，悟空进入猴舍。超过 {PAYMENT_WINDOW_HOURS} 小时未打款判定逾期违约，本次召唤蟠桃充公、不予退还。</li>
         <li>修炼周期 {level.cycleDays} 天，从召唤成功时刻起算。每日修炼一次，漏修可补；全部修炼完成且周期结束后才可传承。</li>
-        <li>圆满加成 +{level.gainPct}%：修炼增长 = 修炼值 × {level.gainPct}%。传承时平台只对修炼增长收取 {INHERITANCE_FEE_PCT}% 手续费，不对修炼值收费。</li>
+        <li>修炼加成 +{level.gainPct}%：修炼增长 = 修炼值 × {level.gainPct}%。传承时平台只对修炼增长收取 {INHERITANCE_FEE_PCT}% 手续费，不对修炼值收费。</li>
       </ul>
     </details>
 
@@ -105,8 +96,6 @@ export function SummonPreview({ stage }: { stage: Stage }) {
       <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 text-sm text-[var(--gold-100)]">我的往期召唤 · {previous.length}<ChevronRight className="size-4 text-[var(--gold-400)]" aria-hidden /></summary>
       <div className="flex flex-col gap-3 px-4 pb-4">{previous.map(record => <SummonPreviewEntry key={record.key} entry={record} compact />)}</div>
     </details>}
-
-    {level.isOpen && <SummonDemoControls stage={stage} />}
 
     {confirmation && <SummonPreviewConfirm level={level} cost={cost} balance={state.balance} usdt={usdt} expired={!round.open || confirmation !== round.key} onClose={() => setConfirmation(null)} onConfirm={() => {
       const timestamp = currentTime()
@@ -135,7 +124,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
         {button}
       </div>
       <p className={`mt-1.5 flex flex-wrap items-center gap-x-1.5 text-[10.5px] ${canReserve && (shortPeach || shortUsdt) ? 'text-[#f0a58a]' : 'text-[var(--gold-200)]/70'}`}>
-        {error ? error
+        {error ? error : product.notice && !entry ? product.notice
           : entry ? <>已暂扣 {peachText(entry.paid)}<PeachIcon size={11} /> · 召唤成功扣除，失败全额退还</>
           : canReserve && shortPeach ? <>蟠桃不足：预约需暂扣 {peachText(lockCents)}，余额 {peachText(state.balance)}<PeachIcon size={11} /><Link href="/me/wallet?mode=buy" className="underline underline-offset-2">购买蟠桃</Link></>
           : canReserve && shortUsdt ? <>USDT 不足：本轮修炼值 {peachText(cost)}，余额 {peachText(usdt)}<Link href="/me/wallet?mode=in" className="underline underline-offset-2">去接收</Link></>

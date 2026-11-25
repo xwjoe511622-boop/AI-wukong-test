@@ -8,7 +8,6 @@ import { money } from '@/lib/cultivation-preview'
 import { TRIBE_TIERS, generationName } from '@/lib/profile-rules'
 import { COMPANION_REWARD, VALID_USER_MIN_PEACH } from '@/lib/game-data'
 import { useProduct } from './product-provider'
-import { RewardDemoControls } from './reward-demo-controls'
 import { ProfileAmount, ProfileButton, ProfileButtonLink, ProfileEmpty, ProfilePageHeader, ProfilePager } from './profile-ui'
 
 const GENERATIONS = [['all', '全部'], ['1', '第一代'], ['2', '第二代'], ['3', '更深层']] as const
@@ -63,7 +62,6 @@ export function ProfileRelations({ initial = 'companions' }: { initial?: Section
       <MemberDetail key={tab} section={tab} empty={!all.length} count={count} now={now} invalid={all.filter(m => m.valid === false && (tab === 'tribe' || m.generation <= 2)).length} />
     </section>
 
-    <RewardDemoControls />
     <details className="profile-surface profile-article">
       <summary className="flex cursor-pointer list-none items-center justify-between font-display text-sm text-[var(--gold-200)]">奖励规则<ChevronDown className="size-4" aria-hidden /></summary>
       <p className="mt-3">同行奖励：第一代 {COMPANION_REWARD.generation1}% · 第二代 {COMPANION_REWARD.generation2}%，返 USDT。第三代及更深的关系不产生同行奖励，但仍计入部族。</p>
