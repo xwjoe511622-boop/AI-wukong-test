@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS, RESERVATION_CUTOFF_MINUTES, cycleText } from '@/lib/game-data'
-import { durationText, roundNumber, matchAt, type Entry } from '@/lib/summon-preview'
+import { durationText, ROUND_LABEL, matchAt, type Entry } from '@/lib/summon-preview'
 import { DAY, dateTime } from '@/lib/cultivation-preview'
 import { useProduct } from './product-provider'
 import { useSound } from '@/lib/sound'
@@ -20,7 +20,7 @@ export function SummonPreviewEntry({ entry, compact = false }: { entry: Entry; c
   if (entry.status === 'success' && !compact && now < matchAt(entry) + 1800) return <section role="status" aria-label="悟空召唤仪式" className="hud-panel panel-glow flex flex-col items-center gap-4 rounded-xl px-4 py-12"><Image src="/assets/player-seal.png" alt="" width={88} height={88} className="motion-safe:animate-pulse" /><h2 className="font-display text-xl tracking-widest text-gold">灵印初醒，悟空现世</h2><p className="text-xs text-[var(--gold-200)]">正在开启本轮数字生命旅程…</p></section>
   // 召唤成功后先进入承接人与传承人交易：打款并经传承人确认到账后，悟空才进入猴舍
   if (entry.status === 'success' && trade && trade.status !== 'completed') return <section aria-label="召唤成功 · 待打款" className={`hud-panel rounded-xl p-4 text-center ${compact ? '' : 'panel-glow'}`}>
-    <p className="text-[10px] text-[var(--gold-200)]">第{roundNumber(entry.enteredAt)}轮 · {level.realm}</p>
+    <p className="text-[10px] text-[var(--gold-200)]">{ROUND_LABEL} · {level.realm}</p>
     <h2 className="mt-2 font-display text-2xl font-bold text-gold">召唤成功</h2>
     <p className="mt-2 text-sm text-[var(--gold-100)]">{trade.status === 'awaiting_payment' ? `请在 ${PAYMENT_WINDOW_HOURS} 小时内向传承人打款` : '已打款 · 等待传承人确认到账'}</p>
     <p className="mb-1 mt-4 text-xs text-[var(--gold-200)]">修炼值 · {trade.status === 'awaiting_payment' ? '待打款' : '已打款'}</p><UsdtValue cents={trade.amountCents} size="xl" />
@@ -30,7 +30,7 @@ export function SummonPreviewEntry({ entry, compact = false }: { entry: Entry; c
     <p className="mt-2 text-[11px] leading-5 text-[var(--gold-200)]/80">{trade.status === 'awaiting_payment' ? `超过 ${PAYMENT_WINDOW_HOURS} 小时未打款判定逾期违约，暂扣的蟠桃全部充公。` : `传承人确认到账后，${level.name}进入猴舍自动修炼。`}</p>
   </section>
   if (entry.status === 'success') return <section aria-label="召唤成功" className={`hud-panel rounded-xl p-4 text-center ${compact ? '' : 'panel-glow'}`}>
-    <p className="text-[10px] text-[var(--gold-200)]">第{roundNumber(entry.enteredAt)}轮 · {level.realm}</p>
+    <p className="text-[10px] text-[var(--gold-200)]">{ROUND_LABEL} · {level.realm}</p>
     <h2 className="mt-2 font-display text-2xl font-bold text-gold">召唤成功</h2>
     <p className="mt-2 text-sm text-[var(--gold-100)]">{level.name}现世 · 已进入猴舍</p>
     <p className="mt-2 inline-flex items-center gap-2 rounded-full border border-[var(--gold-600)]/40 px-3 py-1 text-[11px] text-[var(--gold-200)]">修炼值已打款 · 传承人已确认到账</p>

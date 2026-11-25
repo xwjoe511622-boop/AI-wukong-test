@@ -5,7 +5,7 @@ import { RealmCardHero } from './realm-card-hero'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { LEVEL_BY_ID, INHERITANCE_FEE_PCT, PEACH_UNIT_TEXT, PAYMENT_WINDOW_HOURS, isFreeStage, type Stage } from '@/lib/game-data'
-import { roundFor, durationText, peachText, peachWhole, rangePosition, costCents, matchAt, lockCents as lockOf } from '@/lib/summon-preview'
+import { roundFor, durationText, peachText, peachWhole, rangePosition, costCents, matchAt, lockCents as lockOf, ROUND_LABEL } from '@/lib/summon-preview'
 import { useSummonPreview } from './summon-preview-provider'
 import { SummonPreviewConfirm } from './summon-preview-confirm'
 import { SummonPreviewEntry } from './summon-preview-entry'
@@ -54,7 +54,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
 
     {/* 本轮数据：修炼值、修炼天数、修炼加成、每日修炼消耗、修炼范围 */}
     <section aria-labelledby="round-title" className="hud-panel rounded-xl px-4 py-4">
-      <h2 id="round-title" className="text-[11px] tracking-wider text-[var(--gold-200)]/80">第{round.number}轮 · {level.name}</h2>
+      <h2 id="round-title" className="text-[11px] tracking-wider text-[var(--gold-200)]/80">{ROUND_LABEL} · {level.name}</h2>
       <dl className="stage-sum mt-3">
         <div><dt>本轮修炼值</dt><dd className="font-latin text-gold">{peachText(cost)}<span className="unit">USDT</span></dd></div>
         <div><dt>修炼天数</dt><dd className="text-[var(--gold-100)]">{level.cycleDays}<small>天</small></dd></div>
@@ -62,7 +62,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
         <div><dt>每日修炼消耗</dt><dd className="flex items-center justify-center gap-1.5 text-[var(--gold-100)]">{free ? <span className="text-base font-normal">不消耗</span> : <>{peachWhole(level.perCycleCost)}<PeachIcon size={16} /></>}</dd></div>
       </dl>
       <div className="mt-4 border-t border-[var(--gold-600)]/25 pt-3">
-        <p className="flex items-baseline justify-between text-[11px] text-[var(--gold-200)]/80"><span>修炼范围</span><span>{peachWhole(level.rangeMin)} – {peachWhole(level.rangeMax)} USDT</span></p>
+        <p className="flex items-baseline justify-between text-[11px] text-[var(--gold-200)]/80"><span>修炼范围</span><span>{peachWhole(level.rangeMin)} – {peachWhole(level.rangeMax)}<span className="unit">USDT</span></span></p>
         <div className="stage-range mt-2" role="img" aria-label={`修炼范围 ${level.rangeMin} 到 ${level.rangeMax}，本轮修炼值 ${level.cost}`}><span style={{ width: `${Math.max(3, position * 100)}%` }} /></div>
         <p className="mt-1.5 flex justify-between text-[10px] text-[var(--gold-200)]/70"><span>起点</span><span>上限</span></p>
       </div>

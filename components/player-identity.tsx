@@ -21,10 +21,10 @@ export function PlayerIdentity({ playerId, settingsHref, avatar }: { playerId?: 
 
   return (
     <div className="pt-[env(safe-area-inset-top)]">
-      <header className="flex min-h-16 items-center gap-3 pr-11">
-        {settingsHref ? <Link href={settingsHref} aria-label="设置头像" className="shrink-0"><Avatar src={avatar} size={60} /></Link> : <Avatar src={avatar} size={60} />}
+      <header className="flex min-h-16 items-center gap-2.5 pr-11">
+        {settingsHref ? <Link href={settingsHref} aria-label="设置头像" className="shrink-0"><Avatar src={avatar} size={52} /></Link> : <Avatar src={avatar} size={60} />}
         <div className="min-w-0 flex-1">
-          <h2 className="font-display text-lg font-bold tracking-wider text-gold">悟空召唤者</h2>
+          <h2 className="whitespace-nowrap font-display text-lg font-bold tracking-wide text-gold">悟空召唤者</h2>
           <div className="flex items-center gap-1 text-xs text-[var(--gold-200)]">
             <span className="truncate" title={playerId ?? undefined}>UID：{playerId ? `${playerId.slice(0, 8)}…` : '读取中'}</span>
             <button type="button" onClick={copyUid} disabled={!playerId} aria-label="复制完整 UID" className={settingsHref ? 'shrink-0 px-1 text-xs text-[var(--gold-300)] underline underline-offset-4 disabled:opacity-40' : 'flex size-9 shrink-0 items-center justify-center rounded-md hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-amber-300 disabled:opacity-40'}>{settingsHref ? '复制' : <Copy className="size-3.5" />}</button>

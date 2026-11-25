@@ -25,6 +25,8 @@ export function beijingDate(now: number) { return new Date(now + 8 * 3600000).to
 const DAY_MS = 86_400_000
 // 轮次从 2026-09-29（北京时间）起算，第一轮为该日；七境统一同轮
 const ROUND_EPOCH = Date.UTC(2026, 8, 29) - 8 * 3600000
+/** 页面上显示的轮次名：现阶段统一为第一轮 */
+export const ROUND_LABEL = '第一轮'
 export function roundNumber(now: number) { return Math.max(1, Math.floor((now - ROUND_EPOCH) / DAY_MS) + 1) }
 /**
  * 没有接入真实撮合时，用场次 key 确定性地模拟「别的玩家在周期开始后 1–9 分钟点下召唤」，

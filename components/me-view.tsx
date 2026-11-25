@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeftRight, Bell, BookOpen, ChevronRight, Headphones, Info, Megaphone, Plus, ScrollText, Settings, ShoppingBag, Wallet, Award, History } from 'lucide-react'
+import { Bell, BookOpen, ChevronRight, Headphones, Info, Megaphone, ScrollText, Settings, Wallet, Award, History } from 'lucide-react'
 import { useGame } from '@/lib/game-context'
 import { useProduct } from './product-provider'
 import { useProfile } from '@/lib/use-profile'
@@ -30,9 +30,9 @@ export function MeView() {
       <div className="mb-2 flex items-center justify-between"><h2 id="me-assets" className="profile-heading">我的资产</h2><Link href="/me/ledger" className="profile-inline-link">资产明细<ChevronRight className="size-3" /></Link></div>
       <Link href="/me/wallet" aria-label="我的资产详情" className="block"><AssetCard /></Link>
       <div className="quick-actions mt-3">
-        <Link href="/me/wallet?mode=deposit"><Plus className="size-4" aria-hidden />充值</Link>
-        <Link href="/me/wallet?mode=transfer"><ArrowLeftRight className="size-4" aria-hidden />转账</Link>
-        <Link href="/me/wallet?mode=buy" className="is-primary"><ShoppingBag className="size-4" aria-hidden />购买蟠桃</Link>
+        <Link href="/me/wallet?mode=deposit" className="btn-gold ornate-short">充值</Link>
+        <Link href="/me/wallet?mode=transfer" className="btn-gold ornate-short">转账</Link>
+        <Link href="/me/wallet?mode=buy" className="btn-gold ornate-short">购买蟠桃</Link>
       </div>
     </section>
 

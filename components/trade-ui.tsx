@@ -47,7 +47,7 @@ export function TradeRow({ trade, now }: { trade: Trade; now: number }) {
       <p className="mt-1.5 truncate font-display text-sm text-[var(--gold-100)]">{tradeTitle(trade)}</p>
       <p className="mt-1 text-[11px] text-[var(--profile-muted)]">{ticking ? <>{trade.role === 'payer' ? '打款剩余' : '承接人打款剩余'} <Countdown ms={trade.deadline - now} /></> : dateTime(trade.confirmedAt ?? trade.overdueAt ?? trade.paidAt ?? trade.matchedAt)}</p>
     </div>
-    <div className="shrink-0 text-right"><p className="font-latin text-base font-bold tabular-nums text-gold">{trade.role === 'payer' ? '−' : '+'}{money(trade.amountCents)}</p><p className="text-[10px] text-[var(--profile-muted)]">USDT</p></div>
+    <div className="shrink-0 text-right"><p className="font-latin text-base font-bold tabular-nums text-gold">{trade.role === 'payer' ? '−' : '+'}{money(trade.amountCents)}</p><p className="unit !ml-0 !text-[11px]">USDT</p></div>
     <ChevronRight className="size-4 shrink-0 text-[var(--gold-400)]" />
   </Link></li>
 }

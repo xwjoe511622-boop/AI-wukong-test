@@ -3,7 +3,7 @@
 import { RealmCoverArt } from './realm-cover-art'
 import Link from 'next/link'
 import { LEVELS, starText, cycleText } from '@/lib/game-data'
-import { roundFor, rangeText, durationParts, peachWhole } from '@/lib/summon-preview'
+import { roundFor, rangeText, durationParts, peachWhole, ROUND_LABEL } from '@/lib/summon-preview'
 import { useSummonPreview } from './summon-preview-provider'
 import { REALM_STATUS_LABEL, realmStatus } from '@/lib/home'
 
@@ -29,7 +29,7 @@ export function RealmList() {
         <div className="flex items-end justify-between gap-3 rounded-lg border border-[var(--gold-600)]/40 bg-black/30 px-3 py-2">
           <div>
             <p className="text-[10px] text-[var(--gold-200)]/70">当前轮次</p>
-            <p className="mt-1 font-display text-base font-bold leading-none tracking-wider text-[var(--gold-100)]">第{round.number}轮</p>
+            <p className="mt-1 font-display text-base font-bold leading-none tracking-wider text-[var(--gold-100)]">{ROUND_LABEL}</p>
           </div>
           <div className="text-right">
             <p className="text-[10px] text-[var(--gold-200)]/70">本轮修炼值</p>
@@ -46,7 +46,7 @@ export function RealmList() {
         <div className="gold-line h-px w-full opacity-60" />
         {level.isOpen ? <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-[10px] text-[var(--gold-200)]/70">{status === 'live-reserved' ? '已预约 · 现在可以召唤 · 距本轮结束' : status === 'reserved' ? '已预约 · 距召唤开始' : !ready || round.open ? '距本轮预约截止' : round.ended ? '本轮已结束 · 距下一轮开放预约' : round.matching ? '召唤中 · 未预约本轮 · 距本轮结束' : '预约已截止 · 距召唤开始'}</p>
+            <p className="text-[10px] text-[var(--gold-200)]/70">{status === 'live-reserved' ? '已预约 · 现在可以召唤 · 距本轮结束' : status === 'reserved' ? '已预约 · 距召唤开始' : !ready || round.open ? '距本轮预约截止' : round.ended ? '已结束 · 距下一轮预约' : round.matching ? '召唤中 · 未预约本轮 · 距本轮结束' : '预约已截止 · 距召唤开始'}</p>
             <p className="mt-0.5 font-latin text-base font-bold leading-none tabular-nums text-[var(--gold-100)]" aria-live="off">{h} : {m} : {s}</p>
           </div>
           <Link href={`/world?stage=${level.id}`} className="btn-gold ornate-short inline-flex w-36 shrink-0 items-center justify-center whitespace-nowrap text-[11px]">{status === 'live-reserved' ? '去召唤' : status === 'open' ? '预约召唤' : `进入${level.realm}`}</Link>

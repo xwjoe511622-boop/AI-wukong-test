@@ -21,7 +21,7 @@ export function UsdtValue({ cents, size = 'md', sign, className, muted }: { cent
   const [font] = SIZES[size]
   return (
     <span className={cn('num inline-flex items-baseline whitespace-nowrap font-bold', muted ? 'text-stone-200' : 'text-gold', className)} style={{ fontSize: font }}>
-      {sign}{money(cents)}<span className="unit" style={{ fontSize: Math.max(9.5, Math.round(font * 0.52)) }}>USDT</span>
+      {sign}{money(cents)}<span className="unit">USDT</span>
     </span>
   )
 }
