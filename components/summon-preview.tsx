@@ -24,7 +24,7 @@ export function expectedSettlement(costCentsValue: number, gainPct: number) {
 
 /**
  * 仙境页：先回答「承接多少、修炼多久、预计传承所得多少」，再讲流程；
- * 操作按钮固定在屏幕底部，其余细则收起。页面数值一律按正式版显示。
+ * 页面少字：三个数、一条范围、一个按钮、一条流程线，细则收起。数值一律按正式版显示。
  */
 export function SummonPreview({ stage }: { stage: Stage }) {
   const { state, now, ready, act, currentTime } = useSummonPreview()
@@ -51,7 +51,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     ['传承', '圆满后收款'],
   ]
 
-  return <div className="flex flex-col gap-4 pb-24">
+  return <div className="stage-page flex flex-col gap-4">
     {/* 返回条固定在最上面，往下翻也一直在；和下面的立绘之间不留空隙。右侧留给声音按钮 */}
     <header className="stage-bar">
       <Link href="/world" className="flex min-h-11 items-center text-xs text-[var(--gold-200)]">← 返回</Link>
@@ -64,7 +64,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     {/* 本轮已出结果：成功待打款 / 已入舍 / 未成功 */}
     {ready && settled && <div id="summon-action" className="scroll-mt-20"><SummonPreviewEntry entry={entry} /></div>}
 
-    {/* 算账卡：承接多少、修炼多久、预计传承所得 */}
+    {/* 算账卡：只留三个数和修炼范围，怎么算的放在确认预约弹窗里 */}
     <section aria-labelledby="round-title" className="hud-panel rounded-xl px-4 py-4">
       <h2 id="round-title" className="text-[11px] tracking-wider text-[var(--gold-200)]/80">第{round.number}轮 · {level.name}</h2>
       <dl className="stage-sum mt-3">
@@ -72,16 +72,16 @@ export function SummonPreview({ stage }: { stage: Stage }) {
         <div><dt>修炼</dt><dd className="text-[var(--gold-100)]">{level.cycleDays}<small>天</small></dd><p className="flex items-center justify-center gap-1">{free ? '不消耗蟠桃' : <>每日 {peachWhole(level.perCycleCost)}<PeachIcon size={11} /></>}</p></div>
         <div><dt>预计传承所得</dt><dd className="font-latin text-gold">{money(settle.received)}<small>USDT</small></dd><p>圆满加成 +{level.gainPct}%</p></div>
       </dl>
-      <p className="mt-3 border-t border-[var(--gold-600)]/25 pt-3 text-[11px] leading-5 text-[var(--gold-200)]/80">召唤成功后，把修炼值打给传承人，悟空进入猴舍。修炼 {level.cycleDays} 天圆满后传承给下一位承接人，由对方把修炼值连同修炼增长打给你。传承所得为预计值，以实际匹配和到账为准。</p>
-
-      <div className="mt-4">
-        <p className="flex items-baseline justify-between text-[11px] text-[var(--gold-200)]/80"><span>修炼范围</span><span className="font-latin tabular-nums text-[var(--gold-100)]">{peachWhole(level.rangeMin)} – {peachWhole(level.rangeMax)} USDT</span></p>
+      <div className="mt-4 border-t border-[var(--gold-600)]/25 pt-3">
+        <p className="flex items-baseline justify-between text-[11px] text-[var(--gold-200)]/80"><span>修炼范围</span><span>每圆满一轮 +{level.gainPct}%，至 {peachWhole(level.rangeMax)} 封顶</span></p>
         <div className="stage-range mt-2" role="img" aria-label={`修炼范围 ${level.rangeMin} 到 ${level.rangeMax}，本轮修炼值 ${level.cost}`}><span style={{ width: `${Math.max(3, position * 100)}%` }} /></div>
-        <p className="mt-1.5 flex justify-between text-[10px] text-[var(--gold-200)]/60"><span>起点 {peachWhole(level.rangeMin)}</span><span className="text-[var(--gold-100)]">本轮修炼值 {peachWhole(level.cost)}</span><span>上限 {peachWhole(level.rangeMax)}</span></p>
-        <p className="mt-2 text-[11px] leading-5 text-[var(--gold-200)]/80">每修炼圆满一轮，修炼值上涨 {level.gainPct}%，涨到 {peachWhole(level.rangeMax)} 即达上限。</p>
+        <p className="mt-1.5 flex justify-between font-latin text-[10px] tabular-nums text-[var(--gold-200)]/70"><span>{peachWhole(level.rangeMin)}</span><span>{peachWhole(level.rangeMax)} USDT</span></p>
       </div>
       {level.notes && <ul className="mt-4 flex flex-col gap-1 rounded-lg border border-[var(--gold-600)]/40 bg-black/30 px-3 py-2 text-[11px] leading-5 text-[var(--gold-100)]">{level.notes.map(note => <li key={note}>· {note}</li>)}</ul>}
     </section>
+
+    {/* 操作区：紧跟在算账卡下面，不固定在屏幕底部，不挡导航栏 */}
+    {!settled && <ActionBar />}
 
     {/* 流程线：和首页五行待办是同一套步骤 */}
     <section aria-label="流程" className="hud-panel rounded-xl px-3 py-4">
@@ -108,9 +108,6 @@ export function SummonPreview({ stage }: { stage: Stage }) {
 
     {level.isOpen && <SummonDemoControls stage={stage} />}
 
-    {/* 底部固定操作条：不管翻到哪里，该点的按钮都在 */}
-    {!settled && <ActionBar />}
-
     {confirmation && <SummonPreviewConfirm level={level} cost={cost} balance={state.balance} usdt={usdt} expired={!round.open || confirmation !== round.key} onClose={() => setConfirmation(null)} onConfirm={() => {
       const timestamp = currentTime()
       if (roundFor(stage, timestamp).key !== confirmation) setError('轮次已变更，请重新确认本轮。')
@@ -132,7 +129,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     else if (round.ended) { label = '本轮已结束 · 距下一轮开放预约'; until = round.nextOpen; button = <button type="button" className="btn-gold stage-cta" disabled>已结束</button> }
     else { label = round.matching ? '召唤进行中 · 未预约本轮' : '预约已截止 · 未预约不能召唤'; until = round.matching ? round.windowEnd : round.deadline; button = <button type="button" className="btn-gold stage-cta" disabled>未预约</button> }
     const canReserve = level.isOpen && !entry && round.open
-    return <div id="summon-action" className="stage-action" role="region" aria-label="召唤操作">
+    return <section id="summon-action" className="stage-action scroll-mt-20" aria-label="召唤操作">
       <div className="flex items-center gap-3">
         <div className="min-w-0 flex-1"><p className="truncate text-[10.5px] text-[var(--gold-200)]/80">{label}</p><p className="mt-0.5 font-latin text-xl font-bold leading-none tabular-nums text-[var(--gold-100)]">{ready && until !== null ? durationText(Math.max(0, until - now)) : '--:--:--'}</p></div>
         {button}
@@ -145,6 +142,6 @@ export function SummonPreview({ stage }: { stage: Stage }) {
           : canReserve ? <>{free ? '本阶段不消耗蟠桃' : <>预约暂扣 {peachText(lockCents)}<PeachIcon size={11} /></>} · 余额 {peachText(state.balance)}<PeachIcon size={11} /></>
           : '可继续预约其他仙境'}
       </p>
-    </div>
+    </section>
   }
 }

@@ -970,7 +970,11 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .stage-bar + div .realm-hero { border-radius: 0 0 14px 14px; }
 
 /* 仙境页 */
-.stage-hero .realm-hero { --stage-h: clamp(250px, 42svh, 400px); }
+/* 整页用纯深色底，盖住全局的仙境背景图：背景不抢立绘 */
+.stage-page { position: relative; margin: -16px -16px 0; padding: 16px 16px 8px; background: #0a0907; min-height: 100dvh; }
+/* 立绘后面的仙境图本身也带人物和文字：虚化、压暗，只留氛围 */
+.stage-hero .realm-hero-scenery img { filter: blur(9px) brightness(.42) saturate(.75); transform: scale(1.12); }
+.stage-page .hud-panel { background: linear-gradient(180deg, #17140f, #100e0b); }
 .stage-sum { display: grid; grid-template-columns: 1fr .8fr 1.15fr; text-align: center; }
 .stage-sum > div + div { border-left: 1px solid #b0904b38; }
 .stage-sum dt { font-size: 10.5px; letter-spacing: .12em; color: #c9a866; }
@@ -985,6 +989,6 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .stage-step-dot { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 999px; border: 1px solid #c59b52; font-family: var(--font-latin); font-size: 11px; color: #e9cf9f; background: #100e0b; }
 .stage-steps strong { font-size: 12.5px; font-weight: 600; color: #f3e6c8; }
 .stage-steps em { font-style: normal; font-size: 9.5px; line-height: 1.35; color: #a59c8c; }
-.stage-action { position: fixed; z-index: 35; left: 0; right: 0; bottom: calc(100px + env(safe-area-inset-bottom)); width: calc(100% - 24px); max-width: 456px; margin: 0 auto; padding: 10px 12px 9px 16px; border-radius: 16px; border: 1px solid #d9b26a99; background: rgb(16 13 9 / 94%); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: 0 0 0 1px #ffe39a12 inset, 0 14px 36px #000c; }
+.stage-action { padding: 12px 12px 10px 16px; border-radius: 16px; border: 1px solid #d9b26a99; background: radial-gradient(130% 120% at 0% 0%, #3d2a10 0%, #17130d 55%, #100e0b 100%); box-shadow: 0 0 0 1px #ffe39a12 inset; }
 .stage-cta { flex: none; min-width: 148px; font-size: 14px; }
 .confirm-heading { margin: 18px 0 8px; padding-bottom: 6px; border-bottom: 1px solid #b0904b38; font-size: 11px; letter-spacing: .2em; color: #c9a866; }
