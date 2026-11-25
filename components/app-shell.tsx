@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation'
 import { BottomNav } from './bottom-nav'
-import { SoundToggle } from './sound-toggle'
 import { useGame } from '@/lib/game-context'
 import { TrialRibbon } from './trial-notice'
 
@@ -68,7 +67,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (pathname === '/') return (
     <div className="relative isolate min-h-dvh">
       <TrialRibbon />
-      <SoundToggle />
       <main>{children}</main>
       <BottomNav />
     </div>
@@ -78,7 +76,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative isolate min-h-dvh">
       <TrialRibbon />
-      <SoundToggle />
       <AtmosphereBackground section={pathname.split('/')[1]} />
       <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col">
         <main className="flex-1 px-4 pb-40 pt-4">

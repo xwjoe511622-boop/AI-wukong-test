@@ -42,7 +42,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
   ]
 
   return <div className="stage-page flex flex-col gap-4">
-    {/* 返回条固定在最上面，往下翻也一直在；和下面的立绘之间不留空隙。右侧留给声音按钮 */}
+    {/* 返回条固定在最上面，往下翻也一直在；和下面的立绘之间不留空隙 */}
     <header className="stage-bar">
       <Link href="/world" className="flex min-h-11 items-center text-xs text-[var(--gold-200)]">← 返回</Link>
       <h1 className="font-display text-base tracking-wider text-gold">{level.realm}</h1>

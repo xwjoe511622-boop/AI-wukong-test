@@ -49,7 +49,7 @@ export function RealmList() {
             <p className="text-[10px] text-[var(--gold-200)]/70">{status === 'live-reserved' ? '已预约 · 现在可以召唤 · 距本轮结束' : status === 'reserved' ? '已预约 · 距召唤开始' : !ready || round.open ? '距本轮预约截止' : round.ended ? '本轮已结束 · 距下一轮开放预约' : round.matching ? '召唤中 · 未预约本轮 · 距本轮结束' : '预约已截止 · 距召唤开始'}</p>
             <p className="mt-0.5 font-latin text-base font-bold leading-none tabular-nums text-[var(--gold-100)]" aria-live="off">{h} : {m} : {s}</p>
           </div>
-          <Link href={`/world?stage=${level.id}${status === 'live-reserved' || status === 'open' ? '#summon-action' : ''}`} className="btn-gold ornate-short inline-flex w-36 shrink-0 items-center justify-center whitespace-nowrap text-[11px]">{status === 'live-reserved' ? '去召唤' : status === 'open' ? '预约召唤' : `进入${level.realm}`}</Link>
+          <Link href={`/world?stage=${level.id}`} className="btn-gold ornate-short inline-flex w-36 shrink-0 items-center justify-center whitespace-nowrap text-[11px]">{status === 'live-reserved' ? '去召唤' : status === 'open' ? '预约召唤' : `进入${level.realm}`}</Link>
         </div> : <div className="flex items-center justify-between gap-3">
           <p className="text-[11px] leading-5 text-[var(--gold-200)]/80">该阶段尚未开放召唤 · 静待天时</p>
           <Link href={`/world?stage=${level.id}`} className="btn-ghost-gold inline-flex w-36 shrink-0 items-center justify-center whitespace-nowrap text-[11px]">查看{level.realm}</Link>

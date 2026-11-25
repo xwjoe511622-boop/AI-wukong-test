@@ -28,7 +28,7 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
       const raw = localStorage.getItem(STORE_KEY)
       if (raw) {
         const p = JSON.parse(raw) as { muted?: boolean; volume?: number }
-        if (typeof p.muted === 'boolean') { setMuted(p.muted); engine.setMuted(p.muted) }
+        // 声音默认开启，页面上不再提供静音按钮，所以不读回以前存下的静音状态
         if (typeof p.volume === 'number') { setVolumeState(p.volume); engine.setVolume(p.volume) }
       }
     } catch {}
