@@ -7,9 +7,10 @@ import { ChevronRight } from 'lucide-react'
 import { LEVEL_BY_ID, INHERITANCE_FEE_PCT, PEACH_UNIT_TEXT, PAYMENT_WINDOW_HOURS, isFreeStage, type Stage } from '@/lib/game-data'
 import { roundFor, durationText, peachText, peachWhole, rangePosition, costCents, matchAt, lockCents as lockOf, ROUND_LABEL } from '@/lib/summon-preview'
 import { useSummonPreview } from './summon-preview-provider'
-import { SummonPreviewConfirm } from './summon-preview-confirm'
+import { SummonPreviewConfirm, SummonReserved } from './summon-preview-confirm'
 import { SummonPreviewEntry } from './summon-preview-entry'
 import { PeachIcon } from './peach'
+import { PeachValue } from './peach-value'
 import { PageBar } from './profile-ui'
 import { useProduct } from './product-provider'
 import { useSound } from '@/lib/sound'
@@ -24,6 +25,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
   const { play } = useSound()
   const usdt = product.state?.usdt ?? 0
   const [confirmation, setConfirmation] = useState<string | null>(null)
+  const [reserved, setReserved] = useState<string | null>(null)
   const [error, setError] = useState('')
   const level = LEVEL_BY_ID[stage]
   const free = isFreeStage(level)
@@ -98,9 +100,10 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     {confirmation && <SummonPreviewConfirm level={level} cost={cost} balance={state.balance} usdt={usdt} expired={!round.open || confirmation !== round.key} onClose={() => setConfirmation(null)} onConfirm={() => {
       const timestamp = currentTime()
       if (roundFor(stage, timestamp).key !== confirmation) setError('轮次已变更，请重新确认本轮。')
-      else act({ type: 'join', stage, now: timestamp })
+      else { act({ type: 'join', stage, now: timestamp }); setReserved(confirmation) }
       setConfirmation(null)
     }} />}
+    {reserved && entry?.key === reserved && entry.status === 'waiting' && <SummonReserved level={level} paid={entry.paid} onClose={() => setReserved(null)} />}
   </div>
 
   function ActionBar() {
@@ -123,12 +126,13 @@ export function SummonPreview({ stage }: { stage: Stage }) {
       </div>
       <p className={`mt-1.5 flex flex-wrap items-center gap-x-1.5 text-[10.5px] ${canReserve && (shortPeach || shortUsdt) ? 'text-[#f0a58a]' : 'text-[var(--gold-200)]/70'}`}>
         {error ? error : product.notice && !entry ? product.notice
-          : entry ? <>已暂扣 {peachText(entry.paid)}<PeachIcon size={11} /> · 进猴舍时扣除，召唤失败全额退还</>
+          : entry ? null
           : canReserve && shortPeach ? <>蟠桃不足：预约需暂扣 {peachText(lockCents)}（召唤 + 修炼），余额 {peachText(state.balance)}<PeachIcon size={11} /><Link href="/me/wallet?mode=buy" className="underline underline-offset-2">购买蟠桃</Link></>
-          : canReserve && shortUsdt ? <>USDT 不足：本轮修炼值 {peachText(cost)}，余额 {peachText(usdt)}<Link href="/me/wallet?mode=in" className="underline underline-offset-2">去接收</Link></>
+          : canReserve && shortUsdt ? <>USDT 不足：本轮修炼值 {peachText(cost)}，余额 {peachText(usdt)}<Link href="/me/wallet?mode=deposit" className="underline underline-offset-2">去充值</Link></>
           : canReserve ? <>{free ? '本阶段不消耗蟠桃' : <>预约暂扣 {peachText(lockCents)}<PeachIcon size={11} />（召唤 {peachWhole(level.summonCost)} + 修炼 {peachWhole(level.perCycleCost * level.cycleDays)}）</>} · 余额 {peachText(state.balance)}<PeachIcon size={11} /></>
           : '可继续预约其他仙境'}
       </p>
+      {entry && entry.paid > 0 && <Link href="/me/locked" className="stage-locked">已暂扣<PeachValue cents={entry.paid} size="md" /><em>明细<ChevronRight className="size-3.5" aria-hidden /></em></Link>}
     </section>
   }
 }

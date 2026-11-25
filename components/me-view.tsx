@@ -28,7 +28,7 @@ export function MeView() {
     {/* 资产 */}
     <section aria-labelledby="me-assets">
       <div className="mb-2 flex items-center justify-between"><h2 id="me-assets" className="profile-heading">我的资产</h2><Link href="/me/ledger" className="profile-inline-link">资产明细<ChevronRight className="size-3" /></Link></div>
-      <Link href="/me/wallet" aria-label="我的资产详情" className="block"><AssetCard /></Link>
+      <AssetCard />
       <div className="quick-actions mt-3">
         <Link href="/me/wallet?mode=deposit" className="btn-gold ornate-short">充值</Link>
         <Link href="/me/wallet?mode=transfer" className="btn-gold ornate-short">转账</Link>
