@@ -12,9 +12,14 @@ export type Currency = 'peach' | 'usdt'
 export const CURRENCY_LABEL: Record<Currency, string> = { peach: '蟠桃', usdt: 'USDT' }
 /** 个人地址：由玩家 ID 派生的演示地址，用于接收蟠桃与 USDT */
 export const walletAddress = (playerId: string) => { const hex = playerId.replace(/[^0-9a-f]/gi, '').toLowerCase() || '0'; return `0x${hex.repeat(Math.ceil(40 / hex.length)).slice(0, 40)}` }
+/** 头像只接受缩小后的图片 data URL，限制大小以免撑爆本地存档 */
+export const AVATAR_MAX_CHARS = 200_000
+export const isAvatar = (value: unknown): value is string => typeof value === 'string' && /^data:image\/(png|jpeg|webp);base64,/.test(value) && value.length <= AVATAR_MAX_CHARS
 export const isWalletAddress = (value: string) => /^0x[0-9a-fA-F]{40}$/.test(value)
 export type ProductState = {
   version: 6; playerId: string; inviteCode: string; inviter?: string;
+  /** 自己设置的头像（缩小后的图片 data URL）；未设置时显示默认图标 */
+  avatar?: string;
   /** balance = 蟠桃（分）；usdt = USDT 余额（分） */
   balance: number; usdt: number; entries: Entry[]; offset: number; demoOutcome: 'success' | 'refunded';
   contracts: ReturnType<typeof createPreview>['contracts']; history: ReturnType<typeof createPreview>['history'];
@@ -28,6 +33,8 @@ export type ProductAction =
   | { type: 'summon-cast'; key: string }
   | { type: 'cultivate'; action: CultivationAction }
   | { type: 'invite'; code: string }
+  /** 设置头像；传 null 恢复默认图标 */
+  | { type: 'set-avatar'; dataUrl: string | null }
   | { type: 'tick' }
   | { type: 'demo-clock'; offset: number }
   | { type: 'demo-outcome'; result: 'success' | 'refunded' }
@@ -230,6 +237,11 @@ export function productTransition(state: ProductState, action: ProductAction, no
     if (!c || c.completed !== RULES[c.stage].days || now < maturedAt(c) || state.trades.some(t => t.contractId === c.id)) return { state, message: '这只悟空当前不在等待匹配。' }
     return { state: matchReceiver(state, c, now), message: `仅演示：${RULES[c.stage].name}已匹配到甲方，等待对方打款。` }
   }
+  if (action.type === 'set-avatar') {
+    if (action.dataUrl === null) { const { avatar: _removed, ...rest } = state; return { state: rest, message: '已恢复默认头像。' } }
+    if (!isAvatar(action.dataUrl)) return { state, message: '头像图片无效或过大，请换一张。' }
+    return { state: { ...state, avatar: action.dataUrl }, message: '头像已更新。' }
+  }
   if (action.type === 'invite') {
     const code = action.code.trim().toUpperCase()
     if (!/^WK[A-F0-9]{16}$/.test(code)) return { state, message: '请输入有效的18位邀请码。' }
@@ -301,5 +313,6 @@ export function parseProduct(raw: string): ProductState {
   if (!Array.isArray(data.rewards) || !data.rewards.every((r: RewardRecord) => typeof r.id === 'string' && ['companion', 'tribe'].includes(r.rewardType) && Number.isSafeInteger(r.amountCents) && r.amountCents > 0 && Number.isSafeInteger(r.sourceProfitCents) && Number.isFinite(r.rewardRate) && Number.isFinite(Date.parse(r.createdAt)))) throw new Error('奖励格式无效')
   if (!Array.isArray(data.demoSettlements) || !data.demoSettlements.every((id: unknown) => typeof id === 'string')) throw new Error('结算格式无效')
   if (!Array.isArray(data.trades) || !data.trades.every(isTrade)) throw new Error('交易格式无效')
+  if (data.avatar !== undefined && !isAvatar(data.avatar)) delete data.avatar
   return data
 }

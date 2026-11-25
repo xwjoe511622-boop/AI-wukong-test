@@ -22,7 +22,7 @@ export function MeView() {
   const todo = pendingTrades(state?.trades ?? [])
   const active = state?.trades.filter(t => t.status === 'awaiting_payment' || t.status === 'awaiting_confirm').length ?? 0
   return <div className="flex flex-col gap-5">
-    <PlayerIdentity playerId={playerId} settingsHref="/me/security" />
+    <PlayerIdentity playerId={playerId} settingsHref="/me/security" avatar={state?.avatar} />
     <section className="profile-surface" aria-label="我的资产">
       <ProfileHeading title="我的资产" href="/me/wallet" action="个人地址" />
       <div className="mt-3 grid grid-cols-2 gap-3"><div><p className="mb-2 text-[11px] text-[var(--profile-muted)]">可用蟠桃</p><ProfileAmount cents={Math.round(balance * 100)} size="md" /></div><div className="border-l border-[var(--profile-border)] pl-4"><p className="mb-2 text-[11px] text-[var(--profile-muted)]">可用 USDT</p><ProfileAmount cents={state?.usdt ?? 0} size="md" currency="usdt" /></div></div>

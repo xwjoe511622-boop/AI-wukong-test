@@ -1,11 +1,11 @@
 'use client'
 
-import Image from 'next/image'
+import { Avatar } from './avatar'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Copy, Settings2 } from 'lucide-react'
 
-export function PlayerIdentity({ playerId, settingsHref }: { playerId?: string | null; settingsHref?: string }) {
+export function PlayerIdentity({ playerId, settingsHref, avatar }: { playerId?: string | null; settingsHref?: string; avatar?: string }) {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [copyStatus, setCopyStatus] = useState('')
 
@@ -22,7 +22,7 @@ export function PlayerIdentity({ playerId, settingsHref }: { playerId?: string |
   return (
     <div className="pt-[env(safe-area-inset-top)]">
       <header className="flex min-h-16 items-center gap-3 pr-11">
-        <Image src="/assets/player-emblem.png" alt="AI 悟空印" width={60} height={60} className="size-15 shrink-0 object-contain" priority />
+        {settingsHref ? <Link href={settingsHref} aria-label="设置头像" className="shrink-0"><Avatar src={avatar} size={60} /></Link> : <Avatar src={avatar} size={60} />}
         <div className="min-w-0 flex-1">
           <h2 className="font-display text-lg font-bold tracking-wider text-gold">悟空召唤者</h2>
           <div className="flex items-center gap-1 text-xs text-[var(--gold-200)]">

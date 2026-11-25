@@ -912,3 +912,13 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .relation-filter button[aria-pressed=true] { border-color: #ffcf5c; background: #ffcf5c1f; color: #ffe9c2; }
 .relation-count { margin-top: 8px; font-size: 27px; font-weight: 500; line-height: 1; font-variant-numeric: tabular-nums; }
 .relation-count small { font-size: 11px; margin-left: 6px; color: #a9a294; }
+.relation-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px; border-radius: 12px; border: 1px solid #b0904b38; background: #00000059; }
+.relation-tabs button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 38px; border-radius: 9px; font-size: 13px; color: #d2cbbf; }
+.relation-tabs button small { font-size: 10px; opacity: .7; }
+.relation-tabs button[aria-selected=true] { background: linear-gradient(180deg,#5a4318,#2e220d); color: #ffe9c2; box-shadow: inset 0 0 0 1px #ffcf5c80; }
+.relation-search { display: flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid #b0904b55; background: #00000059; }
+.relation-search:focus-within { border-color: #ffcf5c; }
+.relation-search input { flex: 1; min-width: 0; background: transparent; font-size: 13px; color: #ece6da; outline: none; }
+.relation-search input::placeholder { color: #8f8778; }
+.relation-search input::-webkit-search-cancel-button { display: none; }
+.relation-search button { color: #d2cbbf; }
