@@ -1,20 +1,21 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowDownLeft, ArrowUpRight, CalendarClock, Check, ChevronRight, Flame, Sparkles, type LucideIcon } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, CalendarClock, Check, ChevronRight, Sparkles, type LucideIcon } from 'lucide-react'
 import { contractDay, money } from '@/lib/cultivation-preview'
 import { durationText } from '@/lib/summon-preview'
 import { dailyTodos, type DailyKind, type DailyTodo } from '@/lib/home'
 import { HomeHero } from './home-hero'
 import { useProduct } from './product-provider'
 
-const ICONS: Record<DailyKind, LucideIcon> = { reserve: CalendarClock, cast: Sparkles, pay: ArrowUpRight, train: Flame, receive: ArrowDownLeft }
+const ICONS: Record<DailyKind, LucideIcon> = { reserve: CalendarClock, cast: Sparkles, pay: ArrowUpRight, receive: ArrowDownLeft }
 const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 const weekday = (now: number) => WEEKDAYS[new Date(now + 8 * 3600000).getUTCDay()]
 
 /**
  * 首页只做一件事：今日待办。
- * 固定五行（预约、召唤、打款、修炼、收款），有没有事都显示，正好一屏；不放资产，不重复别的页面。
+ * 固定四行（预约、召唤、打款、收款），有没有事都显示，正好一屏；不放资产，不重复别的页面。
+ * 修炼在进猴舍时一次扣除蟠桃、自动进行，所以不在待办里。
  */
 export function HomeView() {
   const { state, ready, now, act } = useProduct()

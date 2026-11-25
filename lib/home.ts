@@ -1,6 +1,6 @@
 import { LEVELS, LEVEL_BY_ID, PAYMENT_WINDOW_HOURS, type Stage } from './game-data'
 import { beijingDate, matchAt, roundFor, type Entry } from './summon-preview'
-import { RULES, endsAt, money, phase, quote, type Contract } from './cultivation-preview'
+import { endsAt, phase, type Contract } from './cultivation-preview'
 import { nextMatchAfter, type Trade } from './trade'
 
 /** 我在某一轮里的情况 */
@@ -45,11 +45,11 @@ export const REALM_STATUS_LABEL: Record<RealmStatus, string> = { live: '召唤�
 
 // ───────── 首页：今日待办 ─────────
 /**
- * 一只悟空的一生里，玩家每天可能要做的事只有五种，首页固定显示这五行，顺序不变：
- * 预约召唤 → 召唤 → 打款 → 修炼 → 收款。
+ * 一只悟空的一生里，玩家要亲手做的事只有四种，首页固定显示这四行，顺序不变：
+ * 预约召唤 → 召唤 → 打款 → 收款。修炼蟠桃在进猴舍时一次扣除，之后自动修炼，不是待办。
  * 每行四种状态：todo 待处理（可以现在做）、wait 等待中（等时间或等对方）、done 今日已完成、none 今日无。
  */
-export type DailyKind = 'reserve' | 'cast' | 'pay' | 'train' | 'receive'
+export type DailyKind = 'reserve' | 'cast' | 'pay' | 'receive'
 export type DailyStatus = 'todo' | 'wait' | 'done' | 'none'
 export type DailyTodo = {
   kind: DailyKind; label: string; status: DailyStatus; title: string; sub: string
@@ -75,7 +75,7 @@ export function dailyTodos(state: DailyState, now: number): DailyTodo[] {
 
   // 1. 预约召唤
   let reserve: DailyTodo
-  if (bookable.length && !waiting.length) reserve = { kind: 'reserve', label: '预约', status: 'todo', title: `可预约 · ${bookable[0].level.name}`, sub: `${bookable[0].level.summonWindow} 召唤${bookable.length > 1 ? ` · 另有 ${bookable.length - 1} 个仙境可约` : ''}`, until: bookable[0].round.cutoff, href: `/world?stage=${bookable[0].level.id}#summon-action`, cta: '去预约' }
+  if (bookable.length && !mine.length) reserve = { kind: 'reserve', label: '预约', status: 'todo', title: `可预约 · ${bookable[0].level.name}`, sub: `${bookable[0].level.summonWindow} 召唤${bookable.length > 1 ? ` · 另有 ${bookable.length - 1} 个仙境可约` : ''}`, until: bookable[0].round.cutoff, href: `/world?stage=${bookable[0].level.id}#summon-action`, cta: '去预约' }
   else if (bookable.length) reserve = { kind: 'reserve', label: '预约', status: 'done', title: `已预约 ${mine.length} 个仙境`, sub: `还可预约 ${bookable.length} 个 · 最近 ${bookable[0].level.name}`, until: bookable[0].round.cutoff, href: '/world' }
   else if (mine.length) reserve = { kind: 'reserve', label: '预约', status: 'done', title: `今日已预约 ${mine.length} 个仙境`, sub: '今日预约已全部截止', href: '/world' }
   else reserve = { kind: 'reserve', label: '预约', status: 'none', title: '今日预约已全部截止', sub: '明日 00:00 重新开放预约', until: rounds[0]?.round.nextOpen, href: '/world' }
@@ -93,18 +93,11 @@ export function dailyTodos(state: DailyState, now: number): DailyTodo[] {
   const toPay = state.trades.filter(t => t.role === 'payer' && t.status === 'awaiting_payment').sort((a, b) => a.deadline - b.deadline)
   const paid = state.trades.filter(t => t.role === 'payer' && t.status === 'awaiting_confirm')
   let pay: DailyTodo
-  if (toPay.length) { const short = state.usdt < toPay[0].amountCents; pay = { kind: 'pay', label: '打款', status: 'todo', title: `${LEVEL_BY_ID[toPay[0].stage].name} · 向传承人打款${toPay.length > 1 ? `（共 ${toPay.length} 笔）` : ''}`, sub: short ? 'USDT 余额不足，请先接收 USDT' : `逾期 ${PAYMENT_WINDOW_HOURS} 小时，召唤蟠桃充公`, until: toPay[0].deadline, amountCents: toPay[0].amountCents, href: tradeHref(toPay), cta: '去打款', warn: short } }
-  else if (paid.length) pay = { kind: 'pay', label: '打款', status: 'wait', title: `已打款 · 等待传承人确认${paid.length > 1 ? `（${paid.length} 笔）` : ''}`, sub: `确认到账后，${names(paid.map(t => t.stage))}进入猴舍`, href: tradeHref(paid) }
+  if (toPay.length) { const short = state.usdt < toPay[0].amountCents; pay = { kind: 'pay', label: '打款', status: 'todo', title: `${LEVEL_BY_ID[toPay[0].stage].name} · 向传承人打款${toPay.length > 1 ? `（共 ${toPay.length} 笔）` : ''}`, sub: short ? 'USDT 余额不足，请先接收 USDT' : `逾期 ${PAYMENT_WINDOW_HOURS} 小时，暂扣的蟠桃全部充公`, until: toPay[0].deadline, amountCents: toPay[0].amountCents, href: tradeHref(toPay), cta: '去打款', warn: short } }
+  else if (paid.length) pay = { kind: 'pay', label: '打款', status: 'wait', title: `已打款 · 等待传承人确认${paid.length > 1 ? `（${paid.length} 笔）` : ''}`, sub: `确认到账后，${names(paid.map(t => t.stage))}进入猴舍自动修炼`, href: tradeHref(paid) }
   else pay = { kind: 'pay', label: '打款', status: 'none', title: '无待打款', sub: '召唤成功后，在这里向传承人打款', href: '/me/trades' }
 
-  // 4. 修炼
-  const due = quote(state.contracts, now, false)
-  let train: DailyTodo
-  if (due.items.length) { const short = state.balance < due.total; train = { kind: 'train', label: '修炼', status: 'todo', title: `今日待修 ${due.items.length} 只`, sub: short ? `蟠桃不足，需 ${money(due.total)}` : due.total ? `需 ${money(due.total)} 蟠桃` : '本次不消耗蟠桃', href: '/house', cta: '去修炼', warn: short } }
-  else if (state.contracts.length) train = { kind: 'train', label: '修炼', status: 'done', title: '今日修炼已完成', sub: `猴舍共 ${state.contracts.length} 只悟空`, href: '/house' }
-  else train = { kind: 'train', label: '修炼', status: 'none', title: '猴舍还没有悟空', sub: '召唤成功并打款后开始修炼', href: '/house' }
-
-  // 5. 收款（传承，我是传承人）
+  // 4. 收款（传承，我是传承人）
   const toConfirm = state.trades.filter(t => t.role === 'receiver' && t.status === 'awaiting_confirm')
   const matched = state.trades.filter(t => t.role === 'receiver' && t.status === 'awaiting_payment').sort((a, b) => a.deadline - b.deadline)
   const unmatched = state.contracts.filter(c => phase(c, now) === '传承中' && !state.trades.some(t => t.contractId === c.id))
@@ -114,5 +107,5 @@ export function dailyTodos(state: DailyState, now: number): DailyTodo[] {
   else if (unmatched.length) receive = { kind: 'receive', label: '收款', status: 'wait', title: `${names(unmatched.map(c => c.stage))} · 传承中`, sub: '等待下一轮召唤匹配承接人', until: Math.min(...unmatched.map(c => nextMatchAfter(c.stage, Math.max(endsAt(c), c.trainingCompletedAt ?? endsAt(c), now)))), href: '/me/trades' }
   else receive = { kind: 'receive', label: '收款', status: 'none', title: '无待收款', sub: '悟空传承时，在这里确认收款', href: '/me/trades' }
 
-  return [reserve, cast, pay, train, receive]
+  return [reserve, cast, pay, receive]
 }

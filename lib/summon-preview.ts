@@ -3,7 +3,11 @@ import { todayOccurrence, splitDuration } from './schedule'
 
 // 换键让旧演示记录自然失效（修炼值改以 USDT 计，蟠桃仅暂扣召唤消耗）
 export const SUMMON_PREVIEW_KEY = 'wukong-summon-preview-v4'
-/** paid = 提交召唤时暂扣的召唤蟠桃（分）；amount = 本轮修炼值（USDT 分），不占用蟠桃 */
+/**
+ * paid = 预约时一起暂扣的蟠桃（分）= 召唤蟠桃 + 整个周期的修炼蟠桃；summonFee = 其中的召唤蟠桃。
+ * 召唤失败全部退还；悟空进猴舍时正式扣除；召唤成功却逾期不打款，全部充公。
+ * amount = 本轮修炼值（USDT 分），不占用蟠桃
+ */
 export type Entry = { key: string; stage: Stage; date: string; deadline: number; paid: number; amount?: number; enteredAt: number; /** 召唤周期内玩家点下「召唤」的时刻 */ summonedAt?: number; status: 'waiting' | 'success' | 'refunded' | 'forfeited'; settledAt?: number; adoptedAt?: number; summonFee?: number }
 export type PreviewState = { version: 2; balance: number; offset: number; entries: Entry[] }
 export type PreviewAction = { type: 'join'; stage: Stage; now: number } | { type: 'settle'; key: string; result: 'success' | 'refunded'; now: number } | { type: 'clock'; offset: number } | { type: 'poor' } | { type: 'reset' }
@@ -13,6 +17,10 @@ export const peachText = (cents: number) => (cents / 100).toLocaleString('zh-CN'
 export const peachWhole = (value: number) => value.toLocaleString('zh-CN', { maximumFractionDigits: 2 })
 export const rangeText = (stage: Stage) => `${peachWhole(LEVEL_BY_ID[stage].rangeMin)}–${peachWhole(LEVEL_BY_ID[stage].rangeMax)}`
 export const costCents = (stage: Stage) => Math.round(LEVEL_BY_ID[stage].cost * 100)
+/** 整个周期的修炼蟠桃（分）= 每日修炼 × 修炼天数，一次扣除，不用每天去点 */
+export const trainCents = (stage: Stage) => Math.round(LEVEL_BY_ID[stage].perCycleCost * LEVEL_BY_ID[stage].cycleDays * 100)
+/** 预约时暂扣的蟠桃（分）= 召唤 + 整个周期的修炼 */
+export const lockCents = (stage: Stage) => Math.round(LEVEL_BY_ID[stage].summonCost * 100) + trainCents(stage)
 export function beijingDate(now: number) { return new Date(now + 8 * 3600000).toISOString().slice(0, 10) }
 const DAY_MS = 86_400_000
 // 轮次从 2026-09-29（北京时间）起算，第一轮为该日；七境统一同轮
@@ -83,18 +91,18 @@ export function transition(state: PreviewState, action: PreviewAction): { state:
     const round = roundFor(action.stage, action.now)
     if (!round.open) return { state, message: '本轮预约已截止，可继续参与后续召唤。' }
     if (state.entries.some(e => e.key === round.key)) return { state, message: '已预约本轮召唤，无需重复预约。' }
-    const paid = Math.round(LEVEL_BY_ID[action.stage].summonCost * 100)
-    const summonFee = paid
+    const summonFee = Math.round(LEVEL_BY_ID[action.stage].summonCost * 100)
+    const paid = lockCents(action.stage)
     if (state.balance < paid) return { state, message: '蟠桃不足，无法预约本次召唤。' }
     const entry: Entry = { key: round.key, date: round.date, deadline: round.deadline, stage: action.stage, paid, amount: costCents(action.stage), summonFee, enteredAt: action.now, status: 'waiting' }
-    return { state: { ...state, balance: state.balance - paid, entries: [...state.entries, entry] }, message: `已预约召唤，请在 ${LEVEL_BY_ID[action.stage].summonWindow} 召唤周期内点「召唤」；${summonFee ? '召唤成功扣除召唤蟠桃' : '本阶段不消耗蟠桃'}，失败全额退还。` }
+    return { state: { ...state, balance: state.balance - paid, entries: [...state.entries, entry] }, message: `已预约召唤，请在 ${LEVEL_BY_ID[action.stage].summonWindow} 召唤周期内点「召唤」；${paid ? '已暂扣召唤与修炼蟠桃' : '本阶段不消耗蟠桃'}，失败全额退还。` }
   }
   const entry = state.entries.find(e => e.key === action.key)
   if (!entry || entry.status !== 'waiting') return { state, message: '没有召唤中的记录，或本轮已完成召唤。' }
   if (action.now < matchAt(entry)) return { state, message: '尚未召唤，不能展示结果。' }
   const success = action.result === 'success'
   const status = success ? 'success' as const : 'refunded' as const
-  return { state: { ...state, balance: state.balance + (success ? 0 : entry.paid), entries: state.entries.map(e => e.key === entry.key ? { ...e, status, settledAt: action.now } : e) }, message: success ? `召唤成功，召唤蟠桃已自动扣除，${LEVEL_BY_ID[entry.stage].name}已进入猴舍，按日修炼即可。` : '本轮召唤未成功，本次召唤使用的蟠桃已全额退还，可继续参与后续召唤。' }
+  return { state: { ...state, balance: state.balance + (success ? 0 : entry.paid), entries: state.entries.map(e => e.key === entry.key ? { ...e, status, settledAt: action.now } : e) }, message: success ? `召唤成功，请在规定时间内完成打款，${LEVEL_BY_ID[entry.stage].name}随后进入猴舍自动修炼。` : '本轮召唤未成功，暂扣的蟠桃已全额退还，可继续参与后续召唤。' }
 }
 export function parsePreview(raw: string): PreviewState {
   const data = JSON.parse(raw)

@@ -5,7 +5,7 @@ import { RealmCardHero } from './realm-card-hero'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { LEVEL_BY_ID, INHERITANCE_FEE_PCT, PEACH_UNIT_TEXT, PAYMENT_WINDOW_HOURS, isFreeStage, type Stage } from '@/lib/game-data'
-import { roundFor, durationText, peachText, peachWhole, rangePosition, costCents, matchAt } from '@/lib/summon-preview'
+import { roundFor, durationText, peachText, peachWhole, rangePosition, costCents, matchAt, lockCents as lockOf } from '@/lib/summon-preview'
 import { useSummonPreview } from './summon-preview-provider'
 import { SummonPreviewConfirm } from './summon-preview-confirm'
 import { SummonPreviewEntry } from './summon-preview-entry'
@@ -29,7 +29,8 @@ export function SummonPreview({ stage }: { stage: Stage }) {
   const round = roundFor(stage, now)
   const entry = state.entries.find(e => e.key === round.key)
   const cost = costCents(stage)
-  const lockCents = Math.round(level.summonCost * 100)
+  // 预约时一起暂扣：召唤蟠桃 + 整个周期的修炼蟠桃
+  const lockCents = lockOf(stage)
   const previous = state.entries.filter(e => e.stage === stage && e.key !== round.key).slice().reverse()
   const position = rangePosition(stage)
   const settled = !!entry && entry.status !== 'waiting'
@@ -37,7 +38,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     ['预约', `${level.summonStopTime} 前`],
     ['召唤', level.summonWindow],
     ['打款', `成功后 ${PAYMENT_WINDOW_HOURS} 小时内`],
-    ['修炼', `${level.cycleDays} 天`],
+    ['修炼', `自动 ${level.cycleDays} 天`],
     ['传承', '圆满后收款'],
   ]
 
@@ -84,10 +85,10 @@ export function SummonPreview({ stage }: { stage: Stage }) {
       <ul className="flex flex-col gap-2 px-4 pb-4 text-[11px] leading-5 text-[var(--gold-200)]">
         <li>召唤周期 {level.summonWindow}（北京时间）。{level.summonStopTime} 预约截止，未预约不能召唤；{level.summonStartTime} 起进入本周期，预约过的玩家点「召唤」，系统当场匹配并公布结果。预约了但整个周期都没点召唤的，周期结束时由系统按该阶段剩余名额处理。</li>
         <li>修炼值以 USDT 计，由承接人向传承人打款；蟠桃只是召唤与修炼的消耗单位，{PEACH_UNIT_TEXT}。</li>
-        <li>{free ? '本阶段不需要消耗蟠桃：召唤与修炼均不扣费。' : `蟠桃消耗：召唤 ${peachWhole(level.summonCost)}，预约时暂扣、召唤成功后扣除，失败全额退还；修炼每日 ${peachWhole(level.perCycleCost)}，共 ${level.cycleDays} 天。`}</li>
+        <li>{free ? '本阶段不需要消耗蟠桃：召唤与修炼均不扣费。' : `蟠桃消耗：召唤 ${peachWhole(level.summonCost)}；修炼每日 ${peachWhole(level.perCycleCost)} × ${level.cycleDays} 天 = ${peachWhole(level.perCycleCost * level.cycleDays)}。两项在预约时一起暂扣，召唤失败全额退还，悟空进猴舍时正式扣除。`}</li>
         <li>每个召唤周期每人预约一次。召唤失败不产生交易，可继续参与后续召唤。</li>
-        <li>召唤成功后，承接人须在 {PAYMENT_WINDOW_HOURS} 小时内向系统匹配的传承人完成打款（从 USDT 余额扣除）；传承人确认到账后，悟空进入猴舍。超过 {PAYMENT_WINDOW_HOURS} 小时未打款判定逾期违约，本次召唤蟠桃充公、不予退还。</li>
-        <li>修炼周期 {level.cycleDays} 天，从召唤成功时刻起算。每日修炼一次，漏修可补；全部修炼完成且周期结束后才可传承。</li>
+        <li>召唤成功后，承接人须在 {PAYMENT_WINDOW_HOURS} 小时内向系统匹配的传承人完成打款（从 USDT 余额扣除）；传承人确认到账后，悟空进入猴舍。超过 {PAYMENT_WINDOW_HOURS} 小时未打款判定逾期违约，暂扣的召唤蟠桃与修炼蟠桃全部充公、不予退还。</li>
+        <li>修炼周期 {level.cycleDays} 天，从召唤成功时刻起算。修炼蟠桃已一次扣除，悟空自动修炼，不需要每天操作；周期结束后进入传承。</li>
         <li>修炼加成 +{level.gainPct}%：修炼增长 = 修炼值 × {level.gainPct}%。传承时平台只对修炼增长收取 {INHERITANCE_FEE_PCT}% 手续费，不对修炼值收费。</li>
       </ul>
     </details>
@@ -125,10 +126,10 @@ export function SummonPreview({ stage }: { stage: Stage }) {
       </div>
       <p className={`mt-1.5 flex flex-wrap items-center gap-x-1.5 text-[10.5px] ${canReserve && (shortPeach || shortUsdt) ? 'text-[#f0a58a]' : 'text-[var(--gold-200)]/70'}`}>
         {error ? error : product.notice && !entry ? product.notice
-          : entry ? <>已暂扣 {peachText(entry.paid)}<PeachIcon size={11} /> · 召唤成功扣除，失败全额退还</>
-          : canReserve && shortPeach ? <>蟠桃不足：预约需暂扣 {peachText(lockCents)}，余额 {peachText(state.balance)}<PeachIcon size={11} /><Link href="/me/wallet?mode=buy" className="underline underline-offset-2">购买蟠桃</Link></>
+          : entry ? <>已暂扣 {peachText(entry.paid)}<PeachIcon size={11} /> · 进猴舍时扣除，召唤失败全额退还</>
+          : canReserve && shortPeach ? <>蟠桃不足：预约需暂扣 {peachText(lockCents)}（召唤 + 修炼），余额 {peachText(state.balance)}<PeachIcon size={11} /><Link href="/me/wallet?mode=buy" className="underline underline-offset-2">购买蟠桃</Link></>
           : canReserve && shortUsdt ? <>USDT 不足：本轮修炼值 {peachText(cost)}，余额 {peachText(usdt)}<Link href="/me/wallet?mode=in" className="underline underline-offset-2">去接收</Link></>
-          : canReserve ? <>{free ? '本阶段不消耗蟠桃' : <>预约暂扣 {peachText(lockCents)}<PeachIcon size={11} /></>} · 余额 {peachText(state.balance)}<PeachIcon size={11} /></>
+          : canReserve ? <>{free ? '本阶段不消耗蟠桃' : <>预约暂扣 {peachText(lockCents)}<PeachIcon size={11} />（召唤 {peachWhole(level.summonCost)} + 修炼 {peachWhole(level.perCycleCost * level.cycleDays)}）</>} · 余额 {peachText(state.balance)}<PeachIcon size={11} /></>
           : '可继续预约其他仙境'}
       </p>
     </section>

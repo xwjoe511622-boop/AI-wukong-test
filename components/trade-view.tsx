@@ -36,7 +36,7 @@ export function TradeView({ id }: { id: string }) {
       <p className="text-xs text-[var(--profile-muted)]">{payer ? '应打款修炼值' : '本次传承应收'}</p>
       <UsdtValue cents={trade.amountCents} size="xl" className="mt-2" />
       {trade.status === 'awaiting_payment' && <p className="mt-3 text-xs text-[var(--profile-muted)]">{payer ? '打款剩余时间' : '承接人打款剩余时间'}　<Countdown ms={left} /></p>}
-      {payer && trade.status === 'awaiting_payment' && <p className="mt-2 text-[11px] leading-5 text-[#f0b49a]">超过 {PAYMENT_WINDOW_HOURS} 小时未打款判定逾期违约，本次召唤蟠桃充公、不予退还。</p>}
+      {payer && trade.status === 'awaiting_payment' && <p className="mt-2 text-[11px] leading-5 text-[#f0b49a]">超过 {PAYMENT_WINDOW_HOURS} 小时未打款判定逾期违约，暂扣的召唤蟠桃与修炼蟠桃全部充公、不予退还。</p>}
     </section>
 
     <section className="profile-surface"><h2 className="profile-heading mb-3">交易进度</h2><TradeSteps trade={trade} /></section>
@@ -74,7 +74,7 @@ export function TradeView({ id }: { id: string }) {
     </section>}
     {trade.status === 'overdue' && <section className="profile-surface text-center">
       <p className="text-sm text-[#f0b49a]">召唤成功后 {PAYMENT_WINDOW_HOURS} 小时内未完成打款，判定逾期违约</p>
-      <p className="mt-2 text-xs leading-6 text-[var(--profile-muted)]">本次召唤所扣除的蟠桃已充公，不予退还，系统保留违约记录。可继续参与后续召唤。</p>
+      <p className="mt-2 text-xs leading-6 text-[var(--profile-muted)]">预约时暂扣的召唤蟠桃与修炼蟠桃已全部充公，不予退还，系统保留违约记录。可继续参与后续召唤。</p>
       <div className="mt-3 flex justify-center"><Link href="/world" className="btn-ghost-gold profile-button inline-flex items-center justify-center">返回悟空世界</Link></div>
     </section>}
 

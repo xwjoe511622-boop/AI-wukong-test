@@ -81,7 +81,8 @@ function record(state: ProductState, kind: string, amountCents: number, descript
   return { ...state, records: [{ id: `${now}-${state.records.length}-${kind}`, kind, amountCents, description, createdAt: new Date(now).toISOString(), ...(currency === 'usdt' ? { currency } : {}) }, ...state.records] }
 }
 function summonedContract(entry: Entry): Contract {
-  return { id: `summon-${entry.key}`, stage: entry.stage, principal: entry.amount ?? costCents(entry.stage), started: matchAt(entry), completed: 0 }
+  // 修炼蟠桃已在预约时暂扣、进猴舍时一次扣除，所以进舍即视为修炼全部安排好，之后自动修炼到周期结束
+  return { id: `summon-${entry.key}`, stage: entry.stage, principal: entry.amount ?? costCents(entry.stage), started: matchAt(entry), completed: RULES[entry.stage].days, trainingCompletedAt: matchAt(entry) }
 }
 const updateTrade = (state: ProductState, id: string, patch: Partial<Trade>): ProductState => ({ ...state, trades: state.trades.map(t => t.id === id ? { ...t, ...patch } : t) })
 /** 悟空修炼圆满且原周期结束的时刻：此后等下一轮同阶段召唤匹配承接人 */
@@ -95,7 +96,7 @@ function payeeConfirms(state: ProductState, trade: Trade, at: number): ProductSt
     const contract = summonedContract(entry)
     if (![...next.contracts, ...next.history].some(c => c.id === contract.id)) next = { ...next, contracts: [...next.contracts, contract] }
   }
-  return record(next, 'summon', 0, `传承人已确认收到修炼值 ${money(trade.amountCents)} USDT，交易完成；${LEVEL_BY_ID[trade.stage].name}已进入猴舍，按日修炼。`, at)
+  return record(next, 'summon', 0, `传承人已确认收到修炼值 ${money(trade.amountCents)} USDT，交易完成；${LEVEL_BY_ID[trade.stage].name}已进入猴舍，暂扣的召唤与修炼蟠桃正式扣除，自动修炼。`, at)
 }
 /** 承接人已打款：传承人需核实到账后确认收款 */
 function payerPays(state: ProductState, trade: Trade, at: number): ProductState {
@@ -129,8 +130,8 @@ function advanceTrades(state: ProductState, now: number): { state: ProductState;
     if (trade.role === 'payer' && trade.status === 'awaiting_payment' && now >= trade.deadline) {
       next = updateTrade(next, trade.id, { status: 'overdue', overdueAt: trade.deadline })
       next = { ...next, entries: next.entries.map(e => e.key === trade.entryKey ? { ...e, status: 'forfeited' as const } : e) }
-      next = record(next, 'summon_forfeit', 0, `${LEVEL_BY_ID[trade.stage].name}召唤成功后 ${PAYMENT_WINDOW_HOURS} 小时内未完成修炼值 ${money(trade.amountCents)} USDT 打款，判定逾期违约，已扣除的召唤蟠桃充公。`, trade.deadline)
-      message = `${LEVEL_BY_ID[trade.stage].name}逾期未打款，判定违约，召唤蟠桃已充公。`
+      next = record(next, 'summon_forfeit', 0, `${LEVEL_BY_ID[trade.stage].name}召唤成功后 ${PAYMENT_WINDOW_HOURS} 小时内未完成修炼值 ${money(trade.amountCents)} USDT 打款，判定逾期违约，暂扣的召唤蟠桃与修炼蟠桃全部充公。`, trade.deadline)
+      message = `${LEVEL_BY_ID[trade.stage].name}逾期未打款，判定违约，暂扣的蟠桃已全部充公。`
     } else if (trade.role === 'payer' && trade.status === 'awaiting_confirm' && now >= (trade.paidAt ?? now) + COUNTERPARTY_DELAY_MS) {
       next = payeeConfirms(next, trade, (trade.paidAt ?? now) + COUNTERPARTY_DELAY_MS)
       message = `传承人已确认到账，${LEVEL_BY_ID[trade.stage].name}已进入猴舍。`
@@ -189,9 +190,9 @@ export function productTransition(state: ProductState, action: ProductAction, no
         const contract = summonedContract(entry)
         const id = `pay-${entry.key}`
         if (!next.trades.some(t => t.id === id)) next = { ...next, trades: [...next.trades, { id, role: 'payer', stage: entry.stage, amountCents: contract.principal, matchedAt: published, deadline: published + PAYMENT_WINDOW_MS, counterparty: demoCounterparty(id), status: 'awaiting_payment', entryKey: entry.key }] }
-        next = record(next, 'summon', 0, `${level.name}召唤成功，${entry.paid ? `提交时暂扣的 ${money(entry.paid)} 蟠桃已自动扣除` : '本阶段不消耗蟠桃'}；请在 ${PAYMENT_WINDOW_HOURS} 小时内向传承人打款修炼值 ${money(contract.principal)} USDT。`, published)
+        next = record(next, 'summon', 0, `${level.name}召唤成功，${entry.paid ? `预约时暂扣的 ${money(entry.paid)} 蟠桃将在进猴舍时正式扣除` : '本阶段不消耗蟠桃'}；请在 ${PAYMENT_WINDOW_HOURS} 小时内向传承人打款修炼值 ${money(contract.principal)} USDT。`, published)
         message = `${level.name}召唤成功！请在 ${PAYMENT_WINDOW_HOURS} 小时内完成修炼值打款。`
-      } else next = record(next, 'summon_return', entry.paid, '召唤未成功，本次召唤使用的蟠桃全额退还，可继续参与后续召唤。', published)
+      } else next = record(next, 'summon_return', entry.paid, '召唤未成功，暂扣的召唤蟠桃与修炼蟠桃全额退还，可继续参与后续召唤。', published)
     }
     const advanced = advanceTrades(next, now)
     return { state: advanced.state, message: advanced.message || message }
@@ -255,7 +256,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
     const result = summon({ ...initialPreview(), balance: state.balance, entries: state.entries }, { ...action.action, now })
     if (result.state.entries === state.entries) return { state, message: result.message }
     const entry = result.state.entries.at(-1)!
-    const next = record({ ...state, balance: result.state.balance, entries: result.state.entries }, 'summon_lock', -entry.paid, `${LEVEL_BY_ID[entry.stage].name}预约召唤：暂扣召唤蟠桃，召唤成功后扣除，失败全额退还。`, now)
+    const next = record({ ...state, balance: result.state.balance, entries: result.state.entries }, 'summon_lock', -entry.paid, `${LEVEL_BY_ID[entry.stage].name}预约召唤：暂扣召唤蟠桃与修炼蟠桃，进猴舍时扣除，召唤失败全额退还。`, now)
     return { state: next, message: result.message }
   }
   if (action.type === 'buy-peach') {
@@ -308,6 +309,8 @@ export function parseProduct(raw: string): ProductState {
   if (!data || data.version !== 6 || !Number.isSafeInteger(data.usdt) || data.usdt < 0 || data.usdt > 1e12 || typeof data.playerId !== 'string' || !/^WK[A-F0-9]{16}$/.test(data.inviteCode) || !Number.isFinite(data.offset) || Math.abs(data.offset) > 36600 * 86400000 || !['success', 'refunded'].includes(data.demoOutcome)) throw new Error('V2存档格式无效')
   if (!Array.isArray(data.records) || !data.records.every((r: AccountRecord) => typeof r.id === 'string' && typeof r.kind === 'string' && Number.isSafeInteger(r.amountCents) && typeof r.description === 'string' && Number.isFinite(Date.parse(r.createdAt)))) throw new Error('账本格式无效')
   if (!isPreview({ version: 2, balance: data.balance, contracts: data.contracts, history: data.history })) throw new Error('生命周期格式无效')
+  // 修炼改为一次扣除、自动进行：旧存档里还没修完的悟空直接视为已安排好全部修炼
+  data.contracts = data.contracts.map((c: Contract) => c.completed === RULES[c.stage].days ? c : { ...c, completed: RULES[c.stage].days, trainingCompletedAt: c.trainingCompletedAt ?? c.started })
   parsePreview(JSON.stringify({ version: 2, balance: data.balance, offset: data.offset, entries: data.entries }))
   if (!Array.isArray(data.members) || !data.members.every((m: DemoMember) => typeof m.uid === 'string' && Number.isInteger(m.generation) && m.generation > 0 && Number.isFinite(Date.parse(m.joinedAt)))) throw new Error('成员格式无效')
   if (!Array.isArray(data.rewards) || !data.rewards.every((r: RewardRecord) => typeof r.id === 'string' && ['companion', 'tribe'].includes(r.rewardType) && Number.isSafeInteger(r.amountCents) && r.amountCents > 0 && Number.isSafeInteger(r.sourceProfitCents) && Number.isFinite(r.rewardRate) && Number.isFinite(Date.parse(r.createdAt)))) throw new Error('奖励格式无效')

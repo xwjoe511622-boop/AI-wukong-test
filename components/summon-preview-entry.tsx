@@ -25,9 +25,9 @@ export function SummonPreviewEntry({ entry, compact = false }: { entry: Entry; c
     <p className="mt-2 text-sm text-[var(--gold-100)]">{trade.status === 'awaiting_payment' ? `请在 ${PAYMENT_WINDOW_HOURS} 小时内向传承人打款` : '已打款 · 等待传承人确认到账'}</p>
     <p className="mb-1 mt-4 text-xs text-[var(--gold-200)]">修炼值 · {trade.status === 'awaiting_payment' ? '待打款' : '已打款'}</p><UsdtValue cents={trade.amountCents} size="xl" />
     {trade.status === 'awaiting_payment' && <p className="mt-2 text-xs text-[var(--gold-200)]">打款剩余 <Countdown ms={trade.deadline - now} /></p>}
-    <p className="mt-2 flex items-center justify-center gap-2 text-[11px] text-[var(--gold-200)]">已扣除召唤蟠桃 <PeachValue cents={entry.paid} size="xs" /></p>
+    <p className="mt-2 flex items-center justify-center gap-2 text-[11px] text-[var(--gold-200)]">已暂扣蟠桃 <PeachValue cents={entry.paid} size="xs" /></p>
     <Link href={tradeHref} className="btn-gold mt-4 inline-flex w-full items-center justify-center text-sm">{trade.status === 'awaiting_payment' ? '去打款' : '查看交易'}</Link>
-    <p className="mt-2 text-[11px] leading-5 text-[var(--gold-200)]/80">{trade.status === 'awaiting_payment' ? `超过 ${PAYMENT_WINDOW_HOURS} 小时未打款判定逾期违约，召唤蟠桃充公。` : `传承人确认到账后，${level.name}自动进入猴舍。`}</p>
+    <p className="mt-2 text-[11px] leading-5 text-[var(--gold-200)]/80">{trade.status === 'awaiting_payment' ? `超过 ${PAYMENT_WINDOW_HOURS} 小时未打款判定逾期违约，暂扣的蟠桃全部充公。` : `传承人确认到账后，${level.name}进入猴舍自动修炼。`}</p>
   </section>
   if (entry.status === 'success') return <section aria-label="召唤成功" className={`hud-panel rounded-xl p-4 text-center ${compact ? '' : 'panel-glow'}`}>
     <p className="text-[10px] text-[var(--gold-200)]">第{roundNumber(entry.enteredAt)}轮 · {level.realm}</p>
@@ -40,7 +40,7 @@ export function SummonPreviewEntry({ entry, compact = false }: { entry: Entry; c
     <Link href={`/house/room/${entry.stage}`} className="btn-gold mt-4 inline-flex w-full items-center justify-center text-sm">进入猴舍</Link>
     <p className="mt-2 text-[11px] leading-5 text-[var(--gold-200)]/80">全部修炼完成且原周期结束后进入传承，等下一轮同阶段召唤匹配承接人；承接人打款、你确认到账后完成传承所得。</p>
   </section>
-  if (entry.status === 'forfeited') return <section aria-label="逾期违约" className="hud-panel rounded-xl p-4 text-center"><h2 className="font-display text-xl text-[var(--gold-100)]">召唤成功 · 逾期未打款</h2><div className="mt-4"><PeachValue cents={entry.paid} size="lg" sign="-" /></div><p className="mt-2 text-xs leading-6 text-[var(--gold-200)]">召唤成功后 {PAYMENT_WINDOW_HOURS} 小时内未完成修炼值打款，判定逾期违约：本次召唤所扣除的蟠桃已充公，不予退还。可继续参与后续召唤。</p><Link href={tradeHref} className="btn-ghost-gold mt-4 inline-flex w-full items-center justify-center text-sm">查看交易</Link></section>
+  if (entry.status === 'forfeited') return <section aria-label="逾期违约" className="hud-panel rounded-xl p-4 text-center"><h2 className="font-display text-xl text-[var(--gold-100)]">召唤成功 · 逾期未打款</h2><div className="mt-4"><PeachValue cents={entry.paid} size="lg" sign="-" /></div><p className="mt-2 text-xs leading-6 text-[var(--gold-200)]">召唤成功后 {PAYMENT_WINDOW_HOURS} 小时内未完成修炼值打款，判定逾期违约：预约时暂扣的召唤蟠桃与修炼蟠桃已全部充公，不予退还。可继续参与后续召唤。</p><Link href={tradeHref} className="btn-ghost-gold mt-4 inline-flex w-full items-center justify-center text-sm">查看交易</Link></section>
   if (entry.status === 'refunded') return <section aria-label="本轮召唤未成功" className="hud-panel rounded-xl p-4 text-center"><h2 className="font-display text-xl text-[var(--gold-100)]">本轮召唤未成功</h2><div className="mt-4"><PeachValue cents={entry.paid} size="lg" /></div><p className="mt-2 text-xs text-[var(--gold-200)]">本次召唤使用的蟠桃已全额退还，可继续参与后续召唤</p><Link href="/world" className="btn-ghost-gold mt-4 inline-flex w-full items-center justify-center text-sm">返回悟空世界</Link></section>
   const closed = now >= entry.deadline - RESERVATION_CUTOFF_MINUTES * 60_000
   // 召唤周期内：点「召唤」，系统当场匹配并公布结果

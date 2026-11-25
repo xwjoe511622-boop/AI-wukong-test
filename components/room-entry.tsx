@@ -42,7 +42,7 @@ export function RoomEntry({ stage, contracts, now, priority }: { stage: Stage; c
       <span className="room-sill">
         {empty ? (
           <span className="text-xs text-stone-400">暂无修炼中的{rule.name}</span>
-        ) : status.tone === 'ok' && status.text === '今日修炼已完成' ? (
+        ) : status.tone === 'ok' && status.text.startsWith('修炼中') ? (
           <span className="flex items-center gap-1.5 text-xs text-stone-200"><Check className="size-3.5 text-[var(--gold-300)]" />{status.text}</span>
         ) : (
           <span className={`house-chip ${status.tone === 'due' ? 'is-due' : status.tone === 'ok' ? 'is-claim' : ''}`}>{status.text}</span>

@@ -39,7 +39,6 @@ test('体验版没有秒级加速：召唤按钟点匹配，修炼后要等满�
   assert.equal(s.trades[0].deadline - pub, PAYMENT_WINDOW_MS)
   s = payAndEnter(s, pub)
   const c = s.contracts[0]
-  s = transition(s, { type: 'cultivate', action: { type: 'train', ids: [c.id], accelerate: false, expected: 10 } }, pub + COUNTERPARTY_DELAY_MS).state
   assert.equal(s.offset, 0)
   // 原周期 1 天结束后，等下一轮同阶段召唤匹配到承接人
   const matchTime = nextMatchAfter('stone_spirit', pub + DAY)
@@ -49,28 +48,27 @@ test('体验版没有秒级加速：召唤按钟点匹配，修炼后要等满�
   assert.notEqual(done.contracts[0].finishedAt, undefined)
   assert.equal(transition(s, { type: 'trial-summon', stage: 'stone_spirit' }, pub).state, s)
 })
-test('体验版：第七阶段召唤成功扣 USDT，一天修炼一次后传承返 USDT', () => {
+test('体验版：第七阶段预约暂扣 400 蟠桃，进猴舍后自动修炼，一天后传承返 USDT', () => {
   const round = roundFor('infinite_sage', now)
   const pub = matchAt({ key: round.key, deadline: round.deadline })
   let s = transition(initial, { type: 'summon', action: { type: 'join', stage: 'infinite_sage', now } }, now).state
-  assert.equal(s.balance, initial.balance - 10_000)
+  // 预约时一起暂扣：召唤 100 + 修炼 15 × 20 = 300，共 400 蟠桃
+  assert.equal(s.balance, initial.balance - 40_000)
   assert.equal(s.usdt, initial.usdt)
   s = transition(s, { type: 'tick' }, pub).state
   assert.equal(s.usdt, initial.usdt)
   s = payAndEnter(s, pub)
   assert.equal(s.usdt, initial.usdt - 500_000)
   const c = s.contracts.find(item => item.id.startsWith('summon-'))
-  const q = quote([c], pub, false)
-  // 时间加速：20 天压成 1 次修炼，这一次扣满正式周期的蟠桃 15 × 20 = 300
-  assert.equal(q.total, 30_000)
-  s = transition(s, { type: 'cultivate', action: { type: 'train', ids: [c.id], accelerate: false, expected: 30_000 } }, pub).state
+  // 进猴舍后自动修炼，没有需要每天去点的修炼
+  assert.equal(quote([c], pub, false).items.length, 0)
   const end = nextMatchAfter('infinite_sage', pub + DAY) + COUNTERPARTY_DELAY_MS
   s = transition(parseProduct(JSON.stringify(s)), { type: 'tick' }, end).state
   s = transition(s, { type: 'cultivate', action: { type: 'claim', id: c.id } }, end).state
   assert.equal(s.usdt, initial.usdt - 500_000 + 500_000 + 125_000 - 3_750)
-  assert.equal(s.balance, initial.balance - 10_000 - 30_000)
+  assert.equal(s.balance, initial.balance - 40_000)
 })
-test('USDT 余额不足以打款，1 小时后判定逾期违约，召唤蟠桃充公', () => {
+test('USDT 余额不足以打款，1 小时后判定逾期违约，暂扣的蟠桃全部充公', () => {
   const round = roundFor('infinite_sage', now)
   const pub = matchAt({ key: round.key, deadline: round.deadline })
   let s = transition(initial, { type: 'summon', action: { type: 'join', stage: 'infinite_sage', now } }, now).state
@@ -81,9 +79,9 @@ test('USDT 余额不足以打款，1 小时后判定逾期违约，召唤蟠桃�
   assert.equal(s.entries[0].status, 'forfeited')
   assert.equal(s.trades[0].status, 'overdue')
   assert.equal(s.contracts.length, initial.contracts.length)
-  assert.equal(s.balance, initial.balance - 10_000)
+  assert.equal(s.balance, initial.balance - 40_000)
   assert.equal(s.usdt, 100_000)
-  assert.deepEqual(parseProduct(JSON.stringify(s)), JSON.parse(JSON.stringify(s)))
+  assert.deepEqual(parseProduct(JSON.stringify(parseProduct(JSON.stringify(s)))), parseProduct(JSON.stringify(s)))
 })
 test('USDT 余额不足时不能提交召唤', () => {
   const poor = { ...initial, usdt: 100 }
@@ -116,7 +114,7 @@ test('用 USDT 购买蟠桃：1蟠桃 = 1 USDT，分别记账；USDT 不足或�
   assert.equal(s.balance, initial.balance + 25_050)
   assert.equal(s.usdt, initial.usdt - 25_050)
   assert.deepEqual(s.records.map(r => [r.kind, r.currency ?? 'peach', r.amountCents]), [['recharge', 'peach', 25_050], ['buy_pay', 'usdt', -25_050]])
-  assert.deepEqual(parseProduct(JSON.stringify(s)), JSON.parse(JSON.stringify(s)))
+  assert.deepEqual(parseProduct(JSON.stringify(parseProduct(JSON.stringify(s)))), parseProduct(JSON.stringify(s)))
   for (const amountCents of [0, -5, 1.5, initial.usdt + 1]) assert.equal(transition(initial, { type: 'buy-peach', amountCents }, now).state, initial)
 })
 test('体验版只是时间加速：各阶段蟠桃消耗与正式版相同', () => {

@@ -29,13 +29,24 @@ export const contractDay = (time: number) => {
   return `${cnNumber(d.getUTCMonth() + 1)}月${cnNumber(d.getUTCDate())}`
 }
 export const endsAt = (c: Contract) => c.started + RULES[c.stage].days * DAY
+/** 按正式周期显示：现在是修炼的第几天（1 起），以及 0–1 的进度 */
+export function progress(c: Contract, now: number) {
+  const total = RULES[c.stage].cycleDays
+  const ratio = Math.min(1, Math.max(0, (now - c.started) / (endsAt(c) - c.started)))
+  return { ratio, total, day: Math.min(total, Math.floor(ratio * total) + 1), done: now >= endsAt(c) }
+}
 export function due(c: Contract, now: number) {
   const days = RULES[c.stage].days
   return c.finishedAt ? 0 : Math.max(0, Math.min(days, Math.max(0, Math.floor((now - c.started) / DAY) + 1)) - c.completed)
 }
+/**
+ * 修炼蟠桃在进猴舍时一次扣除，之后自动修炼，不需要每天去点：
+ * 新进猴舍的悟空 completed 直接等于周期天数，周期没结束时就是「修炼中」，结束后进入「传承中」。
+ * completed 不足的情况只存在于旧存档和测试数据里。
+ */
 export function phase(c: Contract, now: number): Phase {
   if (c.finishedAt && c.completed === RULES[c.stage].days && now >= endsAt(c)) return '传承完成'
-  if (c.completed === RULES[c.stage].days) return now >= endsAt(c) ? '传承中' : '等待传承'
+  if (c.completed === RULES[c.stage].days) return now >= endsAt(c) ? '传承中' : '修炼中'
   return now >= endsAt(c) ? '待完成修炼' : '修炼中'
 }
 export function settlement(c: Contract) {
@@ -85,7 +96,7 @@ export function roomStatus(contracts: Contract[], now: number): { tone: 'due' | 
   if (s.byPhase.待完成修炼) return { tone: 'due', text: `待完成修炼 ${s.byPhase.待完成修炼}只` }
   if (s.todayMonkeys) return { tone: 'due', text: `今日待修 ${s.todayMonkeys}只${s.backlog ? ` · 待补${s.backlog}次` : ''}` }
   if (s.byPhase.传承完成) return { tone: 'ok', text: `承接人已打款 ${s.byPhase.传承完成}只 · 待确认收款` }
-  if (s.byPhase.修炼中) return { tone: 'ok', text: '今日修炼已完成' }
+  if (s.byPhase.修炼中) return { tone: 'ok', text: `修炼中 ${s.byPhase.修炼中}只` }
   if (s.byPhase.等待传承) return { tone: 'idle', text: `修炼圆满 ${s.byPhase.等待传承}只 · 等待传承` }
   if (s.byPhase.修炼圆满) return { tone: 'idle', text: `修炼圆满 ${s.byPhase.修炼圆满}只` }
   return { tone: 'idle', text: `传承中 ${s.byPhase.传承中}只` }

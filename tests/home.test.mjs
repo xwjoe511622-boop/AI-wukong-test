@@ -41,13 +41,13 @@ test('仙境状态：可预约 → 预约已截止 → 召唤中 → 今日已�
   assert.equal(realmStatus('stone_spirit', s.entries, at('11:30')), 'live-reserved')
 })
 const status = (st, time) => dailyTodos(st, at(time)).map(t => t.status).join(',')
-test('今日待办固定五行：预约、召唤、打款、修炼、收款，随流程推进变化', () => {
-  assert.deepEqual(dailyTodos(initial, at('09:00')).map(t => t.kind), ['reserve', 'cast', 'pay', 'train', 'receive'])
+test('今日待办固定四行：预约、召唤、打款、收款；修炼自动进行，不是待办', () => {
+  assert.deepEqual(dailyTodos(initial, at('09:00')).map(t => t.kind), ['reserve', 'cast', 'pay', 'receive'])
   // 新用户：只有预约是待处理
-  assert.equal(status(initial, '09:00'), 'todo,none,none,none,none')
+  assert.equal(status(initial, '09:00'), 'todo,none,none,none')
   // 预约后：预约完成，召唤等待开始
   let s = reserve(initial, 'stone_spirit', '09:00')
-  assert.equal(status(s, '09:30'), 'done,wait,none,none,none')
+  assert.equal(status(s, '09:30'), 'done,wait,none,none')
   // 召唤周期内：召唤可当场点
   const live = dailyTodos(s, at('11:10'))
   assert.equal(live[1].status, 'todo'); assert.equal(live[1].castKey, s.entries[0].key); assert.equal(live[1].until, at('12:00'))
@@ -56,14 +56,12 @@ test('今日待办固定五行：预约、召唤、打款、修炼、收款，�
   const pay = dailyTodos(s, at('11:11'))
   assert.equal(pay[1].status, 'done'); assert.equal(pay[2].status, 'todo'); assert.equal(pay[2].amountCents, 1000); assert.equal(pay[2].until, at('12:10'))
   assert.equal(dailyTodos({ ...s, usdt: 0 }, at('11:11'))[2].warn, true)
-  // 打款后等传承人确认；入舍后今日待修
+  // 打款后等传承人确认；入舍后没有任何要每天做的事
   s = transition(s, { type: 'trade-pay', id: s.trades[0].id }, at('11:12')).state
   assert.equal(dailyTodos(s, at('11:13'))[2].status, 'wait')
   s = transition(s, { type: 'tick' }, at('11:20')).state
-  const housed = dailyTodos(s, at('11:20'))
-  assert.equal(housed[2].status, 'none'); assert.equal(housed[3].status, 'todo'); assert.equal(housed[3].title, '今日待修 1 只')
-  s = transition(s, { type: 'cultivate', action: { type: 'train', ids: [s.contracts[0].id], accelerate: false, expected: 10 } }, at('11:21')).state
-  assert.equal(dailyTodos(s, at('11:21'))[3].status, 'done')
+  assert.equal(s.contracts.length, 1)
+  assert.equal(status(s, '11:20'), 'done,done,none,none')
   // 18:00 后今日预约全部截止
   assert.equal(dailyTodos(initial, at('18:30'))[0].status, 'none')
 })
