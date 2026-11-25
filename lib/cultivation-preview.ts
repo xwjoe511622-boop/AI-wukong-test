@@ -35,6 +35,19 @@ export function progress(c: Contract, now: number) {
   const ratio = Math.min(1, Math.max(0, (now - c.started) / (endsAt(c) - c.started)))
   return { ratio, total, day: Math.min(total, Math.floor(ratio * total) + 1), done: now >= endsAt(c) }
 }
+/** 修炼手记：每过一天多一行，让人回来时看得到悟空这几天在做什么。按天数循环取用 */
+const JOURNAL = ['吐纳灵气，根基初成', '静坐观心，杂念渐消', '引气入体，筋骨微鸣', '灵光内敛，气息绵长', '踏云而行，身轻如叶', '夜观星斗，心有所悟', '运转周天，灵气充盈', '破障一重，目中有光', '听风辨势，耳聪目明', '凝神聚气，金光隐现', '行走山川，与万物同息', '闭关三刻，气海翻涌', '心猿归位，意马收缰', '淬炼筋骨，力贯双臂', '明心见性，尘念不生', '吞吐日月，光华护体', '一念通达，万法随心', '御气凌空，俯瞰云海', '道心稳固，不动如山', '功行将满，只待圆满']
+/** 到现在为止的修炼手记，最新的在前 */
+export function journal(c: Contract, now: number) {
+  const p = progress(c, now)
+  const days = p.done ? p.total : p.day
+  return Array.from({ length: days }, (_, i) => ({ day: i + 1, text: i + 1 === p.total && p.done ? '修炼圆满，静候传承' : JOURNAL[i % JOURNAL.length] })).reverse()
+}
+/** 此刻的修炼值（USDT，带小数）：从本轮修炼值朝圆满值按时间推进，仅用于展示，圆满后才生效 */
+export function liveValue(c: Contract, now: number) {
+  const growth = c.principal * RULES[c.stage].gain / 100
+  return (c.principal + growth * progress(c, now).ratio) / 100
+}
 export function due(c: Contract, now: number) {
   const days = RULES[c.stage].days
   return c.finishedAt ? 0 : Math.max(0, Math.min(days, Math.max(0, Math.floor((now - c.started) / DAY) + 1)) - c.completed)

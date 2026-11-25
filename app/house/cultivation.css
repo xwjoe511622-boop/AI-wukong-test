@@ -68,3 +68,21 @@
 .contract-slip-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px 16px; }
 .contract-slip-grid dt { font-size: 11px; color: #a9a49a; }
 .contract-slip-grid dd { margin-top: 2px; font-size: 13px; color: #f0e7d5; font-variant-numeric: tabular-nums; }
+
+/* 修炼台 */
+.slip-value { margin-top: 4px; font-family: var(--font-latin); font-size: 38px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; color: #ffd27a; text-shadow: 0 0 22px #ffcf5c40; }
+.slip-value span { font-size: 20px; color: #e9cf9f; }
+.slip-value small { margin-left: 6px; font-family: inherit; font-size: 11px; font-weight: 400; letter-spacing: .12em; color: #a59c8c; }
+.slip-beads { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.slip-beads li { width: 12px; height: 12px; border-radius: 999px; border: 1px solid #8f7a4c; background: #100e0b; }
+.slip-beads li.is-lit { border-color: #ffcf5c; background: radial-gradient(circle at 35% 30%, #fff2c8, #e0a93a 60%, #8a5a12); box-shadow: 0 0 8px #ffcf5c80; }
+.slip-beads li.is-now { border-color: #ffcf5c; background: #5a4318; animation: bead-breathe 2.4s ease-in-out infinite; }
+@keyframes bead-breathe { 0%, 100% { box-shadow: 0 0 0 #ffcf5c00; background: #5a4318; } 50% { box-shadow: 0 0 12px #ffcf5ccc; background: #c9952f; } }
+@media (prefers-reduced-motion: reduce) { .slip-beads li.is-now { animation: none; background: #c9952f; } }
+.slip-journal { display: flex; flex-direction: column; gap: 6px; max-height: 92px; margin-top: 8px; overflow-y: auto; font-size: 12px; line-height: 1.5; color: #d6cfc2; }
+.slip-journal li span { display: inline-block; min-width: 4.2em; margin-right: 8px; font-size: 11px; color: #c9a866; }
+.slip-journal li:not(:first-child) { color: #8f8778; }
+.room-swipe { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.room-swipe::-webkit-scrollbar { display: none; }
+.room-swipe > * { flex: 0 0 100%; min-width: 0; scroll-snap-align: center; }
+.room-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 0 14px; border: 1px solid #b8955333; background: linear-gradient(180deg,#131110,#0c0b09); }

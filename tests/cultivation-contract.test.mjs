@@ -44,3 +44,18 @@ test('批量报价去除已圆满任务，仅扣当前到期次数，无额外�
   assert.equal(q.fee, 0)
   assert.equal(q.total, 200)
 })
+test('自动修炼的展示：第几天、修炼手记和实时修炼值都随时间推进', () => {
+  const { progress, journal, liveValue, RULES } = require('../lib/cultivation-preview.ts')
+  const days = RULES.wukong.days, total = RULES.wukong.cycleDays
+  const c = { id: 'auto', stage: 'wukong', principal: 20000, started: now, completed: days }
+  const span = days * DAY
+  assert.equal(progress(c, now).day, 1)
+  assert.equal(progress(c, now + span / 2).day, Math.floor(total / 2) + 1)
+  assert.equal(progress(c, now + span).done, true)
+  assert.equal(journal(c, now).length, 1)
+  assert.equal(journal(c, now + span).length, total)
+  assert.equal(journal(c, now + span)[0].text, '修炼圆满，静候传承')
+  assert.equal(liveValue(c, now), 200)
+  assert.equal(liveValue(c, now + span), 200 * (1 + RULES.wukong.gain / 100))
+  assert.ok(liveValue(c, now + span / 2) > 200 && liveValue(c, now + span / 2) < liveValue(c, now + span))
+})

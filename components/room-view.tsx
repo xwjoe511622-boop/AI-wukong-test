@@ -16,8 +16,6 @@ export function RoomView({ stage }: { stage: Stage }) {
   const room = ROOMS[stage]
   const contracts = sortContracts(state.contracts.filter(c => c.stage === stage), now)
   const summary = summarize(contracts, now)
-  // 石灵通常只有一只：保留更沉浸的单角色布局；两只及以上自动切换为列表
-  const immersive = stage === 'stone_spirit' && contracts.length === 1
 
   return <div className="house-overview flex flex-col gap-4">
     <header className="flex items-start gap-3 pr-12">
@@ -32,15 +30,12 @@ export function RoomView({ stage }: { stage: Stage }) {
 
     <section aria-label={`${rule.name}修炼之境`} className="cultivation-current">
       <CultivationVideo key={`${stage}-${contracts.length > 0}`} stage={stage} locked={!contracts.length} empty={!state.contracts.length} />
-      {immersive && <ContractSlip contract={contracts[0]} />}
     </section>
 
-    {contracts.length > 0 && !immersive && <>
-      <section aria-label="本室悟空" className="flex flex-col gap-3">
-        {contracts.map(c => <ContractSlip key={c.id} contract={c} />)}
-      </section>
-    </>}
-
+    {contracts.length > 0 && <section aria-label="本室悟空">
+      {contracts.length > 1 && <p className="mb-2 text-center text-[11px] text-stone-400">本室共 {contracts.length} 只 · 左右滑动查看</p>}
+      <div className={contracts.length > 1 ? 'room-swipe' : ''}>{contracts.map(c => <ContractSlip key={c.id} contract={c} />)}</div>
+    </section>}
 
     <p role="status" aria-live="polite" className="min-h-4 text-center text-[11px] leading-5 text-amber-100/80"><PeachText>{message || `${room.room} · 修炼有时，传承有序。`}</PeachText></p>
 
