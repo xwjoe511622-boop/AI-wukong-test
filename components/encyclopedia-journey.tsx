@@ -10,7 +10,7 @@ export function EncyclopediaJourney() {
   const amounts = settlement(example)
   const stacked = rewardParts(10000, 1, 2)
   return <>
-    <LoreChapter id="summon" number="06" title="召唤｜与悟空相遇" subtitle="截止前点一次召唤，到点系统自动匹配，成功后限时支付结算。">
+    <LoreChapter id="summon" number="06" title="召唤｜唤醒一个智能体" subtitle="截止前点一次召唤，到点系统自动匹配，成功后限时支付结算。">
       <ol className="flex flex-col">{['截止前点召唤 · 暂扣召唤蟠桃','到点系统自动匹配','公布结果并通知','召唤成功 · 匹配到传承人','承接人 1 小时内完成支付结算','传承人确认实际到账','悟空进入猴舍 · 蟠桃正式扣除'].map((text, i) => <li key={text} className="flex min-h-12 items-center gap-4 border-l border-[var(--gold-600)]/40 pl-4"><span className="font-latin text-xs text-[var(--gold-400)]">0{i + 1}</span><span className="text-[var(--gold-100)]">{text}</span></li>)}</ol>
       <p>玩家通过蟠桃参与召唤。点召唤时暂扣召唤蟠桃；召唤失败不产生交易，暂扣的蟠桃全额退还，可继续参与后续召唤。每个召唤周期每人参与一次。修炼值以 USDT 计，蟠桃只用于召唤与修炼。</p>
       <div className="hud-panel rounded-xl p-4"><h3 className="font-display text-base text-[var(--gold-100)]">召唤时间表 · 北京时间</h3><div role="table" aria-label="召唤时间表" className="mt-3 text-xs"><div role="row" className="grid grid-cols-[1.3fr_1.5fr_1fr_1fr] gap-2 border-b border-[var(--gold-600)]/30 pb-2 text-[12px] text-[var(--gold-200)]"><span role="columnheader">阶段</span><span role="columnheader">召唤周期</span><span role="columnheader" className="text-right">开放召唤</span><span role="columnheader" className="text-right">停止召唤</span></div>{LEVELS.map(l => <div role="row" key={l.id} className="grid grid-cols-[1.3fr_1.5fr_1fr_1fr] items-center gap-2 border-b border-[var(--gold-600)]/15 py-2 last:border-0"><span role="cell" className="whitespace-nowrap text-[var(--gold-100)]">{l.name}{l.isOpen ? '' : '（未开放）'}</span><span role="cell" className="whitespace-nowrap font-latin tabular-nums">{l.summonWindow}</span><span role="cell" className="text-right font-latin tabular-nums">{l.summonStartTime}</span><span role="cell" className="text-right font-latin tabular-nums">{l.summonStopTime}</span></div>)}</div><p className="mt-3 text-[12px] leading-6 text-stone-400">停止召唤即截止时间，须在此之前点「召唤」；到开放召唤的时刻，系统自动为参与的玩家匹配并公布结果，不需要再操作。</p></div>
@@ -18,7 +18,7 @@ export function EncyclopediaJourney() {
       <div className="hud-panel rounded-xl p-4"><h3 className="font-display text-base text-[var(--gold-100)]">逾期未支付与违约</h3><p className="mt-2">召唤成功后超过 {PAYMENT_WINDOW_HOURS} 小时仍未完成支付结算，系统判定为逾期违约：暂扣的召唤蟠桃全部充公，不予退还，并保留违约记录。</p></div>
       <p className="text-[12px] leading-6 text-stone-400">召唤成功后，可在首页待办或「我的 → 我的交易」中查看匹配的传承人并完成支付结算；传承人确认到账后悟空进入猴舍。支付结算从你的 USDT 余额扣除。</p>
     </LoreChapter>
-    <LoreChapter id="cultivation" number="07" title="修炼｜成长需要时间" subtitle="进了猴舍，悟空自己修炼，你只需要等。">
+    <LoreChapter id="cultivation" number="07" title="修炼｜你在训练它" subtitle="每天为它修炼一次；没有人来的那一天，它就停在原地。">
       <div className="flex flex-wrap gap-2">{Object.values(LEVEL_BY_ID).map(l => <span key={l.id} className="rounded-full border border-[var(--gold-600)]/40 px-3 py-1 text-xs text-[var(--gold-200)]">{l.name} · {l.cycleDays}天</span>)}</div>
       <p>七阶段修炼天数各不相同：{LEVELS.map(l => `${l.name} ${l.cycleDays} 天`).join('、')}。</p>
       <p>悟空进猴舍后，需要每天进修炼室点一次「修炼」：点了扣当天的修炼蟠桃、算当天的修炼加成。当天没点，就没有当天的加成，过后不能补；一天都没点，按原修炼值传承。</p><div className="hud-panel rounded-xl p-4"><h3 className="font-display text-base text-[var(--gold-100)]">{LEVEL_BY_ID.wukong.name} · 修炼蟠桃</h3><p className="mt-2 flex flex-wrap items-center gap-1 text-xs leading-6">每日 <PeachValue cents={LEVEL_BY_ID.wukong.cultivationCost * 100} size="xs" /> × {LEVEL_BY_ID.wukong.cycleDays} 天，共 <PeachValue cents={LEVEL_BY_ID.wukong.cultivationCost * LEVEL_BY_ID.wukong.cycleDays * 100} size="xs" />，每天点修炼时扣当天的。</p></div>
@@ -26,7 +26,7 @@ export function EncyclopediaJourney() {
     <LoreChapter id="completion" number="08" title="周期｜时间自有答案" subtitle="修炼天数走完，进入传承。">
       <p>从召唤成功那一刻起算，修炼天数走完即进入传承，不能提前，也没有付费加速；修炼增长只按实际点过修炼的天数计算。例如{LEVEL_BY_ID.battle_wukong.name}修炼 {LEVEL_BY_ID.battle_wukong.cycleDays} 天，第 {LEVEL_BY_ID.battle_wukong.cycleDays} 天结束后进入传承。</p><div className="hud-panel rounded-xl p-4 text-center font-display text-base text-gold">每日修炼 → 周期结束 → 传承</div>
     </LoreChapter>
-    <LoreChapter id="inheritance" number="09" title="传承｜完成一段生命旅程" subtitle="原生命周期结束后，检查修炼是否全部完成。">
+    <LoreChapter id="inheritance" number="09" title="传承｜记忆不会消失" subtitle="修炼周期结束后，悟空交到下一位手里。">
       <div className="hud-panel rounded-xl p-4 text-center text-[var(--gold-100)]">周期结束 · 进入传承</div><p>修炼天数走完，进入传承中：等下一轮同阶段召唤匹配到承接人，由承接人向你支付；你核实到账并确认收款后，传承完成，传承所得进入 USDT 余额。</p>
       <div className="hud-panel rounded-xl p-4"><h3 className="font-display text-base text-[var(--gold-100)]">齐天大圣 · 传承所得示例</h3><dl className="cultivation-facts mt-4"><div><dt>修炼值</dt><dd><UsdtValue cents={example.principal} size="sm" /></dd></div><div><dt>修炼加成</dt><dd>+{level.growthRate}%</dd></div><div><dt>修炼增长</dt><dd><UsdtValue cents={amounts.profit} sign="+" size="sm" /></dd></div><div><dt>平台手续费 · 修炼增长的 {INHERITANCE_FEE_PCT}%</dt><dd><UsdtValue cents={amounts.fee} sign="-" size="sm" /></dd></div><div className="border-t border-[var(--gold-600)]/30 pt-3"><dt>本次传承所得</dt><dd><UsdtValue cents={amounts.received} size="lg" /></dd></div></dl></div><p>平台仅收实际修炼增长的{INHERITANCE_FEE_PCT}%，不对修炼值收费。传承所得 = 修炼值 + 修炼增长 − 平台手续费，以 USDT 计。</p>
     </LoreChapter>

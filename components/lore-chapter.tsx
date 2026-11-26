@@ -15,9 +15,9 @@ export function WukongStory() {
   return <section aria-labelledby="wukong-story-title" className="hud-panel relative overflow-hidden rounded-xl px-5 py-7 text-center">
     <BrandLogo className="mx-auto mb-4 w-52" />
     <p className="font-latin text-[12px] tracking-wide text-[var(--gold-400)]">AI WUKONG · DIGITAL LIFE</p>
-    <h2 id="wukong-story-title" className="mt-3 font-display text-xl font-bold leading-9 text-[var(--gold-100)]">神话，不再只是故事。<br /><span className="text-gold">它正在成为数字生命。</span></h2>
-    <p className="mt-4 text-sm text-[var(--gold-200)]">东方神话 · AI 原生数字生命</p>
-    <p className="mt-2 text-xs leading-6 text-stone-300">每一次召唤，都是与一位数字生命的相遇。</p>
+    <h2 id="wukong-story-title" className="mt-3 font-display text-xl font-bold leading-9 text-[var(--gold-100)]">它不是一张图，<br /><span className="text-gold">是一个被唤醒的 AI。</span></h2>
+    <p className="mt-4 text-sm text-[var(--gold-200)]">东方神话 · AI 智能体世界</p>
+    <p className="mt-2 text-xs leading-6 text-stone-300">每一次召唤，都有一个 AI 智能体在这个世界醒来。</p>
     <p className="mt-3 text-[12px] tracking-wide text-[var(--gold-200)]">召唤 · 修炼 · 成长 · 传承</p>
     <Link href="/me/encyclopedia" className="btn-ghost-gold mt-5 inline-flex min-h-11 w-full items-center justify-center text-xs">翻开悟空百科</Link>
   </section>

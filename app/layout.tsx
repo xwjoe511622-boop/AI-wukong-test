@@ -12,7 +12,7 @@ import { WalletGate } from '@/components/wallet-gate'
 
 export const metadata: Metadata = {
   title: 'AI WUKONG · AI悟空数字生命',
-  description: `AI WUKONG$：AI 悟空数字生命的世界设定，经历召唤、修炼、圆满与传承。`,
+  description: 'AI WUKONG：每一只悟空都是一个 AI 智能体。召唤、修炼、传承，让东方神话由参与的人共同写下去。',
   generator: 'v0.app',
 }
 
