@@ -32,6 +32,6 @@ export function AssetCard() {
         <p className="asset-note">可用余额</p>
       </Link>
     </div>
-    {locked > 0 && <Link href="/me/locked" className="asset-locked"><span>暂扣中</span><strong>{fmt(locked)}</strong><Image src="/assets/peach.png" alt="蟠桃" width={20} height={20} /><em>查看<ChevronRight className="size-3.5" aria-hidden /></em></Link>}
+    <Link href="/me/locked" className="asset-locked"><span>暂扣中</span><strong>{fmt(locked)}</strong><Image src="/assets/peach.png" alt="蟠桃" width={20} height={20} /><em>查看<ChevronRight className="size-3.5" aria-hidden /></em></Link>
   </div>
 }
