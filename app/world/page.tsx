@@ -14,6 +14,6 @@ export default async function WorldPage({ searchParams }: { searchParams: Promis
   return <div className="flex flex-col gap-5">
     <div className="hud-panel rounded-xl px-3 py-3"><TitlePlaque zh="七大仙境" en="SEVEN IMMORTAL REALMS" /><p className="mt-2 text-center text-xs text-[var(--gold-200)]">选择仙境 · 发起召唤 · 每日修炼</p><GoldDivider className="mx-auto mt-3 w-40" /></div>
     <RealmList />
-    <p className="hud-panel rounded-lg px-3 py-3 text-center text-[12px] leading-relaxed text-[var(--gold-200)]">每日北京时间 11:00—17:00，{ALL_OPEN ? '七' : '前六'}阶段依次召唤<br />每晚 19:00 起可召唤次日的 · 周期前 30 分钟截止 · 到点自动匹配{ALL_OPEN ? '' : ' · 无极大圣未开放'}</p>
+    <p className="hud-panel rounded-lg px-3 py-3 text-center text-[12px] leading-relaxed text-[var(--gold-200)]">每日北京时间 11:00—17:00，{ALL_OPEN ? '七' : '前六'}阶段依次召唤匹配<br />前 30 分钟召唤截止 · 每日 19:00 可以开启新一天的召唤{ALL_OPEN ? '' : ' · 无极大圣未开放'}</p>
   </div>
 }
