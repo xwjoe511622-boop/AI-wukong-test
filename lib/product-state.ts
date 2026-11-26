@@ -2,6 +2,7 @@ import { createPreview, isPreview, transition as cultivate, endsAt, quote, settl
 import { initialPreview, parsePreview, transition as summon, costCents, matchAt, resultAt, type PreviewAction, type Entry } from './summon-preview'
 import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS, TRIAL_MODE, TRIAL_PEACH, TRIAL_USDT, VALID_USER_MIN_PEACH } from './game-data'
 import { COUNTERPARTY_DELAY_MS, PAYMENT_WINDOW_MS, demoCounterparty, isTrade, nextMatchAfter, type Trade } from './trade'
+import { demoAddress, isAddress, shortAddress } from './wallet'
 import { rewardParts, tribeTier, type AccountRecord, type MemberRecord, type RewardRecord } from './profile-rules'
 
 // 换键：契约功能取消后旧存档不再载入，新存档以预置猴舍开始。
@@ -15,7 +16,7 @@ export const walletAddress = (playerId: string) => { const hex = playerId.replac
 /** 头像只接受缩小后的图片 data URL，限制大小以免撑爆本地存档 */
 export const AVATAR_MAX_CHARS = 200_000
 export const isAvatar = (value: unknown): value is string => typeof value === 'string' && /^data:image\/(png|jpeg|webp);base64,/.test(value) && value.length <= AVATAR_MAX_CHARS
-/** UID 的基本格式：字母、数字、短横线，8 到 64 位 */
+/** 旧版 UID 的格式；现在身份统一用钱包地址，转账等处改用 isAddress */
 export const isUid = (value: string) => /^[A-Za-z0-9-]{8,64}$/.test(value)
 export const isWalletAddress = (value: string) => /^0x[0-9a-fA-F]{40}$/.test(value)
 /** 站内通知：召唤结果、待支付结算、入舍、匹配到承接人、待确认收款、到账、违约 */
@@ -51,7 +52,7 @@ export type ProductAction =
   | { type: 'transfer'; currency: Currency; amountCents: number; address: string }
   | { type: 'demo-receive'; currency: Currency; amountCents: number }
   | { type: 'buy-peach'; amountCents: number }
-  /** 平台内转账：按对方 UID 转蟠桃或 USDT */
+  /** 平台内转账：按对方钱包地址转蟠桃或 USDT（uid 字段里是地址） */
   | { type: 'transfer-to'; currency: Currency; amountCents: number; uid: string }
   /** 承接人：从 USDT 余额向传承人支付修炼值 */
   | { type: 'trade-pay'; id: string }
@@ -78,13 +79,13 @@ function starterContracts(now: number): Contract[] {
 }
 /** 示例部族 160 人：第一代 16、第二代 44、更深层 100；每 16 人中 1 人持有蟠桃不足，不算有效用户。加入时间错开在近 30 天内，方便看排序 */
 function sampleMembers(now: number): DemoMember[] {
-  return Array.from({ length: 160 }, (_, index) => ({ uid: `demo-member-${String(index + 1).padStart(3, '0')}`, generation: index < 16 ? 1 : index < 60 ? 2 : 3, joinedAt: new Date(now - ((index * 37) % 30) * 86400000 - ((index * 53) % 24) * 3600000).toISOString(), days: (index * 37) % 30, valid: index % 16 !== 15 }))
+  return Array.from({ length: 160 }, (_, index) => ({ uid: demoAddress(`member-${index + 1}`), generation: index < 16 ? 1 : index < 60 ? 2 : 3, joinedAt: new Date(now - ((index * 37) % 30) * 86400000 - ((index * 53) % 24) * 3600000).toISOString(), days: (index * 37) % 30, valid: index % 16 !== 15 }))
 }
 /** 新存档的初始内容。正式版从零开始；体验版只多赠送余额，不预置悟空和成员 */
 export type ProductSeed = { balance: number; usdt: number; starters?: boolean }
 export const defaultSeed = (): ProductSeed => TRIAL_MODE ? { balance: TRIAL_PEACH * 100, usdt: TRIAL_USDT * 100 } : { balance: 0, usdt: 0 }
 export function createProduct(now: number, playerId: string, seed: ProductSeed = defaultSeed()): ProductState {
-  return { version: 6, playerId, inviteCode: `WK${playerId.replaceAll('-', '').slice(0, 16).toUpperCase()}`, balance: seed.balance, usdt: seed.usdt, entries: [], contracts: seed.starters ? starterContracts(now) : [], history: [], records: [], rewards: [], members: [], demoSettlements: [], trades: [], notifications: [], offset: 0, demoOutcome: 'success' }
+  return { version: 6, playerId, inviteCode: `WK${playerId.replace(/^0x/i, '').replaceAll('-', '').slice(0, 16).toUpperCase()}`, balance: seed.balance, usdt: seed.usdt, entries: [], contracts: seed.starters ? starterContracts(now) : [], history: [], records: [], rewards: [], members: [], demoSettlements: [], trades: [], notifications: [], offset: 0, demoOutcome: 'success' }
 }
 function record(state: ProductState, kind: string, amountCents: number, description: string, now: number, currency: Currency = 'peach'): ProductState {
   return { ...state, records: [{ id: `${now}-${state.records.length}-${kind}`, kind, amountCents, description, createdAt: new Date(now).toISOString(), ...(currency === 'usdt' ? { currency } : {}) }, ...state.records] }
@@ -228,7 +229,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
     if (now >= trade.deadline) return { state, message: '已超过支付期限。' }
     if (state.usdt < trade.amountCents) return { state, message: 'USDT 余额不足，无法完成支付结算。请先补足 USDT。' }
     let next = payerPays({ ...state, usdt: state.usdt - trade.amountCents }, trade, now)
-    next = record(next, 'summon_pay', -trade.amountCents, `${LEVEL_BY_ID[trade.stage].name}召唤：向传承人 ${trade.counterparty.uid} 支付修炼值 ${money(trade.amountCents)} USDT，等待传承人确认到账。`, now, 'usdt')
+    next = record(next, 'summon_pay', -trade.amountCents, `${LEVEL_BY_ID[trade.stage].name}召唤：向传承人 ${shortAddress(trade.counterparty.uid)} 支付修炼值 ${money(trade.amountCents)} USDT，等待传承人确认到账。`, now, 'usdt')
     return { state: next, message: `已支付 ${money(trade.amountCents)} USDT，等待传承人确认到账。` }
   }
   if (action.type === 'trade-confirm') {
@@ -293,11 +294,11 @@ export function productTransition(state: ProductState, action: ProductAction, no
     const key = action.currency === 'usdt' ? 'usdt' as const : 'balance' as const
     const uid = action.uid.trim()
     if (!label) return { state, message: '不支持的资产类型。' }
-    if (!isUid(uid)) return { state, message: '请输入对方的 UID。' }
+    if (!isAddress(uid)) return { state, message: '请输入对方的钱包地址（0x 开头，共 42 位）。' }
     if (uid.toLowerCase() === state.playerId.toLowerCase()) return { state, message: '不能转给自己。' }
     if (!Number.isSafeInteger(action.amountCents) || action.amountCents <= 0) return { state, message: '请输入有效的数量，最多两位小数。' }
     if (state[key] < action.amountCents) return { state, message: `${label} 余额不足。` }
-    return { state: record({ ...state, [key]: state[key] - action.amountCents }, 'transfer_out', -action.amountCents, `转给 ${uid}：${money(action.amountCents)} ${label}。`, now, action.currency), message: `已向 ${uid} 转出 ${money(action.amountCents)} ${label}。` }
+    return { state: record({ ...state, [key]: state[key] - action.amountCents }, 'transfer_out', -action.amountCents, `转给 ${shortAddress(uid)}：${money(action.amountCents)} ${label}。`, now, action.currency), message: `已向 ${shortAddress(uid)} 转出 ${money(action.amountCents)} ${label}。` }
   }
   if (action.type === 'transfer' || action.type === 'demo-receive') {
     const label = CURRENCY_LABEL[action.currency]

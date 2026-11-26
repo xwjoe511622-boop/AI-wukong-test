@@ -1,44 +1,15 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { ChevronRight } from 'lucide-react'
 import { LEVEL_BY_ID } from '@/lib/game-data'
-import { matchAt, matchStage, type Entry } from '@/lib/summon-preview'
+import { matchAt, matchStage } from '@/lib/summon-preview'
 import { useProduct } from './product-provider'
 
 /** 匹配过程里依次出现的三句话；后端没出结果就一直停在最后一句 */
-const STEPS = ['排队中', '正在为你匹配悟空', '结果即将揭晓']
-const stepOf = (elapsed: number) => elapsed < 4000 ? 0 : elapsed < 9000 ? 1 : 2
-
-/**
- * 仙境页：整点前 10 秒进入倒数，整点起显示「系统正在匹配」，一直到后端出结果才揭晓。
- * 多久出结果由后端决定，这里不写死时长。
- */
-export function SummonMatching({ entry, now }: { entry: Entry; now: number }) {
-  const level = LEVEL_BY_ID[entry.stage]
-  const stage = matchStage(entry, now)
-  if (!stage) return null
-  const left = Math.max(0, Math.ceil((matchAt(entry) - now) / 1000))
-  const step = stepOf(now - matchAt(entry))
-  return <section id="summon-action" role="status" aria-live="polite" aria-label={stage === 'soon' ? '即将开始匹配' : '系统正在匹配'} className={`match-panel scroll-mt-20 is-${stage}`}>
-    <div className="match-seal" aria-hidden>
-      <span className="match-ring" /><span className="match-ring is-2" /><span className="match-ring is-3" />
-      <Image src="/assets/player-seal.png" alt="" width={84} height={84} />
-    </div>
-    {stage === 'soon' ? <>
-      <p className="match-kicker">{level.name} · 即将开始匹配</p>
-      <p key={left} className="match-count">{left}</p>
-      <p className="match-note">不需要操作，结果会立即揭晓</p>
-    </> : <>
-      <p className="match-kicker">{level.name} · 系统正在匹配</p>
-      <p key={step} className="match-step">{STEPS[step]}<span className="match-dots" aria-hidden><i /><i /><i /></span></p>
-      <ol className="match-track" aria-hidden>{STEPS.map((_, i) => <li key={i} className={i <= step ? 'is-on' : ''} />)}</ol>
-      <p className="match-note">请留在此页，结果马上揭晓</p>
-    </>}
-  </section>
-}
+export const MATCH_STEPS = ['排队中', '正在为你匹配', '结果即将揭晓']
+export const matchStep = (elapsed: number) => elapsed < 4000 ? 0 : elapsed < 9000 ? 1 : 2
 
 /** 不在仙境页、首页时：顶部滑下一条「正在匹配」，点了过去看 */
 export function MatchBanner() {

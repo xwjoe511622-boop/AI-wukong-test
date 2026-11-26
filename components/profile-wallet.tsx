@@ -1,9 +1,10 @@
 'use client'
 
+import { isAddress } from '@/lib/wallet'
 import { useState } from 'react'
 import { PEACH_UNIT_TEXT, VALID_USER_MIN_PEACH } from '@/lib/game-data'
 import { LEDGER_LABELS, profileTime } from '@/lib/profile-rules'
-import { CURRENCY_LABEL, isUid, type Currency } from '@/lib/product-state'
+import { CURRENCY_LABEL, type Currency } from '@/lib/product-state'
 import { money } from '@/lib/cultivation-preview'
 import { AssetCard } from './asset-card'
 import { useProduct } from './product-provider'
@@ -47,13 +48,13 @@ export function ProfileWallet({ initialMode }: { initialMode?: string }) {
         <h2 className="font-display text-base text-[var(--gold-100)]">转账</h2>
         <span className="asset-label !mt-3">转哪种资产</span>
         <div role="group" aria-label="转账资产" className="asset-pick">{(['usdt', 'peach'] as const).map(id => <button type="button" key={id} aria-pressed={currency === id} onClick={() => { setCurrency(id); setConfirming(false) }}>{CURRENCY_LABEL[id]}<strong>{money(id === 'usdt' ? usdt : peach)}</strong></button>)}</div>
-        <label htmlFor="transfer-uid" className="asset-label">对方 UID</label>
-        <div className="asset-field"><input id="transfer-uid" value={uid} onChange={e => { setUid(e.target.value); setConfirming(false) }} placeholder="请输入对方的 UID" autoComplete="off" spellCheck={false} className="font-mono !text-sm" /></div>
+        <label htmlFor="transfer-uid" className="asset-label">对方钱包地址</label>
+        <div className="asset-field"><input id="transfer-uid" value={uid} onChange={e => { setUid(e.target.value); setConfirming(false) }} placeholder="0x 开头的钱包地址" autoComplete="off" spellCheck={false} className="font-mono !text-sm" /></div>
         <label htmlFor="transfer-amount" className="asset-label">转账数量</label>
         <div className="asset-field"><input id="transfer-amount" value={amount} onChange={e => { setAmount(e.target.value); setConfirming(false) }} inputMode="decimal" placeholder="0.00" className="num" /><span className="unit">{CURRENCY_LABEL[currency]}</span><button type="button" onClick={() => { setAmount((available / 100).toFixed(2)); setConfirming(false) }}>全部</button></div>
         {belowValid && <p role="alert" className="mt-2 text-xs leading-5 text-[#f0a58a]">转出后蟠桃将少于 {VALID_USER_MIN_PEACH} 个，你将不再是有效用户，无法获得同行与部族奖励。</p>}
         {confirming && <div role="alert" className="trade-confirm mt-4 text-xs leading-6">请核对：向 <code className="break-all text-[var(--gold-100)]">{uid.trim()}</code> 转出 <strong className="text-[var(--gold-100)]">{money(cents)} {CURRENCY_LABEL[currency]}</strong>。转出后无法撤回。</div>}
-        <div className="mt-5 flex flex-col gap-2"><ProfileButton size="large" disabled={!ready || badAmount || !isUid(uid.trim())} onClick={transfer}>{confirming ? '确认无误，转出' : '转账'}</ProfileButton>{confirming && <ProfileButton size="large" secondary onClick={() => setConfirming(false)}>返回修改</ProfileButton>}</div>
+        <div className="mt-5 flex flex-col gap-2"><ProfileButton size="large" disabled={!ready || badAmount || !isAddress(uid.trim())} onClick={transfer}>{confirming ? '确认无误，转出' : '转账'}</ProfileButton>{confirming && <ProfileButton size="large" secondary onClick={() => setConfirming(false)}>返回修改</ProfileButton>}</div>
       </div>}
 
       {mode === 'buy' && <div role="tabpanel">

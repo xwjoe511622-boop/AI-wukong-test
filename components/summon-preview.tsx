@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { RealmCardHero } from './realm-card-hero'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
@@ -9,7 +9,7 @@ import { roundFor, durationText, peachText, peachWhole, rangePosition, costCents
 import { useSummonPreview } from './summon-preview-provider'
 import { SummonPreviewConfirm, SummonReserved } from './summon-preview-confirm'
 import { SummonPreviewEntry } from './summon-preview-entry'
-import { SummonMatching } from './summon-matching'
+import { MATCH_STEPS, matchStep } from './summon-matching'
 import { PeachIcon } from './peach'
 import { PeachValue } from './peach-value'
 import { PageBar } from './profile-ui'
@@ -38,6 +38,17 @@ export function SummonPreview({ stage }: { stage: Stage }) {
   const previous = state.entries.filter(e => e.stage === stage && e.key !== round.key).slice().reverse()
   const position = rangePosition(stage)
   const settled = !!entry && entry.status !== 'waiting'
+  // 整点前 10 秒倒数、整点起匹配中：召唤按钮变成金光流动的「匹配中」
+  const matching = entry ? matchStage(entry, now) : null
+  const secondsLeft = entry ? Math.max(0, Math.ceil((matchAt(entry) - now) / 1000)) : 0
+  const step = entry ? matchStep(now - matchAt(entry)) : 0
+  // 倒数每秒一声，最后 3 秒更响；揭晓的一刻震动一下
+  useEffect(() => { if (matching === 'soon' && secondsLeft > 0) play(secondsLeft <= 3 ? 'nav' : 'tap') }, [matching, secondsLeft, play])
+  const wasMatching = useRef(false)
+  useEffect(() => {
+    if (wasMatching.current && settled) { try { navigator.vibrate?.(entry?.status === 'success' ? [80, 60, 160] : 120) } catch {} }
+    wasMatching.current = matching === 'matching'
+  }, [matching, settled, entry?.status])
   const steps = [
     ['召唤', `${level.summonStopTime} 前`],
     ['匹配', `${level.summonStartTime} 自动`],
@@ -73,7 +84,9 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     </section>
 
     {/* 操作区：紧跟在算账卡下面，不固定在屏幕底部，不挡导航栏 */}
-    {!settled && (entry && matchStage(entry, now) ? <SummonMatching entry={entry} now={now} /> : <ActionBar />)}
+    {!settled && <ActionBar />}
+    {/* 匹配期间整页四周一圈金光在收紧放松 */}
+    {matching && <div className="match-vignette" aria-hidden />}
 
     {/* 流程线 */}
     <section aria-label="流程" className="hud-panel rounded-xl px-3 py-4">
@@ -112,18 +125,24 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     // 左边：状态和倒计时；右边：此刻唯一能点的按钮
     let label: string, until: number | null, button: React.ReactNode
     if (!level.isOpen) { label = '本阶段尚未开放'; until = null; button = <button type="button" className="btn-gold stage-cta" disabled>未开放</button> }
+    else if (entry && matching) { label = matching === 'soon' ? '即将开始匹配' : '系统正在匹配'; until = null; button = <button type="button" className={`btn-gold stage-cta match-cta is-step-${matching === 'soon' ? 0 : step + 1}`} aria-disabled="true" tabIndex={-1}><span className="match-sweep" aria-hidden /><span className="relative">{matching === 'soon' ? '即将匹配' : '匹配中'}</span></button> }
     else if (entry) { label = '已参与召唤 · 距系统匹配'; until = matchAt(entry); button = <button type="button" className="btn-gold stage-cta" disabled>等待匹配</button> }
     else if (round.open) { label = '距召唤截止'; until = round.cutoff; button = <button type="button" className="btn-gold stage-cta" disabled={!ready || shortPeach || shortUsdt} onClick={() => { play('nav'); setConfirmation(round.key); setError('') }}>召唤</button> }
     else if (round.ended) { label = '本轮已结束 · 距下一轮开放'; until = round.nextOpen; button = <button type="button" className="btn-gold stage-cta" disabled>已结束</button> }
     else { label = round.matching ? '本轮已匹配 · 未参与' : '本轮召唤已截止 · 未参与'; until = round.matching ? round.windowEnd : round.deadline; button = <button type="button" className="btn-gold stage-cta" disabled>已截止</button> }
     const canReserve = level.isOpen && !entry && round.open
-    return <section id="summon-action" className="stage-action scroll-mt-20" aria-label="召唤操作">
+    return <section id="summon-action" className={`stage-action scroll-mt-20 ${matching ? `is-matching is-${matching}` : ''}`} aria-label="召唤操作" aria-live={matching ? 'polite' : undefined}>
       <div className="flex items-center gap-3">
-        <div className="min-w-0 flex-1"><p className="truncate text-[10.5px] text-[var(--gold-200)]/80">{label}</p><p className="mt-0.5 font-latin text-xl font-bold leading-none tabular-nums text-[var(--gold-100)]">{ready && until !== null ? durationText(Math.max(0, until - now)) : '--:--:--'}</p></div>
+        <div className="min-w-0 flex-1"><p className={`truncate text-[10.5px] ${matching ? 'text-[#ffd27a]' : 'text-[var(--gold-200)]/80'}`}>{label}</p>
+          {matching === 'soon' ? <p key={secondsLeft} className={`match-count ${secondsLeft <= 3 ? 'is-final' : ''}`}>{secondsLeft}<small>秒</small></p>
+            : matching ? <p key={step} className="match-step">{MATCH_STEPS[step]}<span className="match-dots" aria-hidden><i /><i /><i /></span></p>
+            : <p className="mt-0.5 font-latin text-xl font-bold leading-none tabular-nums text-[var(--gold-100)]">{ready && until !== null ? durationText(Math.max(0, until - now)) : '--:--:--'}</p>}
+        </div>
         {button}
       </div>
+      {matching === 'matching' && <ol className="match-track" aria-hidden>{MATCH_STEPS.map((_, i) => <li key={i} className={i <= step ? 'is-on' : ''} />)}</ol>}
       <p className={`mt-1.5 flex flex-wrap items-center gap-x-1.5 text-[10.5px] ${canReserve && (shortPeach || shortUsdt) ? 'text-[#f0a58a]' : 'text-[var(--gold-200)]/70'}`}>
-        {error ? error : product.notice && !entry ? product.notice
+        {matching ? (matching === 'soon' ? '不需要操作，结果会立即揭晓' : '请留在此页，结果马上揭晓') : error ? error : product.notice && !entry ? product.notice
           : entry ? null
           : canReserve && shortPeach ? <>蟠桃不足：召唤需暂扣 {peachText(lockCents)}，余额 {peachText(state.balance)}<PeachIcon size={11} /><Link href="/me/wallet?mode=buy" className="underline underline-offset-2">购买蟠桃</Link></>
           : canReserve && shortUsdt ? <>USDT 不足：本轮修炼值 {peachText(cost)}，余额 {peachText(usdt)}<Link href="/me/wallet?mode=deposit" className="underline underline-offset-2">去充值</Link></>

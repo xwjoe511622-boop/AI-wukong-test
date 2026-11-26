@@ -8,6 +8,7 @@ import { AppShell } from '@/components/app-shell'
 import { AppOpening } from '@/components/app-opening'
 import { ProductProvider } from '@/components/product-provider'
 import { SoundProvider } from '@/lib/sound'
+import { WalletGate } from '@/components/wallet-gate'
 
 export const metadata: Metadata = {
   title: 'AI WUKONG · AI悟空数字生命',
@@ -43,13 +44,15 @@ export default async function RootLayout({
       </head>
       <body className="antialiased">
         <SoundProvider>
-          <ProductProvider>
-            <GameProvider initialNow={initialNow}>
-              <AppOpening>
-                <AppShell>{children}</AppShell>
-              </AppOpening>
-            </GameProvider>
-          </ProductProvider>
+          <WalletGate>
+            <ProductProvider>
+              <GameProvider initialNow={initialNow}>
+                <AppOpening>
+                  <AppShell>{children}</AppShell>
+                </AppOpening>
+              </GameProvider>
+            </ProductProvider>
+          </WalletGate>
         </SoundProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

@@ -1,5 +1,6 @@
 'use client'
 
+import { shortAddress } from '@/lib/wallet'
 import { useState } from 'react'
 import { ArrowUpDown, ChevronDown, Flag, Search, Users, X } from 'lucide-react'
 import { Avatar } from './avatar'
@@ -76,7 +77,7 @@ const joinedText = (joinedAt: string, now: number) => {
   const days = Math.floor((now - Date.parse(joinedAt)) / DAY)
   return days <= 0 ? '今天加入' : days < 30 ? `${days} 天前加入` : `${new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(joinedAt))} 加入`
 }
-/** 一份明细：搜索 UID、排序、按代数筛选、只看未达标 */
+/** 一份明细：搜索钱包地址、排序、按代数筛选、只看未达标 */
 function MemberDetail({ section, empty, count, now, invalid }: { section: Section; empty: boolean; count: (gen: number) => number; now: number; invalid: number }) {
   const [page, setPage] = useState(0)
   const [keyword, setKeyword] = useState('')
@@ -88,7 +89,7 @@ function MemberDetail({ section, empty, count, now, invalid }: { section: Sectio
   const name = section === 'tribe' ? '部族成员' : '同行者'
   return <div role="tabpanel" className="mt-3">
     <div className="flex gap-2">
-      <label className="relation-search min-w-0 flex-1"><Search className="size-4 shrink-0 text-[var(--gold-400)]" aria-hidden /><input type="search" inputMode="search" value={keyword} onChange={event => { setKeyword(event.target.value); setPage(0) }} placeholder={`搜索${name} UID`} aria-label={`搜索${name} UID`} />{keyword && <button type="button" onClick={() => { setKeyword(''); setPage(0) }} aria-label="清空搜索"><X className="size-4" /></button>}</label>
+      <label className="relation-search min-w-0 flex-1"><Search className="size-4 shrink-0 text-[var(--gold-400)]" aria-hidden /><input type="search" inputMode="search" value={keyword} onChange={event => { setKeyword(event.target.value); setPage(0) }} placeholder={`搜索${name}钱包地址`} aria-label={`搜索${name}钱包地址`} />{keyword && <button type="button" onClick={() => { setKeyword(''); setPage(0) }} aria-label="清空搜索"><X className="size-4" /></button>}</label>
       <label className="relation-sort"><ArrowUpDown className="size-3.5 shrink-0 text-[var(--gold-400)]" aria-hidden /><select value={sort} onChange={event => { setSort(event.target.value as MemberSort); setPage(0) }} aria-label="排序方式">{MEMBER_SORTS.map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
     </div>
     <div className="my-3 flex items-center gap-2">
@@ -100,10 +101,10 @@ function MemberDetail({ section, empty, count, now, invalid }: { section: Sectio
     </div>
     {!members.data ? <p role="status" className="text-xs">正在读取成员…</p>
       : empty ? <ProfileEmpty title="同行之路，从一份邀请开始">目前还没有{name}。<div className="mt-3"><ProfileButtonLink href="/me" size="small">邀请同行者</ProfileButtonLink></div></ProfileEmpty>
-      : !members.data.members.length ? <ProfileEmpty title={`没有符合条件的${name}`}>{keyword ? '检查一下 UID，或换一个分类。' : '换一个分类看看。'}</ProfileEmpty>
+      : !members.data.members.length ? <ProfileEmpty title={`没有符合条件的${name}`}>{keyword ? '检查一下地址，或换一个分类。' : '换一个分类看看。'}</ProfileEmpty>
       : <ul className="profile-list flex flex-col">{members.data.members.map(m => <li key={`${m.uid}-${m.joinedAt}`} className="flex items-center gap-3 border-b border-[var(--profile-border)] py-3.5">
         <Avatar src={m.avatar} size={40} />
-        <div className="min-w-0 flex-1"><p className="truncate font-mono text-[13px] text-[var(--gold-100)]">{m.uid}</p><p className="mt-1 truncate text-[11px] text-[var(--profile-muted)]">{(m.generation ?? 3) <= 2 ? generationName(m.generation ?? 0) : '更深层'} · {joinedText(m.joinedAt, now)}</p></div>
+        <div className="min-w-0 flex-1"><p className="truncate font-mono text-[13px] text-[var(--gold-100)]" title={m.uid}>{shortAddress(m.uid)}</p><p className="mt-1 truncate text-[11px] text-[var(--profile-muted)]">{(m.generation ?? 3) <= 2 ? generationName(m.generation ?? 0) : '更深层'} · {joinedText(m.joinedAt, now)}</p></div>
         <div className="shrink-0 text-right">{!!m.rewardCents && <p className="font-latin text-[13px] font-bold tabular-nums text-gold">+{money(m.rewardCents)}<span className="unit">USDT</span></p>}<p className={`text-[11px] ${m.valid === false ? 'text-[#f0b49a]' : 'text-[var(--profile-muted)]'}`}>{m.valid === false ? `未达 ${VALID_USER_MIN_PEACH} 蟠桃` : '有效用户'}</p></div>
       </li>)}</ul>}
     <div className="mt-3"><ProfilePager page={page} hasMore={members.data?.hasMore ?? false} onPage={setPage} /></div>

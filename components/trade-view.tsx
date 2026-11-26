@@ -1,5 +1,6 @@
 'use client'
 
+import { shortAddress } from '@/lib/wallet'
 import Link from 'next/link'
 import { useState } from 'react'
 import { AlertTriangle, ShieldCheck } from 'lucide-react'
@@ -44,7 +45,8 @@ export function TradeView({ id }: { id: string }) {
     <section className="profile-surface" aria-label={payer ? '传承人信息' : '承接人信息'}>
       <h2 className="profile-heading mb-3">{payer ? '传承人信息' : '承接人信息'}</h2>
       <dl className="flex flex-col gap-3">
-        <div className="trade-field"><dt>{payer ? '传承人' : '承接人'} UID</dt><dd><code>{trade.counterparty.uid}</code></dd></div>
+        <div className="trade-field"><dt>{payer ? '传承人' : '承接人'}钱包地址</dt><dd><code className="break-all">{trade.counterparty.uid}</code></dd></div>
+        <p className="rounded-lg border border-[#e0a05a66] bg-[#3a220c80] px-3 py-2 text-[11.5px] leading-5 text-[#f3d6a8]">支付结算在平台内完成，从你的 USDT 余额扣除。请勿向该地址直接转账，链上转账无法到账，也无法找回。</p>
         {trade.paidAt && <div className="trade-field"><dt>支付时间</dt><dd>{dateTime(trade.paidAt)}</dd></div>}
         {trade.confirmedAt && <div className="trade-field"><dt>确认到账时间</dt><dd>{dateTime(trade.confirmedAt)}</dd></div>}
       </dl>
@@ -56,7 +58,7 @@ export function TradeView({ id }: { id: string }) {
     {payer && trade.status === 'awaiting_payment' && <section className="profile-surface" aria-label="支付结算">
       <p className="flex items-center justify-between text-xs text-[var(--profile-muted)]"><span>可用 USDT 余额</span><UsdtValue cents={state.usdt} size="sm" muted /></p>
       {short ? <><p role="alert" className="mt-3 flex items-start gap-2 text-xs leading-5 text-[#f0b49a]"><AlertTriangle className="mt-0.5 size-4 shrink-0" />USDT 余额不足，还差 {money(trade.amountCents - state.usdt)} USDT。请先补足 USDT 余额，再回来支付。</p><div className="mt-3"><ProfileButtonLink href="/me/wallet" size="large">查看我的资产</ProfileButtonLink></div></>
-        : confirming ? <div className="trade-confirm mt-3"><p className="text-xs leading-6">将从 USDT 余额向传承人 <code>{trade.counterparty.uid}</code> 支付 <strong className="text-[var(--gold-100)]">{money(trade.amountCents)} USDT</strong>。支付后无法撤回，系统会通知传承人核实到账。</p><div className="mt-3 grid grid-cols-2 gap-2"><ProfileButton secondary onClick={() => setConfirming(false)}>取消</ProfileButton><ProfileButton onClick={() => { act({ type: 'trade-pay', id: trade.id }); setConfirming(false) }}>确认支付</ProfileButton></div></div>
+        : confirming ? <div className="trade-confirm mt-3"><p className="text-xs leading-6">将从 USDT 余额向传承人 <code>{shortAddress(trade.counterparty.uid)}</code> 支付 <strong className="text-[var(--gold-100)]">{money(trade.amountCents)} USDT</strong>。支付后无法撤回，系统会通知传承人核实到账。</p><div className="mt-3 grid grid-cols-2 gap-2"><ProfileButton secondary onClick={() => setConfirming(false)}>取消</ProfileButton><ProfileButton onClick={() => { act({ type: 'trade-pay', id: trade.id }); setConfirming(false) }}>确认支付</ProfileButton></div></div>
         : <div className="mt-3"><ProfileButton size="large" onClick={() => setConfirming(true)}>立即支付 {money(trade.amountCents)} USDT</ProfileButton></div>}
     </section>}
 

@@ -1,5 +1,6 @@
 import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS, type Stage } from './game-data'
 import { matchDelay, roundFor } from './summon-preview'
+import { demoAddress } from './wallet'
 
 /**
  * 承接人与传承人交易。
@@ -23,7 +24,7 @@ export type Trade = {
   matchedAt: number
   /** 承接人支付结算截止时刻 */
   deadline: number
-  /** 系统匹配的对方：只展示 UID，支付结算在平台内 USDT 余额间划转 */
+  /** 系统匹配的对方：uid 字段里存的是对方的钱包地址，页面只展示地址，支付结算在平台内 USDT 余额间划转 */
   counterparty: { uid: string }
   status: TradeStatus
   paidAt?: number
@@ -53,7 +54,7 @@ function hexOf(seed: string, length: number) {
 }
 /** 演示用的对方身份：由交易编号确定性生成，不是真实用户 */
 export function demoCounterparty(seed: string) {
-  return { uid: `WK${hexOf(`uid:${seed}`, 16).toUpperCase()}` }
+  return { uid: demoAddress(`uid:${seed}`) }
 }
 
 /** 时刻 t 之后（含）该阶段下一次有承接人召唤成功的时刻（模拟）：传承中的悟空在这一刻匹配到承接人 */
