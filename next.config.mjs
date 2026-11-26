@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // 正式版与体验版各用各的构建目录，两个版本可以同时运行、互不覆盖
-  distDir: process.env.NEXT_PUBLIC_WUKONG_TRIAL === '1' ? '.next-trial' : '.next',
+  // Vercel 部署固定读取 .next，因此在 Vercel 上始终使用默认目录
+  distDir: !process.env.VERCEL && process.env.NEXT_PUBLIC_WUKONG_TRIAL === '1' ? '.next-trial' : '.next',
   typescript: {
     ignoreBuildErrors: true,
   },
