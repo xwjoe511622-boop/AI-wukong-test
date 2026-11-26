@@ -1,24 +1,23 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowDownLeft, ArrowUpRight, CalendarClock, Check, ChevronRight, Sparkles, type LucideIcon } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, Check, ChevronRight, Flame, Sparkles, type LucideIcon } from 'lucide-react'
 import { contractDay, money } from '@/lib/cultivation-preview'
 import { durationText } from '@/lib/summon-preview'
 import { dailyTodos, type DailyKind, type DailyTodo } from '@/lib/home'
 import { HomeHero } from './home-hero'
 import { useProduct } from './product-provider'
 
-const ICONS: Record<DailyKind, LucideIcon> = { reserve: CalendarClock, cast: Sparkles, pay: ArrowUpRight, receive: ArrowDownLeft }
+const ICONS: Record<DailyKind, LucideIcon> = { summon: Sparkles, pay: ArrowUpRight, train: Flame, receive: ArrowDownLeft }
 const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 const weekday = (now: number) => WEEKDAYS[new Date(now + 8 * 3600000).getUTCDay()]
 
 /**
  * 首页只做一件事：今日待办。
- * 固定四行（预约、召唤、打款、收款），有没有事都显示，正好一屏；不放资产，不重复别的页面。
- * 修炼在进猴舍时一次扣除蟠桃、自动进行，所以不在待办里。
+ * 固定四行（召唤、资金结算、修炼、收款），有没有事都显示，正好一屏；不放资产，不重复别的页面。
  */
 export function HomeView() {
-  const { state, ready, now, act } = useProduct()
+  const { state, ready, now } = useProduct()
   const todos = ready && state ? dailyTodos(state, now) : []
   const open = todos.filter(t => t.status === 'todo').length
   return <div className="home-page">
@@ -30,12 +29,12 @@ export function HomeView() {
         {ready && <p className="home-count">{open ? <><strong>{open}</strong> 项待处理</> : '今日暂无待处理'}</p>}
       </header>
       {!ready || !state ? <p role="status" className="py-10 text-center text-sm text-stone-400">正在读取…</p>
-        : <ol className="home-list">{todos.map(todo => <li key={todo.kind} className={`is-${todo.status}`}><Row todo={todo} now={now} onCast={() => todo.castKey && act({ type: 'summon-cast', key: todo.castKey })} /></li>)}</ol>}
+        : <ol className="home-list">{todos.map(todo => <li key={todo.kind} className={`is-${todo.status}`}><Row todo={todo} now={now} /></li>)}</ol>}
     </section>
   </div>
 }
 
-function Row({ todo, now, onCast }: { todo: DailyTodo; now: number; onCast: () => void }) {
+function Row({ todo, now }: { todo: DailyTodo; now: number }) {
   const Icon = ICONS[todo.kind]
   const left = todo.until === undefined ? null : Math.max(0, todo.until - now)
   const body = <>
@@ -52,6 +51,5 @@ function Row({ todo, now, onCast }: { todo: DailyTodo; now: number; onCast: () =
     </span>
   </>
   const label = `${todo.label}：${todo.title}`
-  if (todo.castKey) return <button type="button" className="home-row" aria-label={label} onClick={onCast}>{body}</button>
   return <Link href={todo.href} className="home-row" aria-label={label}>{body}</Link>
 }

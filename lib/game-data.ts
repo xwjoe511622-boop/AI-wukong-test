@@ -1,6 +1,6 @@
 export type Stage = 'stone_spirit' | 'spirit_monkey' | 'wukong' | 'battle_wukong' | 'great_sage' | 'destiny_sage' | 'infinite_sage'
 
-// 每个召唤周期开始前 30 分钟预约截止；周期 1 小时内，预约过的玩家点「召唤」，系统当场匹配并公布结果。
+// 每个召唤周期开始前 30 分钟截止；截止前点过「召唤」的玩家，周期一开始由系统自动匹配并公布结果。
 export const RESERVATION_CUTOFF_MINUTES = 30
 // 数值以《AI悟空进阶 · 蟠桃召唤与交易释放机制》正式执行版（2026-11-25）为准。契约功能已取消。
 export const PEACH_UNIT_TEXT = '1蟠桃 = 1 USDT'
@@ -30,7 +30,7 @@ export const TRIBE_REWARD = {
   level2: { direct: 15, members: 150, rate: 3 },
   level3: { direct: 30, members: 300, rate: 5 },
 } as const
-/** 打款期：召唤成功后 1 小时内完成打款；逾期判定违约，预约时暂扣的召唤蟠桃与修炼蟠桃全部充公 */
+/** 结算期：召唤成功后 1 小时内完成资金结算；逾期判定违约，暂扣的召唤蟠桃全部充公 */
 export const PAYMENT_WINDOW_HOURS = 1
 
 export interface WukongLevel {
@@ -63,7 +63,7 @@ export interface WukongLevel {
   summonStartTime: string
   /** 召唤周期结束，例如 12:00 */
   summonEndTime: string
-  /** 打款截止 = 召唤成功后 1 小时，例如 12:00 */
+  /** 结算截止 = 召唤成功后 1 小时，例如 12:00 */
   paymentDeadline: string
   /** @deprecated 请使用 paymentDeadline */
   paymentCutoff: string
@@ -82,7 +82,7 @@ export interface WukongLevel {
   /** @deprecated 请使用 cultivationMin / cultivationMax */
   rangeMin: number
   rangeMax: number
-  /** 本轮修炼值（USDT），当前取范围下限；由承接人向传承人打款，不占用蟠桃 */
+  /** 本轮修炼值（USDT），当前取范围下限；由承接人向传承人结算，不占用蟠桃 */
   cost: number
   /** 正式修炼周期（天） */
   cycleDays: number

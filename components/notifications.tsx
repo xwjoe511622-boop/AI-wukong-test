@@ -59,9 +59,9 @@ export function NotificationList() {
   }, [ready, state, fresh, act])
   const list = state?.notifications ?? []
   return <div className="flex flex-col gap-5">
-    <ProfilePageHeader title="通知" subtitle="召唤结果、打款与收款提醒都在这里。时间均为北京时间。" />
+    <ProfilePageHeader title="通知" subtitle="召唤结果、资金结算与收款提醒都在这里。时间均为北京时间。" />
     {!ready ? <p role="status" className="text-sm text-[var(--profile-muted)]">正在读取…</p>
-      : !list.length ? <ProfileEmpty title="暂无通知">召唤出结果、需要打款或确认收款时，会在这里通知你。</ProfileEmpty>
+      : !list.length ? <ProfileEmpty title="暂无通知">召唤出结果、需要资金结算或确认收款时，会在这里通知你。</ProfileEmpty>
       : <ul className="flex flex-col gap-2">{list.map(n => <li key={n.id}><Link href={n.href} className={`trade-row ${fresh?.has(n.id) ? 'is-todo' : ''}`}>
         <div className="min-w-0 flex-1"><p className="font-display text-sm text-[var(--gold-100)]">{n.title}</p><p className="mt-1 text-xs leading-5 text-[var(--profile-muted)]">{n.body}</p><time className="mt-1.5 block text-[10px] text-[var(--profile-muted)]/80">{profileTime(new Date(n.at).toISOString())}</time></div>
         <ChevronRight className="size-4 shrink-0 text-[var(--gold-400)]" />

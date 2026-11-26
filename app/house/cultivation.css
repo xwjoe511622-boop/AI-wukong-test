@@ -86,3 +86,7 @@
 .room-swipe::-webkit-scrollbar { display: none; }
 .room-swipe > * { flex: 0 0 100%; min-width: 0; scroll-snap-align: center; }
 .room-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 0 14px; border: 1px solid #b8955333; background: linear-gradient(180deg,#131110,#0c0b09); }
+
+/* 漏掉修炼的那天：暗红空心珠，手记里也标出来 */
+.slip-beads li.is-missed { border-color: #7a3f2c; background: #1a0f0c; }
+.slip-journal li.is-missed, .slip-journal li.is-missed span { color: #b0705a !important; }

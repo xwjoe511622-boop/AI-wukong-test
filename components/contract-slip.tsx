@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { ChevronDown, Hourglass } from 'lucide-react'
-import { DAY, RULES, dateTime, endsAt, journal, liveValue, phase, progress, type Contract } from '@/lib/cultivation-preview'
+import { DAY, RULES, dateTime, dayIndex, due, endsAt, journal, liveValue, phase, progress, shownDays, trainedDays, type Contract } from '@/lib/cultivation-preview'
 import { useCultivationPreview } from './cultivation-preview-provider'
 import { PeachValue, UsdtValue } from './peach-value'
 import { cycleText } from '@/lib/game-data'
@@ -17,12 +17,19 @@ function countdown(ms: number) {
 
 /** 同类型角色以召唤日期、修炼值和进度区分，不显示编号。 */
 export function ContractSlip({ contract: c }: { contract: Contract }) {
-  const { now } = useCultivationPreview()
+  const { now, act, state } = useCultivationPreview()
   const trade = useProduct().state?.trades.find(t => t.contractId === c.id)
   const rule = RULES[c.stage]
   const status = phase(c, now)
   const p = progress(c, now)
   const notes = journal(c, now)
+  // 每天自己点修炼：点了才扣当天的蟠桃、才有当天的修炼加成；漏了不能补
+  const canTrain = due(c, now) > 0
+  const trained = new Set(trainedDays(c))
+  const slot = (i: number) => Math.min(rule.days - 1, Math.floor(i / rule.dayFactor))
+  const current = p.done ? -1 : dayIndex(c, now)
+  const doneDays = shownDays(c.stage, c.completed)
+  const short = state.balance < rule.daily
   // 修炼值在眼前慢慢涨：整数部分大，小数四位，看得见它在动
   const [whole, fraction] = liveValue(c, now).toFixed(4).split('.')
   return <article className="contract-slip is-done" aria-label={`${rule.name}修炼台`}>
@@ -31,24 +38,28 @@ export function ContractSlip({ contract: c }: { contract: Contract }) {
     <section aria-label="修炼值" className="px-4 pt-4 text-center">
       <p className="text-[11px] tracking-[.2em] text-[var(--gold-200)]/80">修炼值</p>
       <p className="slip-value" aria-live="off">{Number(whole).toLocaleString('zh-CN')}<span>.{fraction}</span><em className="unit not-italic">USDT</em></p>
-      <p className="mt-1 text-[11px] text-stone-400">{p.done ? `已圆满 · 修炼加成 +${rule.gain}%` : `修炼加成 +${rule.gain}% · 圆满后生效`}</p>
+      <p className="mt-1 text-[11px] text-stone-400">已修炼 {doneDays} / {p.total} 天 · 每天都修炼可得修炼加成 +{rule.gain}%</p>
     </section>
 
     <section aria-label="修炼进度" className="px-4 pt-4">
-      <ol className="slip-beads" aria-label={`共 ${p.total} 天，${p.done ? '已圆满' : `现在是第 ${p.day} 天`}`}>{Array.from({ length: p.total }, (_, i) => <li key={i} className={p.done || i + 1 < p.day ? 'is-lit' : i + 1 === p.day ? 'is-now' : ''} />)}</ol>
-      <p className="mt-2.5 flex items-center justify-between text-xs text-[var(--gold-200)]"><span>{p.done ? '修炼圆满' : `自动修炼中 · 第 ${p.day} 天 / 共 ${p.total} 天`}</span>{!p.done && <span className="font-mono text-[var(--gold-100)]">{countdown(endsAt(c) - now)}</span>}</p>
+      <ol className="slip-beads" aria-label={`共 ${p.total} 天，已修炼 ${doneDays} 天${p.done ? '' : `，现在是第 ${p.day} 天`}`}>{Array.from({ length: p.total }, (_, i) => <li key={i} className={trained.has(slot(i)) ? 'is-lit' : slot(i) === current ? 'is-now' : slot(i) < current || p.done ? 'is-missed' : ''} />)}</ol>
+      <p className="mt-2.5 flex items-center justify-between text-xs text-[var(--gold-200)]"><span>{p.done ? `修炼周期已结束 · 共修炼 ${doneDays} 天` : `第 ${p.day} 天 / 共 ${p.total} 天 · ${canTrain ? (rule.days > 1 ? '今日还没修炼' : '还没修炼') : (rule.days > 1 ? '今日已修炼' : '已修炼')}`}</span>{!p.done && <span className="font-mono text-[var(--gold-100)]">{countdown(endsAt(c) - now)}</span>}</p>
     </section>
 
     <div className="flex flex-col gap-3 px-4 pb-4 pt-3">
-      {status === '传承中' && (trade ? <Link href={`/me/trades/${encodeURIComponent(trade.id)}`} className="flex flex-col items-center gap-1 text-center text-xs text-[var(--gold-200)]"><span className="flex items-center gap-2"><Hourglass className="size-4" aria-hidden />传承中 · 已匹配承接人，等待对方打款</span><span className="text-[11px] text-stone-400">打款剩余 <span className="font-mono text-[var(--gold-100)]">{durationText(Math.max(0, trade.deadline - now))}</span> · 查看交易</span></Link>
-        : <p className="flex flex-col items-center gap-1 text-center text-xs text-[var(--gold-200)]"><span className="flex items-center gap-2"><Hourglass className="size-4" aria-hidden />传承中 · 等待下一轮召唤匹配承接人</span><span className="text-[11px] text-stone-400">预计 {dateTime(nextMatchAfter(c.stage, Math.max(endsAt(c), c.trainingCompletedAt ?? endsAt(c), now)))} 匹配</span></p>)}
-      {status === '传承完成' && trade && <Link href={`/me/trades/${encodeURIComponent(trade.id)}`} className="cultivation-primary flex w-full items-center justify-center">承接人已打款 · 去确认收款</Link>}
+      {status === '修炼中' && (canTrain ? <>
+        <button type="button" className="cultivation-primary flex w-full items-center justify-center gap-1.5" disabled={short} onClick={() => act({ type: 'train', ids: [c.id], accelerate: false, expected: rule.daily })}>{rule.dayFactor > 1 ? `修炼 ${rule.dayFactor} 天` : '修炼'}{rule.daily > 0 && <> · 消耗 <PeachValue cents={rule.daily} size="sm" /></>}</button>
+        <p className={`text-center text-[11px] leading-5 ${short ? 'text-[#f0a58a]' : 'text-stone-400'}`}>{short ? <>蟠桃不足，<Link href="/me/wallet?mode=buy" className="underline underline-offset-2">去购买蟠桃</Link></> : rule.days > 1 ? '点了才有修炼加成；过了今天不能补。' : '点了才有修炼加成；修炼周期结束后不能补。'}</p>
+      </> : <p className="rounded-lg border border-[var(--gold-600)]/30 bg-black/30 py-2.5 text-center text-xs text-[var(--gold-100)]">{rule.days > 1 ? '今日已修炼' : '已修炼'} ✓{rule.days > 1 && current < rule.days - 1 ? ' · 明天记得再来' : ''}</p>)}
+      {status === '传承中' && (trade ? <Link href={`/me/trades/${encodeURIComponent(trade.id)}`} className="flex flex-col items-center gap-1 text-center text-xs text-[var(--gold-200)]"><span className="flex items-center gap-2"><Hourglass className="size-4" aria-hidden />传承中 · 已匹配承接人，等待对方结算</span><span className="text-[11px] text-stone-400">结算剩余 <span className="font-mono text-[var(--gold-100)]">{durationText(Math.max(0, trade.deadline - now))}</span> · 查看交易</span></Link>
+        : <p className="flex flex-col items-center gap-1 text-center text-xs text-[var(--gold-200)]"><span className="flex items-center gap-2"><Hourglass className="size-4" aria-hidden />传承中 · 等待下一轮召唤匹配承接人</span><span className="text-[11px] text-stone-400">预计 {dateTime(nextMatchAfter(c.stage, Math.max(endsAt(c), now)))} 匹配</span></p>)}
+      {status === '传承完成' && trade && <Link href={`/me/trades/${encodeURIComponent(trade.id)}`} className="cultivation-primary flex w-full items-center justify-center">承接人已结算 · 去确认收款</Link>}
 
       <section aria-label="修炼手记" className="border-t border-[var(--gold-600)]/25 pt-3">
         <h3 className="text-[11px] tracking-[.2em] text-[var(--gold-200)]/80">修炼手记</h3>
-        <ol className="slip-journal">{notes.map(n => <li key={n.day}><span>第{n.day}日</span>{n.text}</li>)}</ol>
+        <ol className="slip-journal">{notes.map(n => <li key={n.day} className={n.missed ? 'is-missed' : ''}><span>第{n.day}日</span>{n.text}</li>)}</ol>
       </section>
     </div>
-    <details className="cultivation-details !mx-4"><summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-xs text-stone-300">修炼详情<ChevronDown className="size-4" aria-hidden /></summary><dl className="cultivation-facts pb-4"><div><dt>本轮修炼值</dt><dd><UsdtValue cents={c.principal} size="xs" muted /></dd></div><div><dt>修炼天数</dt><dd>{cycleText(rule)}</dd></div><div><dt>修炼加成</dt><dd>+{rule.gain}%</dd></div><div><dt>每日修炼消耗</dt><dd>{rule.perCycleCost ? <PeachValue cents={Math.round(rule.perCycleCost * 100)} size="xs" muted /> : '不消耗'}</dd></div><div><dt>修炼蟠桃 · 进猴舍时已一次扣除</dt><dd>{rule.perCycleCost ? <PeachValue cents={Math.round(rule.perCycleCost * rule.cycleDays * 100)} size="xs" muted /> : '不消耗'}</dd></div></dl></details>
+    <details className="cultivation-details !mx-4"><summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-xs text-stone-300">修炼详情<ChevronDown className="size-4" aria-hidden /></summary><dl className="cultivation-facts pb-4"><div><dt>本轮修炼值</dt><dd><UsdtValue cents={c.principal} size="xs" muted /></dd></div><div><dt>修炼天数</dt><dd>{cycleText(rule)}</dd></div><div><dt>修炼加成</dt><dd>+{rule.gain}%</dd></div><div><dt>每日修炼消耗</dt><dd>{rule.perCycleCost ? <PeachValue cents={Math.round(rule.perCycleCost * 100)} size="xs" muted /> : '不消耗'}</dd></div><div><dt>已修炼</dt><dd>{doneDays} / {p.total} 天</dd></div><div><dt>已消耗修炼蟠桃</dt><dd>{rule.perCycleCost ? <PeachValue cents={c.completed * rule.daily} size="xs" muted /> : '不消耗'}</dd></div></dl></details>
   </article>
 }

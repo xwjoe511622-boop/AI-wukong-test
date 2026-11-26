@@ -5,7 +5,7 @@ import { useProfileList } from '@/lib/use-profile'
 import { LEDGER_LABELS, profileTime } from '@/lib/profile-rules'
 import { ProfileAmount, ProfileButton, ProfileEmpty, ProfilePageHeader, ProfilePager } from './profile-ui'
 
-const ledgerFilters = [['all','全部'],['lock','预约暂扣'],['return','召唤退还'],['pay','修炼值打款'],['inherit','传承所得'],['companion','同行奖励'],['tribe','部族奖励'],['transfer','转账'],['recharge','购买蟠桃']]
+const ledgerFilters = [['all','全部'],['lock','召唤暂扣'],['return','召唤退还'],['pay','修炼值结算'],['inherit','传承所得'],['companion','同行奖励'],['tribe','部族奖励'],['transfer','转账'],['recharge','购买蟠桃']]
 export function ProfileRecordList({ title, kind }: { title: string; kind: string }) {
   const [filter, setFilter] = useState(kind)
   const [page, setPage] = useState(0)

@@ -14,7 +14,8 @@ export const shownDays = (stage: Stage, count: number) => Math.round(count * RUL
 export const ROOMS = Object.fromEntries(LEVELS.map(level => [level.id, { room: `${level.name}修炼室`, cover: level.roomCover }])) as Record<Stage, { room: string; cover: string }>
 /** 一只悟空的生命周期记录。契约功能已取消；contractedAt 仅为兼容旧存档保留，不再参与任何判断。 */
 /* principal 为修炼值（USDT 分），不占用蟠桃余额；蟠桃仅用于召唤与每日修炼。 */
-export type Contract = { id: string; stage: Stage; principal: number; started: number; completed: number; contractedAt?: number; trainingCompletedAt?: number; finishedAt?: number }
+/* completed = 实际点过修炼的次数；trainedDays = 点过的是第几天（从 0 起）。漏掉的那天不能补，也没有当天的修炼加成。 */
+export type Contract = { id: string; stage: Stage; principal: number; started: number; completed: number; trainedDays?: number[]; contractedAt?: number; trainingCompletedAt?: number; finishedAt?: number }
 export type HistoryEntry = Contract & { claimedAt: number }
 export type PreviewState = { version: 2; balance: number; contracts: Contract[]; history: HistoryEntry[] }
 export type Phase = '修炼中' | '待完成修炼' | '修炼圆满' | '等待传承' | '传承中' | '传承完成'
@@ -35,35 +36,54 @@ export function progress(c: Contract, now: number) {
   const ratio = Math.min(1, Math.max(0, (now - c.started) / (endsAt(c) - c.started)))
   return { ratio, total, day: Math.min(total, Math.floor(ratio * total) + 1), done: now >= endsAt(c) }
 }
-/** 修炼手记：每过一天多一行，让人回来时看得到悟空这几天在做什么。按天数循环取用 */
+/** 现在是第几次修炼的时段（从 0 起）；一次修炼对应正式版的一天，体验版整个周期只有一次 */
+export const dayIndex = (c: Contract, now: number) => Math.min(RULES[c.stage].days - 1, Math.max(0, Math.floor((now - c.started) / DAY)))
+/** 点过修炼的时段；旧记录没有逐天明细时，按从头连续点过处理 */
+export const trainedDays = (c: Contract) => c.trainedDays ?? Array.from({ length: c.completed }, (_, i) => i)
+/** 这一时段是否已经点过修炼 */
+export const trainedNow = (c: Contract, now: number) => trainedDays(c).includes(dayIndex(c, now))
+/** 修炼手记：每过一天多一行；漏掉修炼的那天如实记下 */
 const JOURNAL = ['吐纳灵气，根基初成', '静坐观心，杂念渐消', '引气入体，筋骨微鸣', '灵光内敛，气息绵长', '踏云而行，身轻如叶', '夜观星斗，心有所悟', '运转周天，灵气充盈', '破障一重，目中有光', '听风辨势，耳聪目明', '凝神聚气，金光隐现', '行走山川，与万物同息', '闭关三刻，气海翻涌', '心猿归位，意马收缰', '淬炼筋骨，力贯双臂', '明心见性，尘念不生', '吞吐日月，光华护体', '一念通达，万法随心', '御气凌空，俯瞰云海', '道心稳固，不动如山', '功行将满，只待圆满']
-/** 到现在为止的修炼手记，最新的在前 */
+/** 到现在为止的修炼手记，最新的在前。missed = 这一天没有修炼 */
 export function journal(c: Contract, now: number) {
   const p = progress(c, now)
   const days = p.done ? p.total : p.day
-  return Array.from({ length: days }, (_, i) => ({ day: i + 1, text: i + 1 === p.total && p.done ? '修炼圆满，静候传承' : JOURNAL[i % JOURNAL.length] })).reverse()
+  const factor = RULES[c.stage].dayFactor
+  const trained = new Set(trainedDays(c))
+  const current = p.done ? -1 : dayIndex(c, now)
+  return Array.from({ length: days }, (_, i) => {
+    const slot = Math.min(RULES[c.stage].days - 1, Math.floor(i / factor))
+    const ok = trained.has(slot)
+    return { day: i + 1, missed: !ok, text: ok ? JOURNAL[i % JOURNAL.length] : slot === current ? '等待修炼' : '未修炼 · 当日无修炼加成' }
+  }).reverse()
 }
-/** 此刻的修炼值（USDT，带小数）：从本轮修炼值朝圆满值按时间推进，仅用于展示，圆满后才生效 */
+/** 已经算进去的修炼次数（带小数）：点过的时段随时间逐渐累积，没点的时段不算 */
+function accrued(c: Contract, now: number) {
+  const days = RULES[c.stage].days
+  const done = now >= endsAt(c)
+  const current = dayIndex(c, now)
+  return trainedDays(c).reduce((sum, i) => sum + (done || i < current ? 1 : i === current ? Math.min(1, Math.max(0, (now - c.started) / DAY - i)) : 0), 0) / days
+}
+/** 此刻的修炼值（USDT，带小数）：只有点过修炼的时段才增长，仅用于展示 */
 export function liveValue(c: Contract, now: number) {
   const growth = c.principal * RULES[c.stage].gain / 100
-  return (c.principal + growth * progress(c, now).ratio) / 100
+  return (c.principal + growth * accrued(c, now)) / 100
 }
+/** 现在能点的修炼次数：周期内、这一时段还没点过就是 1，否则 0。漏掉的不能补 */
 export function due(c: Contract, now: number) {
-  const days = RULES[c.stage].days
-  return c.finishedAt ? 0 : Math.max(0, Math.min(days, Math.max(0, Math.floor((now - c.started) / DAY) + 1)) - c.completed)
+  return c.finishedAt || now >= endsAt(c) || now < c.started || trainedNow(c, now) ? 0 : 1
 }
 /**
- * 修炼蟠桃在进猴舍时一次扣除，之后自动修炼，不需要每天去点：
- * 新进猴舍的悟空 completed 直接等于周期天数，周期没结束时就是「修炼中」，结束后进入「传承中」。
- * completed 不足的情况只存在于旧存档和测试数据里。
+ * 每天自己点修炼：点了扣当天的蟠桃、算当天的修炼加成；没点就没有，过后不能补。
+ * 周期结束后不管点了几次都进入「传承中」，修炼增长只按点过的次数算。
  */
 export function phase(c: Contract, now: number): Phase {
-  if (c.finishedAt && c.completed === RULES[c.stage].days && now >= endsAt(c)) return '传承完成'
-  if (c.completed === RULES[c.stage].days) return now >= endsAt(c) ? '传承中' : '修炼中'
-  return now >= endsAt(c) ? '待完成修炼' : '修炼中'
+  if (now < endsAt(c)) return '修炼中'
+  return c.finishedAt ? '传承完成' : '传承中'
 }
 export function settlement(c: Contract) {
-  const profit = Math.round(c.principal * RULES[c.stage].gain / 100)
+  // 修炼增长只算点过修炼的次数：一次没点就按原修炼值传承
+  const profit = Math.round(c.principal * RULES[c.stage].gain / 100 * Math.min(1, c.completed / RULES[c.stage].days))
   const fee = Math.round(profit * INHERITANCE_FEE_PCT / 100)
   return { profit, fee, received: c.principal + profit - fee }
 }
@@ -76,19 +96,15 @@ export function quote(contracts: Contract[], now: number, accelerate: boolean) {
   }).filter(item => item.count > 0)
   return { items, cost: items.reduce((s, i) => s + i.cost, 0), fee: items.reduce((s, i) => s + i.fee, 0), total: items.reduce((s, i) => s + i.cost + i.fee, 0) }
 }
-/** 今日应修 = 需要修炼的悟空只数；此前待补 = 往日漏掉的修炼次数（不含今日那一次） */
+/** 今日应修 = 现在可以点修炼的悟空只数；漏掉的不能补，所以没有待补 */
 export function summarize(contracts: Contract[], now: number) {
   const s = { total: 0, byPhase: Object.fromEntries(PHASES.map(p => [p, 0])) as Record<Phase, number>, todayMonkeys: 0, backlog: 0, dueCount: 0 }
   for (const c of contracts) {
-    const p = phase(c, now)
-    s.byPhase[p] += 1
+    s.byPhase[phase(c, now)] += 1
     s.total += 1
     const d = due(c, now)
-    if (!d) continue
     s.dueCount += d
-    if (now >= endsAt(c)) { s.backlog += d; continue }
-    s.todayMonkeys += 1
-    s.backlog += d - 1
+    s.todayMonkeys += d
   }
   return s
 }
@@ -106,9 +122,8 @@ export function sortContracts(contracts: Contract[], now: number) {
 export function roomStatus(contracts: Contract[], now: number): { tone: 'due' | 'ok' | 'idle' | 'empty'; text: string } {
   if (!contracts.length) return { tone: 'empty', text: '' }
   const s = summarize(contracts, now)
-  if (s.byPhase.待完成修炼) return { tone: 'due', text: `待完成修炼 ${s.byPhase.待完成修炼}只` }
-  if (s.todayMonkeys) return { tone: 'due', text: `今日待修 ${s.todayMonkeys}只${s.backlog ? ` · 待补${s.backlog}次` : ''}` }
-  if (s.byPhase.传承完成) return { tone: 'ok', text: `承接人已打款 ${s.byPhase.传承完成}只 · 待确认收款` }
+  if (s.todayMonkeys) return { tone: 'due', text: `今日待修炼 ${s.todayMonkeys}只` }
+  if (s.byPhase.传承完成) return { tone: 'ok', text: `承接人已结算 ${s.byPhase.传承完成}只 · 待确认收款` }
   if (s.byPhase.修炼中) return { tone: 'ok', text: `修炼中 ${s.byPhase.修炼中}只` }
   if (s.byPhase.等待传承) return { tone: 'idle', text: `修炼圆满 ${s.byPhase.等待传承}只 · 等待传承` }
   if (s.byPhase.修炼圆满) return { tone: 'idle', text: `修炼圆满 ${s.byPhase.修炼圆满}只` }
@@ -128,7 +143,7 @@ export function createPreview(now = Date.now()): PreviewState {
 export function isPreview(value: unknown): value is PreviewState {
   if (!value || typeof value !== 'object') return false
   const s = value as PreviewState
-  const valid = (c: Contract) => c && typeof c.id === 'string' && Object.hasOwn(RULES, c.stage) && Number.isSafeInteger(c.principal) && c.principal >= 0 && Number.isFinite(c.started) && Number.isInteger(c.completed) && c.completed >= 0 && c.completed <= RULES[c.stage].days && (c.finishedAt === undefined || Number.isFinite(c.finishedAt)) && (c.contractedAt === undefined || (Number.isFinite(c.contractedAt) && c.contractedAt >= c.started)) && (c.trainingCompletedAt === undefined || (Number.isFinite(c.trainingCompletedAt) && c.trainingCompletedAt >= c.started))
+  const valid = (c: Contract) => c && typeof c.id === 'string' && Object.hasOwn(RULES, c.stage) && Number.isSafeInteger(c.principal) && c.principal >= 0 && Number.isFinite(c.started) && Number.isInteger(c.completed) && c.completed >= 0 && c.completed <= RULES[c.stage].days && (c.finishedAt === undefined || Number.isFinite(c.finishedAt)) && (c.trainedDays === undefined || (Array.isArray(c.trainedDays) && c.trainedDays.length === c.completed && c.trainedDays.every(i => Number.isInteger(i) && i >= 0 && i < RULES[c.stage].days) && new Set(c.trainedDays).size === c.trainedDays.length)) && (c.contractedAt === undefined || (Number.isFinite(c.contractedAt) && c.contractedAt >= c.started)) && (c.trainingCompletedAt === undefined || (Number.isFinite(c.trainingCompletedAt) && c.trainingCompletedAt >= c.started))
   return s.version === 2 && Number.isSafeInteger(s.balance) && s.balance >= 0 && Array.isArray(s.contracts) && Array.isArray(s.history) && s.contracts.every(valid) && s.history.every(c => valid(c) && Number.isFinite(c.claimedAt)) && new Set([...s.contracts, ...s.history].map(c => c.id)).size === s.contracts.length + s.history.length
 }
 export type Action = { type: 'train'; ids: string[]; accelerate: boolean; expected: number } | { type: 'claim'; id: string } | { type: 'scenario'; id: string; scenario: Phase } | { type: 'reset' } | { type: 'empty' } | { type: 'poor' }
@@ -139,19 +154,19 @@ export function transition(state: PreviewState, action: Action, now: number): { 
   if (action.type === 'train') {
     if (action.accelerate) return { state, message: '仅补齐当前已到期修炼，无额外费用，原生命周期不变。' }
     const q = quote(state.contracts.filter(c => action.ids.includes(c.id)), now, action.accelerate)
-    if (!q.items.length) return { state, message: '无需重复修炼' }
+    if (!q.items.length) return { state, message: '现在没有可修炼的悟空：今日已修炼，或修炼周期已结束' }
     if (q.total !== action.expected) return { state, message: '修炼状态已变化，请重新确认费用' }
     if (state.balance < q.total) return { state, message: '蟠桃不足' }
-    return { state: { ...state, balance: state.balance - q.total, contracts: state.contracts.map(c => { const count = q.items.find(i => i.id === c.id)?.count ?? 0; return count ? { ...c, completed: c.completed + count, trainingCompletedAt: c.completed + count === RULES[c.stage].days ? now : c.trainingCompletedAt } : c }) }, message: `${q.items.length}只悟空今日已修炼，已补齐到期任务；消耗 ${money(q.total)} 蟠桃` }
+    return { state: { ...state, balance: state.balance - q.total, contracts: state.contracts.map(c => { const count = q.items.find(i => i.id === c.id)?.count ?? 0; return count ? { ...c, completed: c.completed + 1, trainedDays: [...trainedDays(c), dayIndex(c, now)], trainingCompletedAt: c.completed + 1 === RULES[c.stage].days ? now : c.trainingCompletedAt } : c }) }, message: `${q.items.length}只悟空已修炼，消耗 ${money(q.total)} 蟠桃` }
   }
   const c = state.contracts.find(c => c.id === action.id)
   if (!c) return { state, message: '这只悟空已归档' }
   if (action.type === 'claim') {
-    if (phase(c, now) !== '传承完成') return { state, message: '需原周期结束且全部修炼完成后方可传承' }
+    if (phase(c, now) !== '传承完成') return { state, message: '需修炼周期结束、承接人完成资金结算后方可确认' }
     return { state: { ...state, contracts: state.contracts.filter(item => item.id !== c.id), history: [{ ...c, claimedAt: now }, ...state.history] }, message: '已确认传承所得（USDT），本次传承已归档' }
   }
   const days = RULES[c.stage].days
-  const changed = { ...c, finishedAt: undefined, started: now - DAY * .2, completed: 0 } as Contract
+  const changed = { ...c, finishedAt: undefined, trainedDays: undefined, started: now - DAY * .2, completed: 0 } as Contract
   if (action.scenario === '待完成修炼') Object.assign(changed, { started: now - DAY * (days + .2), completed: days - 1 })
   if (action.scenario === '修炼圆满') changed.completed = days
   if (action.scenario === '传承中' || action.scenario === '传承完成') Object.assign(changed, { started: now - DAY * (days + .2), completed: days })

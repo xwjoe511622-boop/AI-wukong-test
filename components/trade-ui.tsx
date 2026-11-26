@@ -19,8 +19,8 @@ export function TradeChip({ trade, className }: { trade: Trade; className?: stri
 }
 
 const STEPS = {
-  payer: ['召唤成功 · 匹配传承人', '向传承人打款', '传承人确认到账', '悟空进入猴舍'],
-  receiver: ['传承 · 匹配承接人', '承接人打款', '我确认到账', '传承完成 · 所得到账'],
+  payer: ['召唤成功 · 匹配传承人', '向传承人结算', '传承人确认到账', '悟空进入猴舍'],
+  receiver: ['传承 · 匹配承接人', '承接人结算', '我确认到账', '传承完成 · 所得到账'],
 } as const
 /** 交易进度：已完成的步骤打勾，当前步骤高亮 */
 export function TradeSteps({ trade }: { trade: Trade }) {
@@ -28,7 +28,7 @@ export function TradeSteps({ trade }: { trade: Trade }) {
   return <ol className="trade-steps" aria-label="交易进度">
     {STEPS[trade.role].map((label, i) => {
       const state = trade.status === 'overdue' && i === 1 ? 'fail' : i < current ? 'done' : i === current ? 'now' : 'next'
-      return <li key={label} className={`is-${state}`} aria-current={state === 'now' ? 'step' : undefined}><span className="trade-step-dot">{state === 'done' ? <Check className="size-3" /> : i + 1}</span><span>{state === 'fail' ? '逾期未打款' : label}</span></li>
+      return <li key={label} className={`is-${state}`} aria-current={state === 'now' ? 'step' : undefined}><span className="trade-step-dot">{state === 'done' ? <Check className="size-3" /> : i + 1}</span><span>{state === 'fail' ? '逾期未结算' : label}</span></li>
     })}
   </ol>
 }
@@ -45,7 +45,7 @@ export function TradeRow({ trade, now }: { trade: Trade; now: number }) {
     <div className="min-w-0 flex-1">
       <div className="flex items-center gap-2"><TradeChip trade={trade} /><span className="text-[10px] text-[var(--profile-muted)]">{trade.role === 'payer' ? '承接人' : '传承人'} · {LEVEL_BY_ID[trade.stage].realm}</span></div>
       <p className="mt-1.5 truncate font-display text-sm text-[var(--gold-100)]">{tradeTitle(trade)}</p>
-      <p className="mt-1 text-[11px] text-[var(--profile-muted)]">{ticking ? <>{trade.role === 'payer' ? '打款剩余' : '承接人打款剩余'} <Countdown ms={trade.deadline - now} /></> : dateTime(trade.confirmedAt ?? trade.overdueAt ?? trade.paidAt ?? trade.matchedAt)}</p>
+      <p className="mt-1 text-[11px] text-[var(--profile-muted)]">{ticking ? <>{trade.role === 'payer' ? '结算剩余' : '承接人结算剩余'} <Countdown ms={trade.deadline - now} /></> : dateTime(trade.confirmedAt ?? trade.overdueAt ?? trade.paidAt ?? trade.matchedAt)}</p>
     </div>
     <div className="shrink-0 text-right"><p className="font-latin text-base font-bold tabular-nums text-gold">{trade.role === 'payer' ? '−' : '+'}{money(trade.amountCents)}</p><p className="unit !ml-0 !text-[11px]">USDT</p></div>
     <ChevronRight className="size-4 shrink-0 text-[var(--gold-400)]" />

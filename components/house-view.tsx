@@ -24,21 +24,21 @@ export function HouseView() {
         <p className="font-latin text-lg font-bold tabular-nums text-[var(--gold-100)]">{summary.total}<span className="ml-0.5 font-display text-xs font-normal text-stone-300">只</span></p>
       </div>
       <p className="mt-1.5 text-xs text-stone-300">
-        修炼中 <span className="tabular-nums text-stone-100">{summary.byPhase.修炼中}</span>
+        {summary.todayMonkeys > 0 && <><span className="text-[#f3b27a]">今日待修炼 <span className="tabular-nums">{summary.todayMonkeys}</span></span><span className="mx-1.5 text-stone-600">·</span></>}修炼中 <span className="tabular-nums text-stone-100">{summary.byPhase.修炼中}</span>
         <span className="mx-1.5 text-stone-600">·</span>传承中 <span className="tabular-nums text-stone-100">{summary.byPhase.传承中}</span>
       </p>
       {claimable.length > 0 && <div className="mt-2.5 border-t border-[rgba(197,155,82,0.2)] pt-2.5"><span className="house-chip is-claim">待确认收款 {claimable.length}只</span></div>}
-      {summary.total === 0 ? <Link href="/world" className="cultivation-primary mt-3 flex w-full items-center justify-center">前往悟空世界召唤第一只悟空</Link> : <p className="mt-2.5 border-t border-[rgba(197,155,82,0.2)] pt-2.5 text-[11px] leading-5 text-stone-400">修炼蟠桃已在进猴舍时一次扣除，悟空自动修炼，周期结束后进入传承。</p>}
+      {summary.total === 0 ? <Link href="/world" className="cultivation-primary mt-3 flex w-full items-center justify-center">前往悟空世界召唤第一只悟空</Link> : <p className="mt-2.5 border-t border-[rgba(197,155,82,0.2)] pt-2.5 text-[11px] leading-5 text-stone-400">每天进修炼室点一次修炼；当天没点就没有当天的修炼加成，过后不能补。</p>}
     </section>
 
 
-    {/* ⑥ 承接人已打款、待确认收款（仅存在时出现） */}
+    {/* ⑥ 承接人已结算、待确认收款（仅存在时出现） */}
     {claimable.length > 0 && <section aria-labelledby="inherit-title" className="flex flex-col gap-2">
       <h2 id="inherit-title" className="sr-only">传承完成</h2>
       {claimable.map(c => <div key={c.id} className="house-inherit flex items-center justify-between gap-3 px-4 py-3.5">
         <div className="min-w-0">
           <p className="house-chip is-claim">待确认收款</p>
-          <p className="mt-1 font-display text-base font-semibold text-[var(--gold-100)]">{RULES[c.stage].name}<span className="ml-1.5 text-xs font-normal text-stone-300">· 承接人已打款</span></p>
+          <p className="mt-1 font-display text-base font-semibold text-[var(--gold-100)]">{RULES[c.stage].name}<span className="ml-1.5 text-xs font-normal text-stone-300">· 承接人已结算</span></p>
           <p className="mt-1.5 flex items-center gap-2 text-[11px] text-stone-400">本次结算 <UsdtValue cents={settlement(c).received} size="sm" /></p>
         </div>
         <Link href={`/me/trades/${encodeURIComponent(`inherit-${c.id}`)}`} className="cultivation-primary ornate-short btn-compact shrink-0">确认收款</Link>
