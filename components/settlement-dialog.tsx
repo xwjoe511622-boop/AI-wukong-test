@@ -26,7 +26,7 @@ export function SettlementDialog({ contract, busy, onClose, onClaim }: { contrac
     </div>
     <div className="my-5 border-y border-amber-200/15 py-4"><SettlementFacts contract={contract} /></div>
     <p className="mb-4 text-xs leading-6 text-stone-300">修炼值不参与平台手续费；结算以 USDT 计，确认后转入 USDT 余额；已消耗的召唤与修炼蟠桃不退还。确认后本次传承归档至传承历史。</p>
-    <button type="button" className="cultivation-primary w-full" disabled={busy} onClick={onClaim}>{busy ? '处理中…' : '确认结算'}</button>
+    <button type="button" className="cultivation-primary w-full" disabled={busy} onClick={onClaim}>{busy ? '处理中…' : '确认支付'}</button>
     <button type="button" className="cultivation-secondary mt-2 w-full" onClick={onClose}>稍后再看</button>
   </dialog>
 }

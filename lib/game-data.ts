@@ -30,7 +30,7 @@ export const TRIBE_REWARD = {
   level2: { direct: 15, members: 150, rate: 3 },
   level3: { direct: 30, members: 300, rate: 5 },
 } as const
-/** 结算期：召唤成功后 1 小时内完成支付结算；逾期判定违约，暂扣的召唤蟠桃全部充公 */
+/** 支付期：召唤成功后 1 小时内完成支付结算；逾期判定违约，暂扣的召唤蟠桃全部充公 */
 export const PAYMENT_WINDOW_HOURS = 1
 
 export interface WukongLevel {
@@ -82,7 +82,7 @@ export interface WukongLevel {
   /** @deprecated 请使用 cultivationMin / cultivationMax */
   rangeMin: number
   rangeMax: number
-  /** 本轮修炼值（USDT），当前取范围下限；由承接人向传承人结算，不占用蟠桃 */
+  /** 本轮修炼值（USDT），当前取范围下限；由承接人向传承人支付，不占用蟠桃 */
   cost: number
   /** 正式修炼周期（天） */
   cycleDays: number

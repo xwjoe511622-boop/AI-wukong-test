@@ -3,7 +3,7 @@ import { matchDelay, roundFor } from './summon-preview'
 
 /**
  * 承接人与传承人交易。
- * - 承接人（payer，结算方）：召唤成功后，在结算期内把修炼值结算给系统匹配的传承人。
+ * - 承接人（payer，支付方）：召唤成功后，在支付期内把修炼值支付给系统匹配的传承人。
  * - 传承人（receiver，收款方/释放方）：悟空完成修炼且原周期结束后进入传承中，
  *   等下一轮同阶段召唤匹配到承接人；承接人完成支付结算后，传承人核实到账并确认，传承所得完成。
  *
@@ -39,7 +39,7 @@ export const PAYMENT_WINDOW_MS = PAYMENT_WINDOW_HOURS * 3600_000
 /** 模拟对方完成操作（承接人支付结算 / 传承人确认到账）所需时间 */
 export const COUNTERPARTY_DELAY_MS = 2 * 60_000
 
-export const TRADE_ROLE_LABEL: Record<TradeRole, string> = { payer: '承接人 · 结算方', receiver: '传承人 · 收款方' }
+export const TRADE_ROLE_LABEL: Record<TradeRole, string> = { payer: '承接人 · 支付方', receiver: '传承人 · 收款方' }
 
 function hashOf(seed: string) {
   let hash = 2166136261
@@ -66,7 +66,7 @@ export function nextMatchAfter(stage: Stage, t: number) {
   return t
 }
 
-/** 需要我本人处理的交易：承接人待结算、传承人待确认收款 */
+/** 需要我本人处理的交易：承接人待支付、传承人待确认收款 */
 export function needsMyAction(trade: Trade) {
   return (trade.role === 'payer' && trade.status === 'awaiting_payment') || (trade.role === 'receiver' && trade.status === 'awaiting_confirm')
 }
@@ -76,9 +76,9 @@ export function pendingTrades(trades: Trade[]) {
 }
 export function tradeStatusText(trade: Trade) {
   if (trade.status === 'completed') return '交易完成'
-  if (trade.status === 'overdue') return '逾期未结算'
-  if (trade.role === 'payer') return trade.status === 'awaiting_payment' ? '待我结算' : '等待传承人确认'
-  return trade.status === 'awaiting_payment' ? '等待承接人结算' : '待确认收款'
+  if (trade.status === 'overdue') return '逾期未支付'
+  if (trade.role === 'payer') return trade.status === 'awaiting_payment' ? '待我支付' : '等待传承人确认'
+  return trade.status === 'awaiting_payment' ? '等待承接人支付' : '待确认收款'
 }
 export function tradeTitle(trade: Trade) {
   return `${LEVEL_BY_ID[trade.stage].name} · ${trade.role === 'payer' ? '召唤支付结算' : '传承收款'}`

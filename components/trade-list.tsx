@@ -18,7 +18,7 @@ export function TradeList() {
   const matching = state.contracts.filter(c => phase(c, now) === '传承中' && !state.trades.some(t => t.contractId === c.id))
 
   return <div className="flex flex-col gap-5">
-    <ProfilePageHeader title="我的交易" subtitle="召唤成功后向传承人结算（我是承接人），传承时等承接人结算并确认收款（我是传承人）。时间均为北京时间。" />
+    <ProfilePageHeader title="我的交易" subtitle="召唤成功后向传承人支付（我是承接人），传承时等承接人支付并确认收款（我是传承人）。时间均为北京时间。" />
     {!state.trades.length && !matching.length && <ProfileEmpty title="暂无交易">召唤成功或悟空进入传承后，交易会出现在这里。</ProfileEmpty>}
     {todo.length > 0 && <section aria-labelledby="todo-title"><h2 id="todo-title" className="profile-heading mb-2">待我处理 · {todo.length}</h2><ul className="flex flex-col gap-2">{todo.map(t => <TradeRow key={t.id} trade={t} now={now} />)}</ul></section>}
     {waiting.length > 0 && <section aria-labelledby="wait-title"><h2 id="wait-title" className="profile-heading mb-2">等待对方</h2><ul className="flex flex-col gap-2">{waiting.map(t => <TradeRow key={t.id} trade={t} now={now} />)}</ul></section>}

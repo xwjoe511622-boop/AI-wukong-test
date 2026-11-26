@@ -55,7 +55,7 @@ test('今日待办固定四行：召唤、支付结算、修炼、收款', () =>
   const pay = dailyTodos(s, at('11:01'))
   assert.equal(pay[0].status, 'done'); assert.equal(pay[1].status, 'todo'); assert.equal(pay[1].amountCents, 1000); assert.equal(pay[1].until, at('12:00'))
   assert.equal(dailyTodos({ ...s, usdt: 0 }, at('11:01'))[1].warn, true)
-  // 结算后等传承人确认；入舍后修炼成为待办，点过就完成
+  // 支付后等传承人确认；入舍后修炼成为待办，点过就完成
   s = transition(s, { type: 'trade-pay', id: s.trades[0].id }, at('11:02')).state
   assert.equal(dailyTodos(s, at('11:03'))[1].status, 'wait')
   s = transition(s, { type: 'tick' }, at('11:10')).state
