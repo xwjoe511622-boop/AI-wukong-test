@@ -131,11 +131,16 @@ export type SoundName =
 
 const RECIPES: Record<SoundName, (v: Voice) => void> = {
   // ── UI ──
-  tap: (v) => { pluck(v, 0, P.A5, 0.4, 0.12); tone(v, { freq: P.E5, type: 'sine', dur: 0.25, peak: 0.06, send: 0.5 }) },
+  // 轻点：一声很短的玉石轻叩。不用拨弦和长尾音，连续点也不会糊成一片
+  tap: (v) => {
+    tone(v, { freq: 740, glideTo: 620, type: 'sine', dur: 0.07, peak: 0.06, attack: 0.002, send: 0.08 })
+    noise(v, { dur: 0.018, peak: 0.02, type: 'bandpass', freq: 2600, q: 2, attack: 0.001, send: 0.04 })
+  },
+  // 导航：木鱼式的一声「笃」——低而短的木质敲击，加一点点高频泛音提亮，几乎没有混响
   nav: (v) => {
-    pluck(v, 0, P.G4, 0.5, 0.12, -0.15)
-    pluck(v, 0.06, P.C5, 0.6, 0.1, 0.15)
-    noise(v, { dur: 0.4, peak: 0.05, type: 'bandpass', freq: 700, sweepTo: 2000, q: 0.7, send: 0.3 })
+    tone(v, { freq: 540, glideTo: 400, type: 'sine', dur: 0.09, peak: 0.11, attack: 0.002, send: 0.1 })
+    tone(v, { freq: 1080, glideTo: 860, type: 'sine', dur: 0.05, peak: 0.03, attack: 0.002, send: 0.08 })
+    noise(v, { dur: 0.025, peak: 0.035, type: 'bandpass', freq: 1900, q: 2.5, attack: 0.001, send: 0.05 })
   },
 
   // ── 召唤成功：大锣 + 上行五声琶音 + 金光炸裂 + 混响长尾 ──
