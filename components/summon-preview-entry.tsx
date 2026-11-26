@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS, cycleText } from '@/lib/game-data'
-import { durationText, ROUND_LABEL, matchAt, type Entry } from '@/lib/summon-preview'
+import { durationText, ROUND_LABEL, matchAt, resultAt, type Entry } from '@/lib/summon-preview'
 import { DAY, dateTime } from '@/lib/cultivation-preview'
 import { useProduct } from './product-provider'
 import { PeachValue, UsdtValue } from './peach-value'
@@ -15,7 +15,7 @@ export function SummonPreviewEntry({ entry, compact = false }: { entry: Entry; c
   const contract = [...(state?.contracts ?? []), ...(state?.history ?? [])].find(c => c.id === `summon-${entry.key}`)
   const trade = state?.trades.find(t => t.entryKey === entry.key)
   const tradeHref = trade ? `/me/trades/${encodeURIComponent(trade.id)}` : '/me/trades'
-  if (entry.status === 'success' && !compact && now < matchAt(entry) + 1800) return <section role="status" aria-label="悟空召唤仪式" className="hud-panel panel-glow flex flex-col items-center gap-4 rounded-xl px-4 py-12"><Image src="/assets/player-seal.png" alt="" width={88} height={88} className="motion-safe:animate-pulse" /><h2 className="font-display text-xl tracking-widest text-gold">灵印初醒，悟空现世</h2><p className="text-xs text-[var(--gold-200)]">正在开启本轮数字生命旅程…</p></section>
+  if (entry.status === 'success' && !compact && now < resultAt(entry) + 2600) return <section role="status" aria-label="悟空召唤仪式" className="hud-panel panel-glow flex flex-col items-center gap-4 rounded-xl px-4 py-12"><Image src="/assets/player-seal.png" alt="" width={88} height={88} className="motion-safe:animate-pulse" /><h2 className="font-display text-xl tracking-widest text-gold">灵印初醒，悟空现世</h2><p className="text-xs text-[var(--gold-200)]">正在开启本轮数字生命旅程…</p></section>
   // 召唤成功后先进入承接人与传承人交易：完成支付结算并经传承人确认到账后，悟空才进入猴舍
   if (entry.status === 'success' && trade && trade.status !== 'completed') return <section aria-label="召唤成功 · 待支付" className={`hud-panel rounded-xl p-4 text-center ${compact ? '' : 'panel-glow'}`}>
     <p className="text-[10px] text-[var(--gold-200)]">{ROUND_LABEL} · {level.realm}</p>

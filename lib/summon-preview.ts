@@ -43,6 +43,18 @@ export const WINDOW_MS = MATCH_WINDOW_HOURS * 3600_000
  * 召唤周期一开始系统就自动匹配并公布结果（名额由后端决定，这里先按模拟结果处理）。
  */
 export const matchAt = (entry: Pick<Entry, 'deadline'>) => entry.deadline
+/**
+ * 匹配要算多久由后端决定：页面在这段时间里一直显示「系统正在匹配」，后端出结果才揭晓。
+ * 现在没有后端，这里先模拟成 15 秒；接入后端后改成等接口返回结果。
+ */
+export const SIMULATED_MATCH_MS = 15_000
+/** 结果揭晓的时刻（模拟） */
+export const resultAt = (entry: Pick<Entry, 'deadline'>) => matchAt(entry) + SIMULATED_MATCH_MS
+/** 开始匹配前多久进入「即将开始」的提示 */
+export const MATCH_LEAD_MS = 10_000
+/** 一场召唤此刻处在匹配的哪一步：soon 即将开始、matching 正在匹配；其余时候为 null */
+export const matchStage = (entry: Pick<Entry, 'deadline' | 'status'>, now: number): 'soon' | 'matching' | null =>
+  entry.status !== 'waiting' ? null : now >= matchAt(entry) ? 'matching' : now >= matchAt(entry) - MATCH_LEAD_MS ? 'soon' : null
 export function roundFor(stage: Stage, now: number) {
   const date = beijingDate(now)
   const deadline = todayOccurrence(LEVEL_BY_ID[stage].summonHour, new Date(now)).getTime()

@@ -34,7 +34,7 @@ test('体验版没有秒级加速：召唤按钟点匹配，修炼后要等满�
   let s = transition(initial, { type: 'summon', action: { type: 'join', stage: 'stone_spirit', now } }, now).state
   assert.equal(s.offset, 0)
   assert.equal(transition(s, { type: 'tick' }, pub - 1).state.entries[0].status, 'waiting')
-  s = transition(s, { type: 'tick' }, pub).state
+  s = transition(s, { type: 'tick' }, pub + 15_000).state
   // 打款期与正式版相同：1 小时
   assert.equal(s.trades[0].deadline - pub, PAYMENT_WINDOW_MS)
   s = payAndEnter(s, pub)
@@ -55,7 +55,7 @@ test('体验版：第七阶段召唤暂扣 100 蟠桃；进猴舍后点一次修
   // 点召唤时只暂扣召唤蟠桃 100
   assert.equal(s.balance, initial.balance - 10_000)
   assert.equal(s.usdt, initial.usdt)
-  s = transition(s, { type: 'tick' }, pub).state
+  s = transition(s, { type: 'tick' }, pub + 15_000).state
   assert.equal(s.usdt, initial.usdt)
   s = payAndEnter(s, pub)
   assert.equal(s.usdt, initial.usdt - 500_000)
@@ -78,7 +78,7 @@ test('USDT 余额不足以结算，1 小时后判定逾期违约，暂扣的召�
   const pub = matchAt({ key: round.key, deadline: round.deadline })
   let s = transition(initial, { type: 'summon', action: { type: 'join', stage: 'infinite_sage', now } }, now).state
   s = transition(s, { type: 'transfer', currency: 'usdt', amountCents: 900_000, address: other }, now).state
-  s = transition(s, { type: 'tick' }, pub).state
+  s = transition(s, { type: 'tick' }, pub + 15_000).state
   assert.equal(transition(s, { type: 'trade-pay', id: s.trades[0].id }, pub).state, s)
   s = transition(s, { type: 'tick' }, pub + PAYMENT_WINDOW_MS).state
   assert.equal(s.entries[0].status, 'forfeited')

@@ -29,7 +29,7 @@ export function HomeView() {
         {ready && <p className="home-count">{open ? <><strong>{open}</strong> 项待处理</> : '今日暂无待处理'}</p>}
       </header>
       {!ready || !state ? <p role="status" className="py-10 text-center text-sm text-stone-400">正在读取…</p>
-        : <ol className="home-list">{todos.map(todo => <li key={todo.kind} className={`is-${todo.status}`}><Row todo={todo} now={now} /></li>)}</ol>}
+        : <ol className="home-list">{todos.map(todo => <li key={todo.kind} className={`is-${todo.status} ${todo.live ? 'is-live' : ''}`}><Row todo={todo} now={now} /></li>)}</ol>}
     </section>
   </div>
 }

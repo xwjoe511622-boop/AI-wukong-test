@@ -24,7 +24,7 @@ test('召唤周期内：显示此刻轮到的仙境，以及我有没有参与',
   const s = reserve(initial, 'stone_spirit', '09:00')
   assert.equal(currentSummon(s.entries, at('10:59')).mine, 'reserved')
   // 到点系统自动匹配，不用再点
-  const done = transition(s, { type: 'tick' }, at('11:00')).state
+  const done = transition(s, { type: 'tick' }, at('11:01')).state
   assert.equal(currentSummon(done.entries, at('11:01')).mine, 'success')
 })
 test('18:00 之后：今日结束，等明日 00:00', () => {
@@ -51,10 +51,14 @@ test('今日待办固定四行：召唤、支付结算、修炼、收款', () =>
   assert.equal(status(s, '09:30'), 'wait,none,none,none')
   assert.equal(dailyTodos(s, at('09:30'))[0].until, at('11:00'))
   // 11:00 自动匹配成功：支付结算待处理，带金额和倒计时
-  s = transition(s, { type: 'tick' }, at('11:00')).state
-  const pay = dailyTodos(s, at('11:01'))
+  // 整点前 10 秒进入倒数，整点起显示正在匹配，后端出结果才揭晓
+  assert.equal(dailyTodos(s, at('10:59') + 55_000)[0].live, true)
+  assert.equal(dailyTodos(s, at('11:00') + 5_000)[0].title.includes('正在匹配'), true)
+  assert.equal(transition(s, { type: 'tick' }, at('11:00') + 5_000).state, s)
+  s = transition(s, { type: 'tick' }, at('11:01')).state
+  const pay = dailyTodos(s, at('11:01') + 1000)
   assert.equal(pay[0].status, 'done'); assert.equal(pay[1].status, 'todo'); assert.equal(pay[1].amountCents, 1000); assert.equal(pay[1].until, at('12:00'))
-  assert.equal(dailyTodos({ ...s, usdt: 0 }, at('11:01'))[1].warn, true)
+  assert.equal(dailyTodos({ ...s, usdt: 0 }, at('11:01') + 1000)[1].warn, true)
   // 支付后等传承人确认；入舍后修炼成为待办，点过就完成
   s = transition(s, { type: 'trade-pay', id: s.trades[0].id }, at('11:02')).state
   assert.equal(dailyTodos(s, at('11:03'))[1].status, 'wait')

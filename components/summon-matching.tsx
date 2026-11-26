@@ -1,0 +1,62 @@
+'use client'
+
+import Image from 'next/image'
+import Link from 'next/link'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { ChevronRight } from 'lucide-react'
+import { LEVEL_BY_ID } from '@/lib/game-data'
+import { matchAt, matchStage, type Entry } from '@/lib/summon-preview'
+import { useProduct } from './product-provider'
+
+/** 匹配过程里依次出现的三句话；后端没出结果就一直停在最后一句 */
+const STEPS = ['排队中', '正在为你匹配悟空', '结果即将揭晓']
+const stepOf = (elapsed: number) => elapsed < 4000 ? 0 : elapsed < 9000 ? 1 : 2
+
+/**
+ * 仙境页：整点前 10 秒进入倒数，整点起显示「系统正在匹配」，一直到后端出结果才揭晓。
+ * 多久出结果由后端决定，这里不写死时长。
+ */
+export function SummonMatching({ entry, now }: { entry: Entry; now: number }) {
+  const level = LEVEL_BY_ID[entry.stage]
+  const stage = matchStage(entry, now)
+  if (!stage) return null
+  const left = Math.max(0, Math.ceil((matchAt(entry) - now) / 1000))
+  const step = stepOf(now - matchAt(entry))
+  return <section id="summon-action" role="status" aria-live="polite" aria-label={stage === 'soon' ? '即将开始匹配' : '系统正在匹配'} className={`match-panel scroll-mt-20 is-${stage}`}>
+    <div className="match-seal" aria-hidden>
+      <span className="match-ring" /><span className="match-ring is-2" /><span className="match-ring is-3" />
+      <Image src="/assets/player-seal.png" alt="" width={84} height={84} />
+    </div>
+    {stage === 'soon' ? <>
+      <p className="match-kicker">{level.name} · 即将开始匹配</p>
+      <p key={left} className="match-count">{left}</p>
+      <p className="match-note">不需要操作，结果会立即揭晓</p>
+    </> : <>
+      <p className="match-kicker">{level.name} · 系统正在匹配</p>
+      <p key={step} className="match-step">{STEPS[step]}<span className="match-dots" aria-hidden><i /><i /><i /></span></p>
+      <ol className="match-track" aria-hidden>{STEPS.map((_, i) => <li key={i} className={i <= step ? 'is-on' : ''} />)}</ol>
+      <p className="match-note">请留在此页，结果马上揭晓</p>
+    </>}
+  </section>
+}
+
+/** 不在仙境页、首页时：顶部滑下一条「正在匹配」，点了过去看 */
+export function MatchBanner() {
+  const { state, now, ready } = useProduct()
+  const pathname = usePathname()
+  const search = useSearchParams()
+  if (!ready || !state) return null
+  const entry = state.entries.filter(e => matchStage(e, now)).sort((a, b) => a.deadline - b.deadline)[0]
+  if (!entry) return null
+  // 首页待办那一行、仙境页本身已经在演，不重复
+  if (pathname === '/' || (pathname === '/world' && search.get('stage') === entry.stage)) return null
+  const stage = matchStage(entry, now)
+  const name = LEVEL_BY_ID[entry.stage].name
+  return <div className="pointer-events-none fixed inset-x-0 top-0 z-[55] mx-auto w-full max-w-[480px] pt-[env(safe-area-inset-top)]">
+    <Link href={`/world?stage=${entry.stage}#summon-action`} className="match-banner">
+      <span className="match-banner-dot" aria-hidden />
+      <span className="min-w-0 flex-1 truncate">{stage === 'soon' ? `${name} · ${Math.max(0, Math.ceil((matchAt(entry) - now) / 1000))} 秒后开始匹配` : `${name} · 系统正在匹配…`}</span>
+      <span className="flex shrink-0 items-center text-[var(--gold-200)]">去看<ChevronRight className="size-3.5" aria-hidden /></span>
+    </Link>
+  </div>
+}

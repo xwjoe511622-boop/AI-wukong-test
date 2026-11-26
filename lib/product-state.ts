@@ -1,5 +1,5 @@
 import { createPreview, isPreview, transition as cultivate, endsAt, quote, settlement, money, dateTime, RULES, type Action as CultivationAction, type Contract } from './cultivation-preview'
-import { initialPreview, parsePreview, transition as summon, costCents, matchAt, type PreviewAction, type Entry } from './summon-preview'
+import { initialPreview, parsePreview, transition as summon, costCents, matchAt, resultAt, type PreviewAction, type Entry } from './summon-preview'
 import { LEVEL_BY_ID, PAYMENT_WINDOW_HOURS, TRIAL_MODE, TRIAL_PEACH, TRIAL_USDT, VALID_USER_MIN_PEACH } from './game-data'
 import { COUNTERPARTY_DELAY_MS, PAYMENT_WINDOW_MS, demoCounterparty, isTrade, nextMatchAfter, type Trade } from './trade'
 import { rewardParts, tribeTier, type AccountRecord, type MemberRecord, type RewardRecord } from './profile-rules'
@@ -197,7 +197,8 @@ export function productTransition(state: ProductState, action: ProductAction, no
     for (const entry of state.entries) {
       // 召唤周期一开始系统自动匹配并公布结果；生命周期与支付倒计时都从这一刻起算
       const published = matchAt(entry)
-      if (entry.status !== 'waiting' || now < published) continue
+      // 匹配要等后端算完才揭晓（现在是模拟的时长）；揭晓前一直是「正在匹配」
+      if (entry.status !== 'waiting' || now < resultAt(entry)) continue
       const level = LEVEL_BY_ID[entry.stage]
       const result = summon({ ...initialPreview(), balance: next.balance, entries: next.entries }, { type: 'settle', key: entry.key, result: next.demoOutcome, now: published })
       const settled = result.state.entries.find(e => e.key === entry.key)!

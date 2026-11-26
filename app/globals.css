@@ -1094,3 +1094,40 @@ body:not(:has(.page-bar)) .notice-bell { top: calc(22px + env(safe-area-inset-to
 /* 部族等级徽章：只是标识，不能点 */
 .tier-badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; border: 1px solid transparent; background: linear-gradient(180deg, #5a4212, #2a1d08) padding-box, linear-gradient(160deg, #ffe7a3, #b9862c 50%, #f3c969) border-box; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: .04em; line-height: 1; white-space: nowrap; color: #ffe39a; box-shadow: 0 0 10px #ffcf5c33; }
 .tier-badge.is-none { background: #1a1712; border-color: #6b6557; color: #9a9384; box-shadow: none; font-weight: 400; }
+
+/* ── 召唤匹配：整点前倒数、匹配中、揭晓 ── */
+.match-panel { position: relative; overflow: hidden; padding: 22px 16px 20px; border-radius: 18px; border: 1px solid #ffcf5c; background: radial-gradient(90% 80% at 50% 30%, #4a3310 0%, #17110a 70%); text-align: center; box-shadow: 0 0 0 1px #ffe39a1f inset, 0 0 32px #ffcf5c33; animation: match-glow 1.6s ease-in-out infinite; }
+@keyframes match-glow { 0%, 100% { box-shadow: 0 0 0 1px #ffe39a1f inset, 0 0 22px #ffcf5c26; } 50% { box-shadow: 0 0 0 1px #ffe39a40 inset, 0 0 44px #ffcf5c66; } }
+.match-seal { position: relative; display: flex; align-items: center; justify-content: center; width: 132px; height: 132px; margin: 0 auto 10px; }
+.match-seal img { position: relative; width: 84px; height: 84px; animation: match-pulse 1.2s ease-in-out infinite; filter: drop-shadow(0 0 16px #ffcf5c99); }
+@keyframes match-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+.match-ring { position: absolute; inset: 0; border-radius: 999px; border: 2px solid transparent; border-top-color: #ffe39a; border-right-color: #ffcf5c66; animation: match-spin 1.4s linear infinite; }
+.match-ring.is-2 { inset: 10px; border-top-color: transparent; border-bottom-color: #f3c969; border-left-color: #f3c96955; animation-duration: 2.1s; animation-direction: reverse; }
+.match-ring.is-3 { inset: -8px; border: 1px dashed #ffcf5c55; animation-duration: 9s; }
+.is-soon .match-ring { animation-duration: 3.2s; }
+.is-soon .match-ring.is-2 { animation-duration: 4.4s; }
+@keyframes match-spin { to { transform: rotate(360deg); } }
+.match-kicker { font-family: var(--font-display); font-size: 14px; letter-spacing: .18em; color: #f3d6a8; }
+.match-count { margin-top: 2px; font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: 64px; font-weight: 700; line-height: 1.05; color: #ffe39a; text-shadow: 0 0 28px #ffcf5c; animation: match-tick .9s ease-out; }
+@keyframes match-tick { 0% { transform: scale(1.5); opacity: .2; } 30% { transform: scale(1); opacity: 1; } }
+.match-step { display: flex; align-items: baseline; justify-content: center; gap: 4px; margin-top: 8px; font-family: var(--font-display); font-size: 22px; font-weight: 700; color: #fff1cf; text-shadow: 0 0 18px #ffcf5c80; animation: match-step .5s ease-out; }
+@keyframes match-step { from { opacity: 0; transform: translateY(8px); } }
+.match-dots { display: inline-flex; gap: 3px; }
+.match-dots i { width: 5px; height: 5px; border-radius: 999px; background: #ffe39a; animation: match-dot 1.2s ease-in-out infinite; }
+.match-dots i:nth-child(2) { animation-delay: .2s; }
+.match-dots i:nth-child(3) { animation-delay: .4s; }
+@keyframes match-dot { 0%, 100% { opacity: .2; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-4px); } }
+.match-track { display: flex; justify-content: center; gap: 6px; margin-top: 14px; }
+.match-track li { width: 38px; height: 3px; border-radius: 999px; background: #5a4a2a; transition: background .4s, box-shadow .4s; }
+.match-track li.is-on { background: #ffcf5c; box-shadow: 0 0 10px #ffcf5c; }
+.match-note { margin-top: 12px; font-size: 12px; color: #cfc6b4; }
+.match-banner { pointer-events: auto; display: flex; align-items: center; gap: 8px; min-height: 40px; margin: 10px 60px 0 12px; padding: 0 12px; border-radius: 999px; border: 1px solid #ffcf5c; background: rgb(42 28 6 / 97%); font-size: 12.5px; color: #ffe9c2; box-shadow: 0 10px 28px #000c, 0 0 18px #ffcf5c40; animation: match-banner-in .4s ease-out, match-glow 1.6s ease-in-out infinite; }
+@keyframes match-banner-in { from { transform: translateY(-140%); opacity: 0; } }
+.match-banner-dot { width: 8px; height: 8px; flex-shrink: 0; border-radius: 999px; background: #ffcf5c; box-shadow: 0 0 10px #ffcf5c; animation: match-dot 1s ease-in-out infinite; }
+/* 首页待办：正在匹配的那一行 */
+.home-list .is-live { background: linear-gradient(90deg, #ffcf5c33, #ffcf5c08 75%); animation: home-live 1.4s ease-in-out infinite; }
+.is-live .home-node { border-color: #ffcf5c; background: #2e220d; color: #ffd27a; animation: match-pulse 1.2s ease-in-out infinite; box-shadow: 0 0 16px #ffcf5c99; }
+.is-live .home-label, .is-live .home-timer { color: #ffd27a; }
+.is-live .home-row-title { color: #fff2d6; font-weight: 700; }
+@keyframes home-live { 0%, 100% { box-shadow: inset 3px 0 0 #ffcf5c66; } 50% { box-shadow: inset 3px 0 0 #ffcf5c, inset 0 0 24px #ffcf5c26; } }
+@media (prefers-reduced-motion: reduce) { .match-panel, .match-seal img, .match-ring, .match-count, .match-step, .match-dots i, .match-banner, .match-banner-dot, .home-list .is-live, .is-live .home-node { animation: none !important; } }

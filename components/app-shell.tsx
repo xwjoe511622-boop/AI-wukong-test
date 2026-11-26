@@ -5,6 +5,7 @@ import { BottomNav } from './bottom-nav'
 import { useGame } from '@/lib/game-context'
 import { TrialRibbon } from './trial-notice'
 import { NoticeBell, NoticeToast } from './notifications'
+import { MatchBanner } from './summon-matching'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { loading, error, retry } = useGame()
@@ -14,6 +15,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="relative isolate min-h-dvh">
       <TrialRibbon />
       <NoticeToast />
+      <MatchBanner />
       <NoticeBell />
       <main>{children}</main>
       <BottomNav />
@@ -25,6 +27,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="app-plain relative isolate min-h-dvh">
       <TrialRibbon />
       <NoticeToast />
+      <MatchBanner />
       <NoticeBell />
       <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col">
         <main className="flex-1 px-4 pb-40 pt-4">

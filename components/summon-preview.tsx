@@ -5,10 +5,11 @@ import { RealmCardHero } from './realm-card-hero'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { LEVEL_BY_ID, INHERITANCE_FEE_PCT, PEACH_UNIT_TEXT, PAYMENT_WINDOW_HOURS, isFreeStage, type Stage } from '@/lib/game-data'
-import { roundFor, durationText, peachText, peachWhole, rangePosition, costCents, matchAt, lockCents as lockOf, ROUND_LABEL } from '@/lib/summon-preview'
+import { roundFor, durationText, peachText, peachWhole, rangePosition, costCents, matchAt, lockCents as lockOf, matchStage, ROUND_LABEL } from '@/lib/summon-preview'
 import { useSummonPreview } from './summon-preview-provider'
 import { SummonPreviewConfirm, SummonReserved } from './summon-preview-confirm'
 import { SummonPreviewEntry } from './summon-preview-entry'
+import { SummonMatching } from './summon-matching'
 import { PeachIcon } from './peach'
 import { PeachValue } from './peach-value'
 import { PageBar } from './profile-ui'
@@ -72,7 +73,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     </section>
 
     {/* 操作区：紧跟在算账卡下面，不固定在屏幕底部，不挡导航栏 */}
-    {!settled && <ActionBar />}
+    {!settled && (entry && matchStage(entry, now) ? <SummonMatching entry={entry} now={now} /> : <ActionBar />)}
 
     {/* 流程线 */}
     <section aria-label="流程" className="hud-panel rounded-xl px-3 py-4">
