@@ -1138,11 +1138,11 @@ body:not(:has(.page-bar)) .notice-bell { top: calc(22px + env(safe-area-inset-to
 @keyframes home-live { 0%, 100% { box-shadow: inset 3px 0 0 #ffcf5c66; } 50% { box-shadow: inset 3px 0 0 #ffcf5c, inset 0 0 24px #ffcf5c26; } }
 @media (prefers-reduced-motion: reduce) { .stage-action.is-matching, .match-cta, .match-sweep::before, .match-vignette, .match-count, .match-step, .match-dots i, .match-banner, .match-banner-dot, .home-list .is-live, .is-live .home-node { animation: none !important; } .match-sweep { display: none; } }
 
-/* ── 连接钱包登录 ── */
-.wallet-gate { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100dvh; padding: 24px 16px calc(24px + env(safe-area-inset-bottom)); background: radial-gradient(90% 60% at 50% 20%, #3a2a10 0%, #0b0a08 70%); }
-.wallet-card { width: 100%; max-width: 400px; padding: 28px 22px 22px; border-radius: 20px; border: 1px solid #e3c07a; background: linear-gradient(165deg, #211a0d, #0f0c08); text-align: center; box-shadow: 0 0 0 1px #ffe39a1f inset, 0 0 0 4px #0b0906, 0 0 0 5px #c59b5255, 0 22px 50px #000c; }
-.wallet-seal { width: 104px; height: 104px; margin: 0 auto 14px; filter: drop-shadow(0 0 22px #ffcf5c80); }
-.wallet-steps { display: flex; justify-content: center; gap: 18px; margin: 22px 0 16px; font-size: 12px; color: #8f8778; }
+/* ── 连接钱包 ── */
+.wallet-card { width: 100%; padding: 28px 22px 22px; border-radius: 20px; border: 1px solid #e3c07a; background: radial-gradient(90% 60% at 50% 0%, #3a2a10 0%, transparent 70%), linear-gradient(165deg, #211a0d, #0f0c08); text-align: center; box-shadow: 0 0 0 1px #ffe39a1f inset, 0 0 0 4px #0b0906, 0 0 0 5px #c59b5255, 0 22px 50px #000c; }
+.wallet-seal { margin: 0 auto 12px; filter: drop-shadow(0 0 22px #ffcf5c80); }
+.wallet-dialog { border-radius: 18px; padding-top: 26px; }
+.wallet-steps { display: flex; justify-content: center; gap: 18px; margin: 18px 0 14px; font-size: 12px; color: #8f8778; }
 .wallet-steps li { display: flex; align-items: center; gap: 6px; }
 .wallet-steps span { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 999px; border: 1px solid #6b6557; font-size: 11px; }
 .wallet-steps .is-now { color: #ffe39a; }
@@ -1150,3 +1150,20 @@ body:not(:has(.page-bar)) .notice-bell { top: calc(22px + env(safe-area-inset-to
 .wallet-steps .is-done { color: #a9dba3; }
 .wallet-steps .is-done span { border-color: #8fc98a; background: #1f3a1e; }
 .wallet-tip { margin-top: 14px; padding: 12px; border-radius: 12px; border: 1px solid #e0a05a80; background: #3a220c80; text-align: left; }
+/* 右上角钱包入口：没连接是按钮，连接后是铃铛左边的小图标 */
+.wallet-slot { position: fixed; z-index: 45; top: calc(6px + env(safe-area-inset-top)); right: max(8px, calc(50% - 232px)); }
+.wallet-slot.is-connected { top: 0; right: 0; }
+.wallet-slot .wallet-connect { min-width: 112px; font-family: var(--font-display); filter: drop-shadow(0 4px 10px #000a); }
+.notice-bell.wallet-icon { right: max(56px, calc(50% - 184px)); }
+body:not(:has(.page-bar)) .wallet-slot:not(.is-connected) { top: calc(10px + env(safe-area-inset-top)); right: max(12px, calc(50% - 228px)); }
+/* 没连接钱包、又没有返回条的页面（悟空世界）：给右上角的连接按钮让出一行 */
+.app-plain:has(.wallet-slot:not(.is-connected)):not(:has(.page-bar)) main { padding-top: calc(60px + env(safe-area-inset-top)); }
+body:not(:has(.page-bar)) .notice-bell.wallet-icon { right: max(68px, calc(50% - 172px)); }
+.wallet-pop { position: fixed; z-index: 59; top: calc(56px + env(safe-area-inset-top)); right: max(12px, calc(50% - 228px)); width: min(300px, calc(100vw - 24px)); padding: 14px; border-radius: 14px; border: 1px solid #e3c07a; background: linear-gradient(165deg, #241c0e, #100d09); box-shadow: 0 18px 44px #000d, 0 0 0 1px #ffe39a1a inset; }
+.wallet-pop-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; border-radius: 10px; border: 1px solid #c59b5299; font-size: 12.5px; color: #ffe9c2; }
+.wallet-pop-btn.is-out { border-color: #e0703f99; color: #f0b49a; }
+/* 首页：没连接钱包时四行待办是灰的，最上面一行提示连接 */
+.home-connect { background: linear-gradient(90deg, #ffcf5c26, #ffcf5c08 75%); }
+.home-connect .home-node { border-color: #ffcf5c; background: #2e220d; color: #ffd27a; box-shadow: 0 0 14px #ffcf5c66; }
+.home-connect .home-row-title { color: #fff2d6; font-weight: 700; }
+.home-list.is-guest li:not(.home-connect) { opacity: .5; pointer-events: none; }

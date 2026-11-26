@@ -14,6 +14,7 @@ import { PeachIcon } from './peach'
 import { PeachValue } from './peach-value'
 import { PageBar } from './profile-ui'
 import { useProduct } from './product-provider'
+import { useWallet } from './wallet-gate'
 import { useSound } from '@/lib/sound'
 
 /**
@@ -23,6 +24,7 @@ import { useSound } from '@/lib/sound'
 export function SummonPreview({ stage }: { stage: Stage }) {
   const { state, now, ready, act, currentTime } = useSummonPreview()
   const product = useProduct()
+  const wallet = useWallet()
   const { play } = useSound()
   const usdt = product.state?.usdt ?? 0
   const [confirmation, setConfirmation] = useState<string | null>(null)
@@ -125,6 +127,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     // 左边：状态和倒计时；右边：此刻唯一能点的按钮
     let label: string, until: number | null, button: React.ReactNode
     if (!level.isOpen) { label = '本阶段尚未开放'; until = null; button = <button type="button" className="btn-gold stage-cta" disabled>未开放</button> }
+    else if (product.guest && round.open) { label = '距召唤截止'; until = round.cutoff; button = <button type="button" className="btn-gold stage-cta" onClick={() => { play('nav'); wallet.connect() }}>召唤</button> }
     else if (entry && matching) { label = matching === 'soon' ? '即将开始匹配' : '系统正在匹配'; until = null; button = <button type="button" className={`btn-gold stage-cta match-cta is-step-${matching === 'soon' ? 0 : step + 1}`} aria-disabled="true" tabIndex={-1}><span className="match-sweep" aria-hidden /><span className="relative">{matching === 'soon' ? '即将匹配' : '匹配中'}</span></button> }
     else if (entry) { label = '已参与召唤 · 距系统匹配'; until = matchAt(entry); button = <button type="button" className="btn-gold stage-cta" disabled>等待匹配</button> }
     else if (round.open) { label = '距召唤截止'; until = round.cutoff; button = <button type="button" className="btn-gold stage-cta" disabled={!ready || shortPeach || shortUsdt} onClick={() => { play('nav'); setConfirmation(round.key); setError('') }}>召唤</button> }
@@ -141,8 +144,8 @@ export function SummonPreview({ stage }: { stage: Stage }) {
         {button}
       </div>
       {matching === 'matching' && <ol className="match-track" aria-hidden>{MATCH_STEPS.map((_, i) => <li key={i} className={i <= step ? 'is-on' : ''} />)}</ol>}
-      <p className={`mt-1.5 flex flex-wrap items-center gap-x-1.5 text-[10.5px] ${canReserve && (shortPeach || shortUsdt) ? 'text-[#f0a58a]' : 'text-[var(--gold-200)]/70'}`}>
-        {matching ? (matching === 'soon' ? '不需要操作，结果会立即揭晓' : '请留在此页，结果马上揭晓') : error ? error : product.notice && !entry ? product.notice
+      <p className={`mt-1.5 flex flex-wrap items-center gap-x-1.5 text-[10.5px] ${!product.guest && canReserve && (shortPeach || shortUsdt) ? 'text-[#f0a58a]' : 'text-[var(--gold-200)]/70'}`}>
+        {product.guest ? <>连接钱包后即可召唤<button type="button" onClick={wallet.connect} className="underline underline-offset-2">连接钱包</button></> : matching ? (matching === 'soon' ? '不需要操作，结果会立即揭晓' : '请留在此页，结果马上揭晓') : error ? error : product.notice && !entry ? product.notice
           : entry ? null
           : canReserve && shortPeach ? <>蟠桃不足：召唤需暂扣 {peachText(lockCents)}，余额 {peachText(state.balance)}<PeachIcon size={11} /><Link href="/me/wallet?mode=buy" className="underline underline-offset-2">购买蟠桃</Link></>
           : canReserve && shortUsdt ? <>USDT 不足：本轮修炼值 {peachText(cost)}，余额 {peachText(usdt)}<Link href="/me/wallet?mode=deposit" className="underline underline-offset-2">去充值</Link></>
