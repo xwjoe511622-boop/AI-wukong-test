@@ -6,6 +6,7 @@ import { useGame } from '@/lib/game-context'
 import { useProduct } from './product-provider'
 import { useProfile } from '@/lib/use-profile'
 import { PlayerIdentity } from './player-identity'
+import { tribeTier } from '@/lib/profile-rules'
 import { ProfileInvite } from './profile-invite'
 import { AssetCard } from './asset-card'
 import { ProfileMenu } from './profile-ui'
@@ -21,8 +22,11 @@ export function MeView() {
   const { data } = useProfile()
   const active = (state?.trades ?? []).filter(t => t.status === 'awaiting_payment' || t.status === 'awaiting_confirm')
   const todo = active.filter(needsMyAction)
+  // 部族等级：按第一代有效同行者数和部族有效成员数算，和奖励发放用的是同一套规则
+  const members = state?.members ?? []
+  const tier = tribeTier(members.filter(m => m.generation === 1 && m.valid !== false).length, members.filter(m => m.valid !== false).length)
   return <div className="flex flex-col gap-5">
-    <PlayerIdentity playerId={playerId} settingsHref="/me/security" avatar={state?.avatar} />
+    <PlayerIdentity playerId={playerId} settingsHref="/me/security" avatar={state?.avatar} tier={state ? tier?.name.replace('部族', '部族 ').replace('阶', ' 阶') ?? null : undefined} />
 
     {/* 资产 */}
     <section aria-labelledby="me-assets">
