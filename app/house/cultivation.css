@@ -128,3 +128,36 @@
 .slip-spent img { width: 26px; height: 26px; }
 @keyframes slip-spent { 0% { transform: translateY(10px) scale(.8); opacity: 0; } 15% { transform: none; opacity: 1; } 70% { opacity: 1; } 100% { transform: translateY(-46px); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .slip-spent { animation: none; display: none; } }
+
+/* ═══ 猴舍首页 ═══ */
+.house-card { position: relative; padding: 18px 18px 16px; border-radius: 18px; border: 1px solid #e3c07a; background: radial-gradient(90% 90% at 100% 0%, #4a3310 0%, transparent 62%), radial-gradient(70% 80% at 0% 100%, #33250e 0%, transparent 65%), linear-gradient(165deg, #211a0d, #0f0c08); box-shadow: 0 0 0 1px #ffe39a1f inset, 0 0 0 3px #0b0906, 0 0 0 4px #c59b5255, 0 12px 26px #0009; }
+.house-card-title { font-family: var(--font-display); font-size: 14px; letter-spacing: .12em; color: #f3c969; }
+.house-card-count { margin-top: 4px; font-family: var(--font-display); font-size: 15px; color: #f3d6a8; }
+.house-card-count strong { margin-right: 6px; font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: 40px; font-weight: 700; line-height: 1; color: #fff1cf; text-shadow: 0 0 20px #ffcf5c55; }
+.house-card-link { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 4px; font-size: 13px; color: #e9cf9f; }
+.house-card-stats { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 14px; border-top: 1px solid #e3c07a40; border-bottom: 1px solid #e3c07a40; text-align: center; }
+.house-card-stats > div { padding: 10px 4px; }
+.house-card-stats > div + div { border-left: 1px solid #e3c07a2e; }
+.house-card-stats dt { font-size: 12px; color: #b7afa0; }
+.house-card-stats dd { margin-top: 4px; font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: 20px; font-weight: 700; color: #fff1cf; }
+.house-card-stats .is-on dt, .house-card-stats .is-on dd { color: #ffd27a; }
+.house-card-foot { margin-top: 14px; }
+.house-card-foot.is-ok { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; color: #a9dba3; }
+.house-card-foot.is-due { padding: 12px; border-radius: 12px; border: 1px solid #e0a05a99; background: linear-gradient(180deg, #3a220c99, #1c130999); }
+.house-card.is-done { animation: house-done 1.4s ease-out; }
+@keyframes house-done { 0% { box-shadow: 0 0 0 1px #ffe39a inset, 0 0 60px #ffcf5c; } 100% { box-shadow: 0 0 0 1px #ffe39a1f inset, 0 0 0 3px #0b0906, 0 0 0 4px #c59b5255, 0 12px 26px #0009; } }
+/* 七间修炼室的徽章 */
+.house-badges { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.house-badge { display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 0; }
+.house-badge-art { position: relative; display: block; width: 100%; max-width: 46px; aspect-ratio: 1; border-radius: 999px; border: 1.5px solid #5a5142; background: #14110d; }
+.house-badge-art img { width: 100%; height: 100%; border-radius: 999px; object-fit: cover; object-position: 50% 12%; filter: grayscale(1) brightness(.45); }
+.house-badge.is-on .house-badge-art { border-color: #ffcf5c; box-shadow: 0 0 0 2px #0b0906, 0 0 12px #ffcf5c80; }
+.house-badge.is-on .house-badge-art img { filter: none; }
+.house-badge-art i { position: absolute; top: -2px; right: -2px; width: 11px; height: 11px; border-radius: 999px; background: #e8562f; box-shadow: 0 0 0 2px #0b0906, 0 0 8px #e8562f; }
+.house-badge-art b { position: absolute; right: -4px; bottom: -3px; min-width: 16px; height: 16px; padding: 0 3px; border-radius: 999px; background: #2e220d; border: 1px solid #ffcf5c; font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700; line-height: 14px; text-align: center; color: #ffe39a; }
+.house-badge-name { width: 100%; overflow: hidden; white-space: nowrap; text-align: center; font-size: 12px; transform-origin: center; color: #8f8778; }
+.house-badge.is-on .house-badge-name { color: #ffe9c2; }
+/* 修炼室入口：今天还有没修炼的，画面静止压暗 */
+.room-door.is-due .room-opening img { animation: none; filter: brightness(.5) saturate(.55); }
+.room-door.is-due .room-dust { display: none; }
+@media (prefers-reduced-motion: reduce) { .house-card.is-done { animation: none; } }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ChevronDown, Hourglass } from 'lucide-react'
 import { DAY, RULES, dateTime, dayIndex, due, endsAt, journal, liveValue, phase, progress, shownDays, streak, trainedDays, type Contract } from '@/lib/cultivation-preview'
 import { useCultivationPreview } from './cultivation-preview-provider'
@@ -12,9 +12,7 @@ import { durationText } from '@/lib/summon-preview'
 import { nextMatchAfter } from '@/lib/trade'
 import { useProduct } from './product-provider'
 import { useSound } from '@/lib/sound'
-
-/** 按住运功多久算完成（毫秒） */
-const HOLD_MS = 1400
+import { HoldButton } from './hold-button'
 
 function countdown(ms: number) {
   const seconds = Math.max(0, Math.floor(ms / 1000))
@@ -38,20 +36,13 @@ export function ContractSlip({ contract: c }: { contract: Contract }) {
   const short = state.balance < rule.daily
   const run = streak(c, now)
   const { play } = useSound()
-  // 按住运功：按满 HOLD_MS 才算修炼，中途松手不算
-  const [holding, setHolding] = useState(false)
   const [burst, setBurst] = useState(0)
   const [roll, setRoll] = useState<string | null>(null)
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const train = () => {
-    setHolding(false)
     act({ type: 'train', ids: [c.id], accelerate: false, expected: rule.daily })
     play('breakthrough')
     setBurst(n => n + 1)
   }
-  const press = () => { if (short || timer.current) return; play('tap'); setHolding(true); timer.current = setTimeout(() => { timer.current = null; train() }, HOLD_MS) }
-  const release = () => { if (timer.current) { clearTimeout(timer.current); timer.current = null } setHolding(false) }
-  useEffect(() => () => { if (timer.current) clearTimeout(timer.current) }, [])
   // 修炼那一刻：修炼值的小数快速滚动一小段
   useEffect(() => {
     if (!burst) return
@@ -79,12 +70,7 @@ export function ContractSlip({ contract: c }: { contract: Contract }) {
 
     <div className="flex flex-col gap-3 px-4 pb-4 pt-3">
       {status === '修炼中' && (canTrain ? <>
-        <button type="button" className={`cultivation-primary slip-hold flex w-full items-center justify-center gap-1.5 ${holding ? 'is-holding' : ''}`} style={{ '--hold': `${HOLD_MS}ms` } as React.CSSProperties} disabled={short} aria-label={`按住修炼${rule.daily > 0 ? `，消耗 ${rule.daily / 100} 蟠桃` : ''}`}
-          onPointerDown={e => { if (e.button === 0) press() }} onPointerUp={release} onPointerLeave={release} onPointerCancel={release} onContextMenu={e => e.preventDefault()}
-          onClick={e => { if (e.detail === 0 && !short) train() }}>
-          <span className="slip-hold-fill" aria-hidden />
-          <span className="relative flex items-center gap-1.5">{holding ? '运功中…' : <>按住{rule.dayFactor > 1 ? `修炼 ${rule.dayFactor} 天` : '修炼'}{rule.daily > 0 && <> · 消耗 <PeachValue cents={rule.daily} size="sm" /></>}</>}</span>
-        </button>
+        <HoldButton onDone={train} disabled={short} label={`按住修炼${rule.daily > 0 ? `，消耗 ${rule.daily / 100} 蟠桃` : ''}`}>按住{rule.dayFactor > 1 ? `修炼 ${rule.dayFactor} 天` : '修炼'}{rule.daily > 0 && <> · 消耗 <PeachValue cents={rule.daily} size="sm" /></>}</HoldButton>
         <p className={`text-center text-[12px] leading-5 ${short ? 'text-[#f0a58a]' : 'text-stone-400'}`}>{short ? <>蟠桃不足，<Link href="/me/wallet?mode=buy" className="underline underline-offset-2">去购买蟠桃</Link></> : rule.days > 1 ? '按住不放，运功完成才算；过了今天不能补。' : '按住不放，运功完成才算；修炼周期结束后不能补。'}</p>
       </> : <p className="rounded-lg border border-[var(--gold-600)]/30 bg-black/30 py-2.5 text-center text-xs text-[var(--gold-100)]"><span className="inline-flex flex-wrap items-center justify-center gap-1">{rule.days > 1 ? '今日已修炼' : '已修炼'} ✓{rule.daily > 0 && <> · 本次消耗 <PeachValue cents={rule.daily} size="sm" /></>}</span>{rule.days > 1 && run > 1 ? ` · 已连续修炼 ${shownDays(c.stage, run)} 天` : ''}{rule.days > 1 && current < rule.days - 1 ? ' · 明天记得再来' : ''}</p>)}
       {status === '传承中' && (trade ? <Link href={`/me/trades/${encodeURIComponent(trade.id)}`} className="flex flex-col items-center gap-1 text-center text-xs text-[var(--gold-200)]"><span className="flex items-center gap-2"><Hourglass className="size-4" aria-hidden />传承中 · 已匹配承接人，等待对方支付</span><span className="text-[12px] text-stone-400">支付剩余 <span className="num text-[var(--gold-100)]">{durationText(Math.max(0, trade.deadline - now))}</span> · 查看交易</span></Link>

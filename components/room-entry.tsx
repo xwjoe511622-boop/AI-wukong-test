@@ -12,6 +12,7 @@ export function RoomEntry({ stage, contracts, now, priority }: { stage: Stage; c
   const empty = status.tone === 'empty'
   const closed = !rule.isOpen
   const href = empty ? `/world?stage=${stage}` : `/house/room/${stage}`
+  // 和修炼室里一致：今天有悟空还没修炼，画面静止压暗；修炼过才亮起来
   const tone = empty ? 'is-empty' : status.tone === 'due' ? 'is-due' : 'is-live'
   // 空房间不占一整屏：缩成一行，点了去对应仙境召唤
   if (empty) {
