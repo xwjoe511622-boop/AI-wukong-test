@@ -14,7 +14,7 @@ const mine = (entries: Entry[], key: string): MyRound => {
  * 首页「当前召唤」：此刻轮到哪个仙境。
  * - live：正在召唤周期内（例如 11:00–12:00 是石灵），系统已自动匹配
  * - upcoming：今天下一个要开始的仙境（例如 11:00 之前是石灵）
- * - closed：今日七个周期全部结束，可参与明日
+ * - closed：今日七个周期全部结束，等今晚 19:00 开放明日的召唤
  * nextBookable：现在还能点召唤、且我没参与的最近一个仙境
  */
 export type CurrentSummon =
@@ -41,7 +41,7 @@ export function realmStatus(stage: Stage, entries: Entry[], now: number): RealmS
   if (reserved) return 'reserved'
   return round.open ? 'open' : 'cutoff'
 }
-export const REALM_STATUS_LABEL: Record<RealmStatus, string> = { live: '匹配中', 'live-reserved': '匹配中', reserved: '已召唤 · 等待匹配', open: '可召唤', cutoff: '召唤已截止', ended: '今日已结束' }
+export const REALM_STATUS_LABEL: Record<RealmStatus, string> = { live: '匹配中', 'live-reserved': '匹配中', reserved: '已召唤 · 等待匹配', open: '可召唤', cutoff: '召唤已截止', ended: '今日已结束 · 19:00 开放明日' }
 
 // ───────── 首页：今日待办 ─────────
 /**
@@ -69,20 +69,23 @@ const names = (stages: Stage[]) => [...new Set(stages)].map(s => LEVEL_BY_ID[s].
 
 export function dailyTodos(state: DailyState, now: number): DailyTodo[] {
   const today = beijingDate(now)
-  const mine = state.entries.filter(e => e.date === today)
+  const rounds = LEVELS.filter(l => l.isOpen).map(level => ({ level, round: roundFor(level.id, now) }))
+  // 今晚 19:00 之后看的是明天那一轮：今天的和明天的都算「我参与的」
+  const dates = new Set([today, ...rounds.map(r => r.round.date)])
+  const mine = state.entries.filter(e => dates.has(e.date))
+  const day = (date: string) => date !== today ? '明日 ' : ''
   const waiting = mine.filter(e => e.status === 'waiting').sort((a, b) => a.deadline - b.deadline)
   const settled = mine.filter(e => e.status !== 'waiting')
-  const rounds = LEVELS.filter(l => l.isOpen).map(level => ({ level, round: roundFor(level.id, now) }))
   const bookable = rounds.filter(({ round }) => round.open && !state.entries.some(e => e.key === round.key)).sort((a, b) => a.round.cutoff - b.round.cutoff)
 
   // 1. 召唤：截止前点一次，到点系统自动匹配
   let summon: DailyTodo
   const stage0 = waiting.length ? matchStage(waiting[0], now) : null
   if (stage0) summon = { kind: 'summon', label: '召唤', status: 'wait', live: true, title: stage0 === 'matching' ? `${LEVEL_BY_ID[waiting[0].stage].name} · 系统正在匹配…` : `${LEVEL_BY_ID[waiting[0].stage].name} · 即将开始匹配`, sub: stage0 === 'matching' ? '结果马上揭晓，请稍候' : '不需要操作，结果会立即通知你', until: stage0 === 'soon' ? matchAt(waiting[0]) : undefined, href: `/world?stage=${waiting[0].stage}#summon-action` }
-  else if (bookable.length && !mine.length) summon = { kind: 'summon', label: '召唤', status: 'todo', title: `可召唤 · ${bookable[0].level.name}`, sub: `${bookable[0].level.summonStartTime} 自动匹配${bookable.length > 1 ? ` · 另有 ${bookable.length - 1} 个仙境可召唤` : ''}`, until: bookable[0].round.cutoff, href: `/world?stage=${bookable[0].level.id}#summon-action`, cta: '去召唤' }
-  else if (waiting.length) summon = { kind: 'summon', label: '召唤', status: 'wait', title: `${LEVEL_BY_ID[waiting[0].stage].name} · 等待匹配`, sub: `${LEVEL_BY_ID[waiting[0].stage].summonStartTime} 自动匹配${waiting.length > 1 ? ` · 共 ${waiting.length} 个在等` : ''}${bookable.length ? ` · 还可召唤 ${bookable.length} 个` : ''}`, until: matchAt(waiting[0]), href: `/world?stage=${waiting[0].stage}#summon-action` }
+  else if (bookable.length && !mine.length) summon = { kind: 'summon', label: '召唤', status: 'todo', title: `可召唤 · ${bookable[0].level.name}`, sub: `${day(bookable[0].round.date)}${bookable[0].level.summonStartTime} 自动匹配${bookable.length > 1 ? ` · 另有 ${bookable.length - 1} 个仙境可召唤` : ''}`, until: bookable[0].round.cutoff, href: `/world?stage=${bookable[0].level.id}#summon-action`, cta: '去召唤' }
+  else if (waiting.length) summon = { kind: 'summon', label: '召唤', status: 'wait', title: `${LEVEL_BY_ID[waiting[0].stage].name} · 等待匹配`, sub: `${day(waiting[0].date)}${LEVEL_BY_ID[waiting[0].stage].summonStartTime} 自动匹配${waiting.length > 1 ? ` · 共 ${waiting.length} 个在等` : ''}${bookable.length ? ` · 还可召唤 ${bookable.length} 个` : ''}`, until: matchAt(waiting[0]), href: `/world?stage=${waiting[0].stage}#summon-action` }
   else if (settled.length) { const ok = settled.filter(e => e.status !== 'refunded'); summon = { kind: 'summon', label: '召唤', status: 'done', title: bookable.length ? `还可召唤 ${bookable.length} 个仙境` : '今日召唤已完成', sub: `${ok.length ? `成功 ${names(ok.map(e => e.stage))}` : ''}${ok.length && ok.length < settled.length ? ' · ' : ''}${ok.length < settled.length ? `未成功 ${settled.length - ok.length} 个，蟠桃已退还` : ''}`, until: bookable[0]?.round.cutoff, href: bookable.length ? '/world' : '/me/summons' } }
-  else summon = { kind: 'summon', label: '召唤', status: 'none', title: '今日召唤已全部截止', sub: '明日 00:00 重新开放', until: rounds[0]?.round.nextOpen, href: '/world' }
+  else summon = { kind: 'summon', label: '召唤', status: 'none', title: '今日召唤已全部截止', sub: '今晚 19:00 起可召唤明日的悟空', until: rounds[0]?.round.nextOpen, href: '/world' }
 
   // 2. 支付结算（我是承接人）
   const toPay = state.trades.filter(t => t.role === 'payer' && t.status === 'awaiting_payment').sort((a, b) => a.deadline - b.deadline)

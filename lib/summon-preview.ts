@@ -55,18 +55,29 @@ export const MATCH_LEAD_MS = 10_000
 /** 一场召唤此刻处在匹配的哪一步：soon 即将开始、matching 正在匹配；其余时候为 null */
 export const matchStage = (entry: Pick<Entry, 'deadline' | 'status'>, now: number): 'soon' | 'matching' | null =>
   entry.status !== 'waiting' ? null : now >= matchAt(entry) ? 'matching' : now >= matchAt(entry) - MATCH_LEAD_MS ? 'soon' : null
+/** 每晚几点（北京时间）起可以召唤次日的悟空 */
+export const NEXT_DAY_OPEN_HOUR = 19
+/**
+ * 某个仙境此刻面对的是哪一轮。
+ * 每晚 19:00（北京时间）起开放次日的召唤：19:00 之后看到的是明天那一轮，可以提前点召唤；
+ * 当天这一轮结束后到 19:00 之间是「已结束，等 19:00 开放」。
+ */
 export function roundFor(stage: Stage, now: number) {
-  const date = beijingDate(now)
-  const deadline = todayOccurrence(LEVEL_BY_ID[stage].summonHour, new Date(now)).getTime()
+  const today = beijingDate(now)
+  const reopen = Date.parse(`${today}T${String(NEXT_DAY_OPEN_HOUR).padStart(2, '0')}:00:00+08:00`)
+  // 19:00 之后算明天那一轮
+  const ref = now >= reopen ? Date.parse(`${today}T00:00:00+08:00`) + DAY_MS : now
+  const date = beijingDate(ref)
+  const deadline = todayOccurrence(LEVEL_BY_ID[stage].summonHour, new Date(ref)).getTime()
   const cutoff = deadline - RESERVATION_CUTOFF_MINUTES * 60_000
   const open = now < cutoff
   // deadline = 召唤周期开始；周期结束后本轮才算结束
   const windowEnd = deadline + WINDOW_MS
   const matching = now >= deadline && now < windowEnd
   const ended = now >= windowEnd
-  // 本轮结束后，下一轮自次日 00:00（北京时间）起可提交
-  const nextOpen = Date.parse(`${date}T00:00:00+08:00`) + DAY_MS
-  return { key: `${date}:${stage}`, date, deadline, cutoff, windowEnd, open, matching, ended, nextOpen, waiting: now >= cutoff && now < deadline, left: Math.max(0, (open ? cutoff : ended ? nextOpen : matching ? windowEnd : deadline) - now), number: roundNumber(now) }
+  // 本轮结束后，当晚 19:00 起可以召唤次日的
+  const nextOpen = reopen
+  return { key: `${date}:${stage}`, date, deadline, cutoff, windowEnd, open, matching, ended, nextOpen, /** 这一轮是明天的（今晚 19:00 之后提前开放） */ tomorrow: date !== today, waiting: now >= cutoff && now < deadline, left: Math.max(0, (open ? cutoff : ended ? nextOpen : matching ? windowEnd : deadline) - now), number: roundNumber(now) }
 }
 /** 本轮修炼在修炼范围中的位置 0–1 */
 export function rangePosition(stage: Stage) {

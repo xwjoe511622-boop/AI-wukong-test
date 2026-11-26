@@ -27,9 +27,26 @@ test('召唤周期内：显示此刻轮到的仙境，以及我有没有参与',
   const done = transition(s, { type: 'tick' }, at('11:01')).state
   assert.equal(currentSummon(done.entries, at('11:01')).mine, 'success')
 })
-test('18:00 之后：今日结束，等明日 00:00', () => {
+test('18:00 之后今日结束，等 19:00 开放明日的召唤；19:00 起可以召唤明日的', () => {
   const night = currentSummon([], at('18:30'))
-  assert.equal(night.kind, 'closed'); assert.equal(night.until, Date.parse('2026-09-20T00:00:00+08:00'))
+  assert.equal(night.kind, 'closed'); assert.equal(night.until, at('19:00'))
+  // 下午石灵这一轮已经结束：等 19:00
+  assert.equal(realmStatus('stone_spirit', [], at('15:00')), 'ended')
+  assert.equal(dailyTodos(initial, at('18:30'))[0].status, 'none')
+  // 19:00 起：七个仙境都可以召唤明天那一轮
+  assert.equal(realmStatus('stone_spirit', [], at('19:00')), 'open')
+  const todo = dailyTodos(initial, at('19:30'))[0]
+  assert.equal(todo.status, 'todo'); assert.ok(todo.sub.startsWith('明日 11:00'))
+  const tomorrow11 = Date.parse('2026-09-20T11:00:00+08:00')
+  let s = reserve(initial, 'stone_spirit', '19:30')
+  assert.equal(s.entries[0].date, '2026-09-20'); assert.equal(s.entries[0].deadline, tomorrow11)
+  // 今晚参与的，首页一直显示在等明日匹配；同一轮不能再点第二次
+  const wait = dailyTodos(s, at('20:00'))[0]
+  assert.equal(wait.status, 'wait'); assert.equal(wait.until, tomorrow11); assert.ok(wait.sub.startsWith('明日 11:00'))
+  assert.equal(reserve(s, 'stone_spirit', '21:00'), s)
+  // 第二天到点自动匹配
+  s = transition(s, { type: 'tick' }, tomorrow11 + 60_000).state
+  assert.equal(s.entries[0].status, 'success')
 })
 test('仙境状态：可召唤 → 召唤已截止 → 匹配中 → 今日已结束', () => {
   assert.equal(realmStatus('stone_spirit', [], at('09:00')), 'open')

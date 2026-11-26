@@ -8,7 +8,7 @@ import { money } from '@/lib/cultivation-preview'
 import { PeachValue, UsdtValue } from './peach-value'
 
 /** 确认召唤：把这一轮怎么算的摆出来——暂扣多少蟠桃、修炼值、修炼加成、手续费、预计传承所得 */
-export function SummonPreviewConfirm({ level, cost, balance, usdt, expired, onClose, onConfirm }: { level: WukongLevel; cost: number; balance: number; usdt: number; expired: boolean; onClose: () => void; onConfirm: () => void }) {
+export function SummonPreviewConfirm({ level, cost, balance, usdt, expired, onClose, onConfirm, tomorrow }: { tomorrow?: boolean; level: WukongLevel; cost: number; balance: number; usdt: number; expired: boolean; onClose: () => void; onConfirm: () => void }) {
   const ref = useRef<HTMLDialogElement>(null)
   useEffect(() => { const node = ref.current; node?.showModal(); node?.scrollTo(0, 0); return () => node?.close() }, [])
   const lock = Math.round(level.summonCost * 100)
@@ -42,14 +42,14 @@ export function SummonPreviewConfirm({ level, cost, balance, usdt, expired, onCl
     <h3 className="confirm-heading">我的余额</h3>
     <dl className="cultivation-facts"><div><dt>蟠桃</dt><dd><PeachValue cents={balance} size="sm" muted /></dd></div><div><dt>USDT</dt><dd><UsdtValue cents={usdt} size="sm" muted /></dd></div></dl>
 
-    <p className="mt-4 text-[12px] leading-5 text-[var(--gold-200)]/80">{level.summonStartTime}（北京时间）系统自动匹配并公布结果，不需要再操作；参与不等于召唤成功。成功后须在 {PAYMENT_WINDOW_HOURS} 小时内向传承人完成支付结算。传承所得为预计值，以实际修炼天数、匹配和到账为准。</p>
+    <p className="mt-4 text-[12px] leading-5 text-[var(--gold-200)]/80">{tomorrow ? '明日 ' : ''}{level.summonStartTime}（北京时间）系统自动匹配并公布结果，不需要再操作；参与不等于召唤成功。成功后须在 {PAYMENT_WINDOW_HOURS} 小时内向传承人完成支付结算。传承所得为预计值，以实际修炼天数、匹配和到账为准。</p>
     {blocked && <p role="alert" className="mt-3 text-sm text-[#f0a58a]">{expired ? '本轮召唤已截止。' : balance < lock ? '蟠桃不足，无法参与本次召唤。' : 'USDT 余额不足以完成本轮修炼值的支付结算。'}</p>}
     <button type="button" className="btn-gold mt-4 w-full text-sm" disabled={blocked} onClick={onConfirm}>确认召唤</button><button type="button" className="mt-3 min-h-11 w-full text-sm text-[var(--gold-200)] underline underline-offset-4" onClick={onClose}>暂不召唤</button>
   </dialog>
 }
 
 /** 已参与召唤：告诉用户提交上了、暂扣了多少、几点自动匹配 */
-export function SummonReserved({ level, paid, onClose }: { level: WukongLevel; paid: number; onClose: () => void }) {
+export function SummonReserved({ level, paid, onClose, tomorrow }: { tomorrow?: boolean; level: WukongLevel; paid: number; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null)
   useEffect(() => { const node = ref.current; node?.showModal(); return () => node?.close() }, [])
   return <dialog ref={ref} aria-labelledby="reserved-title" onCancel={onClose} className="cultivation-dialog text-center">
@@ -58,7 +58,7 @@ export function SummonReserved({ level, paid, onClose }: { level: WukongLevel; p
     <p className="mt-1 text-sm text-[var(--gold-100)]">等待匹配</p>
     <p className="mt-2 text-sm text-[var(--gold-200)]">{level.realm} · {level.name}</p>
     {paid > 0 && <div className="lock-total"><p>已暂扣</p><PeachValue cents={paid} size="xl" className="lock-value" /><p className="lock-split">召唤失败全额退还 · 悟空进猴舍时扣除</p></div>}
-    <p className="mt-4 text-sm leading-6 text-[var(--gold-100)]"><strong className="font-latin text-base text-gold">{level.summonStartTime}</strong>（北京时间）系统自动匹配<br />不需要再操作，结果会通知你</p>
+    <p className="mt-4 text-sm leading-6 text-[var(--gold-100)]"><strong className="font-latin text-base text-gold">{tomorrow ? '明日 ' : ''}{level.summonStartTime}</strong>（北京时间）系统自动匹配<br />不需要再操作，结果会通知你</p>
     <p className="mt-1 text-xs leading-5 text-[var(--gold-200)]/80">召唤成功后要在 {PAYMENT_WINDOW_HOURS} 小时内完成支付结算，请留意通知。</p>
     <button autoFocus type="button" className="btn-gold mt-5 w-full text-sm" onClick={onClose}>知道了</button>
     {paid > 0 && <Link href="/me/locked" className="mt-2 flex min-h-11 items-center justify-center text-sm text-[var(--gold-200)] underline underline-offset-4">查看暂扣明细</Link>}

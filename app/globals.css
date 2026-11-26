@@ -938,7 +938,8 @@
 /* 悟空世界：按此刻状态区分仙境，顺序不变 */
 .realm-cover.is-live, .realm-cover.is-live-reserved { outline: 2px solid #ffcf5c; outline-offset: 2px; box-shadow: 0 0 36px #ffcf5c55; }
 .realm-cover.is-reserved { outline: 1px solid #7fb06a99; outline-offset: 2px; }
-.realm-cover.is-ended { opacity: .62; filter: grayscale(.45); }
+/* 结束的仙境不再整张变灰：封面保持彩色，只有状态标签和按钮变暗 */
+.realm-cover.is-ended .btn-gold { filter: grayscale(.7) brightness(.75); }
 .realm-state { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; border: 1px solid #b0904b80; padding: 2px 9px; font-size: 12px; letter-spacing: .08em; color: #e9cf9f; }
 .realm-state.is-live, .realm-state.is-live-reserved { border-color: #ffcf5c; background: #ffcf5c26; color: #ffe39a; }
 .realm-state.is-live::before, .realm-state.is-live-reserved::before { content: ''; width: 5px; height: 5px; border-radius: 999px; background: #e0703f; box-shadow: 0 0 8px #e0703f; }
@@ -1229,3 +1230,12 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 /* 空状态 */
 .profile-empty { border: 1px dashed #c9a35a66; border-radius: 16px; }
 .trade-chip { flex-shrink: 0; white-space: nowrap; }
+
+/* 悟空世界卡片：三样数据一行排开 */
+.realm-facts { display: grid; grid-template-columns: 1.5fr 1fr 1fr; border-top: 1px solid #b0904b38; border-bottom: 1px solid #b0904b38; }
+.realm-facts > div { padding: 10px 6px; text-align: center; }
+.realm-facts > div + div { border-left: 1px solid #b0904b2e; }
+.realm-facts dt { font-size: 12px; color: #b7afa0; }
+.realm-facts dd { margin-top: 5px; font-family: var(--num); font-size: 18px; font-weight: 700; line-height: 1.1; white-space: nowrap; color: #fff1cf; }
+.realm-facts dd small { margin-left: 2px; font-family: var(--font-sans, 'Noto Sans SC'), sans-serif; font-size: 12px; font-weight: 400; color: #b7afa0; }
+.realm-facts dd .unit { font-size: .62em; }

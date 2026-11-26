@@ -98,7 +98,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     <details className="hud-panel rounded-xl">
       <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 text-sm text-[var(--gold-100)]">召唤规则<ChevronRight className="size-4 text-[var(--gold-400)]" aria-hidden /></summary>
       <ul className="flex flex-col gap-2 px-4 pb-4 text-[12px] leading-5 text-[var(--gold-200)]">
-        <li>{level.summonStopTime}（北京时间）前点「召唤」即参与本轮，每轮每人一次；{level.summonStartTime} 系统自动匹配并公布结果，不需要再操作。没在截止前点召唤的，不参与本轮匹配。</li>
+        <li>每晚 19:00（北京时间）起可以召唤次日的悟空，到次日 {level.summonStopTime} 截止。截止前点「召唤」即参与，每轮每人一次；{level.summonStartTime} 系统自动匹配并公布结果，不需要再操作。没在截止前点召唤的，不参与本轮匹配。</li>
         <li>修炼值以 USDT 计，由承接人向传承人完成支付结算；蟠桃只是召唤与修炼的消耗单位，{PEACH_UNIT_TEXT}。</li>
         <li>{free ? '本阶段不需要消耗蟠桃：召唤与修炼均不扣费。' : `蟠桃消耗：召唤 ${peachWhole(level.summonCost)}，点召唤时暂扣，召唤失败全额退还，悟空进猴舍时正式扣除；修炼每日 ${peachWhole(level.perCycleCost)}，每天点修炼时扣当天的。`}</li>
         <li>召唤成功后，承接人须在 {PAYMENT_WINDOW_HOURS} 小时内向系统匹配的传承人完成支付结算（从 USDT 余额扣除）；传承人确认到账后，悟空进入猴舍。超过 {PAYMENT_WINDOW_HOURS} 小时未支付判定逾期违约，暂扣的召唤蟠桃全部充公、不予退还。</li>
@@ -112,13 +112,13 @@ export function SummonPreview({ stage }: { stage: Stage }) {
       <div className="flex flex-col gap-3 px-4 pb-4">{previous.map(record => <SummonPreviewEntry key={record.key} entry={record} compact />)}</div>
     </details>}
 
-    {confirmation && <SummonPreviewConfirm level={level} cost={cost} balance={state.balance} usdt={usdt} expired={!round.open || confirmation !== round.key} onClose={() => setConfirmation(null)} onConfirm={() => {
+    {confirmation && <SummonPreviewConfirm tomorrow={round.tomorrow} level={level} cost={cost} balance={state.balance} usdt={usdt} expired={!round.open || confirmation !== round.key} onClose={() => setConfirmation(null)} onConfirm={() => {
       const timestamp = currentTime()
       if (roundFor(stage, timestamp).key !== confirmation) setError('轮次已变更，请重新确认本轮。')
       else { act({ type: 'join', stage, now: timestamp }); setReserved(confirmation) }
       setConfirmation(null)
     }} />}
-    {reserved && entry?.key === reserved && entry.status === 'waiting' && <SummonReserved level={level} paid={entry.paid} onClose={() => setReserved(null)} />}
+    {reserved && entry?.key === reserved && entry.status === 'waiting' && <SummonReserved tomorrow={round.tomorrow} level={level} paid={entry.paid} onClose={() => setReserved(null)} />}
   </div>
 
   function ActionBar() {
@@ -129,9 +129,9 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     if (!level.isOpen) { label = '本阶段尚未开放'; until = null; button = <button type="button" className="btn-gold stage-cta" disabled>未开放</button> }
     else if (product.guest && round.open) { label = '距召唤截止'; until = round.cutoff; button = <button type="button" className="btn-gold stage-cta" onClick={() => { play('nav'); wallet.connect() }}>召唤</button> }
     else if (entry && matching) { label = matching === 'soon' ? '即将开始匹配' : '系统正在匹配'; until = null; button = <button type="button" className={`btn-gold stage-cta match-cta is-step-${matching === 'soon' ? 0 : step + 1}`} aria-disabled="true" tabIndex={-1}><span className="match-sweep" aria-hidden /><span className="relative">{matching === 'soon' ? '即将匹配' : '匹配中'}</span></button> }
-    else if (entry) { label = '已参与召唤 · 距系统匹配'; until = matchAt(entry); button = <button type="button" className="btn-gold stage-cta" disabled>等待匹配</button> }
-    else if (round.open) { label = '距召唤截止'; until = round.cutoff; button = <button type="button" className="btn-gold stage-cta" disabled={!ready || shortPeach || shortUsdt} onClick={() => { play('nav'); setConfirmation(round.key); setError('') }}>召唤</button> }
-    else if (round.ended) { label = '本轮已结束 · 距下一轮开放'; until = round.nextOpen; button = <button type="button" className="btn-gold stage-cta" disabled>已结束</button> }
+    else if (entry) { label = round.tomorrow ? '已参与明日召唤 · 距系统匹配' : '已参与召唤 · 距系统匹配'; until = matchAt(entry); button = <button type="button" className="btn-gold stage-cta" disabled>等待匹配</button> }
+    else if (round.open) { label = round.tomorrow ? '明日这一轮 · 距召唤截止' : '距召唤截止'; until = round.cutoff; button = <button type="button" className="btn-gold stage-cta" disabled={!ready || shortPeach || shortUsdt} onClick={() => { play('nav'); setConfirmation(round.key); setError('') }}>召唤</button> }
+    else if (round.ended) { label = '今日已结束 · 距开放明日召唤'; until = round.nextOpen; button = <button type="button" className="btn-gold stage-cta" disabled>已结束</button> }
     else { label = round.matching ? '本轮已匹配 · 未参与' : '本轮召唤已截止 · 未参与'; until = round.matching ? round.windowEnd : round.deadline; button = <button type="button" className="btn-gold stage-cta" disabled>已截止</button> }
     const canReserve = level.isOpen && !entry && round.open
     return <section id="summon-action" className={`stage-action scroll-mt-20 ${matching ? `is-matching is-${matching}` : ''}`} aria-label="召唤操作" aria-live={matching ? 'polite' : undefined}>
@@ -149,7 +149,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
           : entry ? null
           : canReserve && shortPeach ? <>蟠桃不足：召唤需暂扣 {peachText(lockCents)}，余额 {peachText(state.balance)}<PeachIcon size={11} /><Link href="/me/wallet?mode=buy" className="underline underline-offset-2">购买蟠桃</Link></>
           : canReserve && shortUsdt ? <>USDT 不足：本轮修炼值 {peachText(cost)}，余额 {peachText(usdt)}<Link href="/me/wallet?mode=deposit" className="underline underline-offset-2">去充值</Link></>
-          : canReserve ? <>{free ? '本阶段不消耗蟠桃' : <>召唤暂扣 {peachText(lockCents)}<PeachIcon size={11} /></>} · 余额 {peachText(state.balance)}<PeachIcon size={11} /> · {level.summonStartTime} 自动匹配</>
+          : canReserve ? <>{free ? '本阶段不消耗蟠桃' : <>召唤暂扣 {peachText(lockCents)}<PeachIcon size={11} /></>} · 余额 {peachText(state.balance)}<PeachIcon size={11} /> · {round.tomorrow ? '明日 ' : ''}{level.summonStartTime} 自动匹配</>
           : '可继续参与其他仙境的召唤'}
       </p>
       {entry && entry.paid > 0 && <Link href="/me/locked" className="stage-locked">已暂扣<PeachValue cents={entry.paid} size="md" /><em>明细<ChevronRight className="size-3.5" aria-hidden /></em></Link>}
