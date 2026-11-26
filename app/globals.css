@@ -548,7 +548,7 @@
   filter: drop-shadow(0 22px 26px #000d) drop-shadow(0 0 28px color-mix(in srgb, var(--realm-aura) 45%, transparent));
 }
   /* 天命大圣立绘偏宽（含四周留白），用匹配比例的展示框铺满，保持大而完整不裁切 */
-  .realm-hero[data-realm=destiny_sage] .realm-hero-reveal { aspect-ratio: 1310 / 1644; height: 94%; }
+  .realm-hero:is([data-realm=destiny_sage], [data-realm=infinite_sage]) .realm-hero-reveal { aspect-ratio: 1310 / 1644; height: 94%; }
   .realm-hero[data-locked=true] .realm-hero-art { filter: grayscale(1) brightness(.3) contrast(1.15) drop-shadow(0 22px 26px #000d); }
 .realm-hero[data-locked=true] .realm-hero-breathe { animation-duration: 9s; }
 
