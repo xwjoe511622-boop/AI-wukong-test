@@ -10,7 +10,7 @@ const { RULES, DAY, quote } = require('../lib/cultivation-preview.ts')
 const { roundFor, matchAt } = require('../lib/summon-preview.ts')
 const { createProduct, productTransition: transition, parseProduct, walletAddress } = require('../lib/product-state.ts')
 const { COUNTERPARTY_DELAY_MS, PAYMENT_WINDOW_MS, nextMatchAfter } = require('../lib/trade.ts')
-// 承接人完成资金结算后，传承人（模拟）确认到账，悟空入舍
+// 承接人完成支付结算后，传承人（模拟）确认到账，悟空入舍
 const payAndEnter = (s, at) => transition(transition(s, { type: 'trade-pay', id: s.trades.find(t => t.role === 'payer' && t.status === 'awaiting_payment').id }, at).state, { type: 'tick' }, at + COUNTERPARTY_DELAY_MS).state
 const now = Date.parse('2026-09-19T10:00:00+08:00')
 const initial = createProduct(now, '01234567-89ab-cdef-0123-456789abcdef')

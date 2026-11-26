@@ -103,7 +103,7 @@ export function transition(state: PreviewState, action: PreviewAction): { state:
   if (action.now < matchAt(entry)) return { state, message: '尚未召唤，不能展示结果。' }
   const success = action.result === 'success'
   const status = success ? 'success' as const : 'refunded' as const
-  return { state: { ...state, balance: state.balance + (success ? 0 : entry.paid), entries: state.entries.map(e => e.key === entry.key ? { ...e, status, settledAt: action.now } : e) }, message: success ? `召唤成功，请在规定时间内完成资金结算，${LEVEL_BY_ID[entry.stage].name}随后进入猴舍。` : '本轮召唤未成功，暂扣的蟠桃已全额退还，可继续参与后续召唤。' }
+  return { state: { ...state, balance: state.balance + (success ? 0 : entry.paid), entries: state.entries.map(e => e.key === entry.key ? { ...e, status, settledAt: action.now } : e) }, message: success ? `召唤成功，请在规定时间内完成支付结算，${LEVEL_BY_ID[entry.stage].name}随后进入猴舍。` : '本轮召唤未成功，暂扣的蟠桃已全额退还，可继续参与后续召唤。' }
 }
 export function parsePreview(raw: string): PreviewState {
   const data = JSON.parse(raw)

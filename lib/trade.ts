@@ -5,9 +5,9 @@ import { matchDelay, roundFor } from './summon-preview'
  * 承接人与传承人交易。
  * - 承接人（payer，结算方）：召唤成功后，在结算期内把修炼值结算给系统匹配的传承人。
  * - 传承人（receiver，收款方/释放方）：悟空完成修炼且原周期结束后进入传承中，
- *   等下一轮同阶段召唤匹配到承接人；承接人完成资金结算后，传承人核实到账并确认，传承所得完成。
+ *   等下一轮同阶段召唤匹配到承接人；承接人完成支付结算后，传承人核实到账并确认，传承所得完成。
  *
- * 中心化撮合：匹配由平台完成，资金结算从平台内 USDT 余额划转，没有链上地址与付款凭证。
+ * 中心化撮合：匹配由平台完成，支付结算从平台内 USDT 余额划转，没有链上地址与付款凭证。
  * 当前没有接入后端撮合，对方的操作由本地模拟（见 COUNTERPARTY_DELAY_MS）。
  * 接入后端后，这里的模拟逻辑由接口返回的交易状态替代，页面不需要改动。
  */
@@ -21,9 +21,9 @@ export type Trade = {
   amountCents: number
   /** 系统匹配完成、交易开始的时刻 */
   matchedAt: number
-  /** 承接人资金结算截止时刻 */
+  /** 承接人支付结算截止时刻 */
   deadline: number
-  /** 系统匹配的对方：只展示 UID，资金结算在平台内 USDT 余额间划转 */
+  /** 系统匹配的对方：只展示 UID，支付结算在平台内 USDT 余额间划转 */
   counterparty: { uid: string }
   status: TradeStatus
   paidAt?: number
@@ -36,7 +36,7 @@ export type Trade = {
 }
 
 export const PAYMENT_WINDOW_MS = PAYMENT_WINDOW_HOURS * 3600_000
-/** 模拟对方完成操作（承接人资金结算 / 传承人确认到账）所需时间 */
+/** 模拟对方完成操作（承接人支付结算 / 传承人确认到账）所需时间 */
 export const COUNTERPARTY_DELAY_MS = 2 * 60_000
 
 export const TRADE_ROLE_LABEL: Record<TradeRole, string> = { payer: '承接人 · 结算方', receiver: '传承人 · 收款方' }
@@ -81,7 +81,7 @@ export function tradeStatusText(trade: Trade) {
   return trade.status === 'awaiting_payment' ? '等待承接人结算' : '待确认收款'
 }
 export function tradeTitle(trade: Trade) {
-  return `${LEVEL_BY_ID[trade.stage].name} · ${trade.role === 'payer' ? '召唤资金结算' : '传承收款'}`
+  return `${LEVEL_BY_ID[trade.stage].name} · ${trade.role === 'payer' ? '召唤支付结算' : '传承收款'}`
 }
 
 export function isTrade(value: unknown): value is Trade {

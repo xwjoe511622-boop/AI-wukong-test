@@ -12,11 +12,11 @@ export function lockedItems(state: ProductState | null | undefined): LockedItem[
     const level = LEVEL_BY_ID[entry.stage]
     const summonCents = entry.summonFee ?? Math.round(level.summonCost * 100)
     const base = { key: entry.key, entry, name: level.name, realm: level.realm, cents: entry.paid, summonCents: Math.min(summonCents, entry.paid), trainCents: Math.max(0, entry.paid - summonCents) }
-    if (entry.status === 'waiting') items.push({ ...base, phase: 'reserved', status: '已参与召唤 · 等待匹配', next: '召唤失败全额退还；召唤成功并完成资金结算、悟空进猴舍时扣除。', until: matchAt(entry), href: `/world?stage=${entry.stage}` })
+    if (entry.status === 'waiting') items.push({ ...base, phase: 'reserved', status: '已参与召唤 · 等待匹配', next: '召唤失败全额退还；召唤成功并完成支付结算、悟空进猴舍时扣除。', until: matchAt(entry), href: `/world?stage=${entry.stage}` })
     else if (entry.status === 'success') {
       const trade = state.trades.find(t => t.entryKey === entry.key && (t.status === 'awaiting_payment' || t.status === 'awaiting_confirm'))
       if (!trade) continue
-      if (trade.status === 'awaiting_payment') items.push({ ...base, phase: 'paying', status: '召唤成功 · 待我结算', next: '按时完成资金结算、传承人确认后，悟空进猴舍并扣除；逾期未结算全部充公。', until: trade.deadline, href: `/me/trades/${encodeURIComponent(trade.id)}` })
+      if (trade.status === 'awaiting_payment') items.push({ ...base, phase: 'paying', status: '召唤成功 · 待我结算', next: '按时完成支付结算、传承人确认后，悟空进猴舍并扣除；逾期未结算全部充公。', until: trade.deadline, href: `/me/trades/${encodeURIComponent(trade.id)}` })
       else items.push({ ...base, phase: 'confirming', status: '已结算 · 等传承人确认', next: '传承人确认到账后，悟空进猴舍并扣除。', href: `/me/trades/${encodeURIComponent(trade.id)}` })
     }
   }

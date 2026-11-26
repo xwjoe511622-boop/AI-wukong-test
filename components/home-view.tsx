@@ -14,7 +14,7 @@ const weekday = (now: number) => WEEKDAYS[new Date(now + 8 * 3600000).getUTCDay(
 
 /**
  * 首页只做一件事：今日待办。
- * 固定四行（召唤、资金结算、修炼、收款），有没有事都显示，正好一屏；不放资产，不重复别的页面。
+ * 固定四行（召唤、支付结算、修炼、收款），有没有事都显示，正好一屏；不放资产，不重复别的页面。
  */
 export function HomeView() {
   const { state, ready, now } = useProduct()

@@ -53,7 +53,7 @@ export function TradeView({ id }: { id: string }) {
     {!payer && contract && trade.status !== 'awaiting_payment' && <section className="profile-surface" aria-label="传承所得"><h2 className="profile-heading mb-3">传承所得</h2><SettlementFacts contract={contract} /></section>}
 
     {/* 操作区：只在需要我处理时出现 */}
-    {payer && trade.status === 'awaiting_payment' && <section className="profile-surface" aria-label="资金结算">
+    {payer && trade.status === 'awaiting_payment' && <section className="profile-surface" aria-label="支付结算">
       <p className="flex items-center justify-between text-xs text-[var(--profile-muted)]"><span>可用 USDT 余额</span><UsdtValue cents={state.usdt} size="sm" muted /></p>
       {short ? <><p role="alert" className="mt-3 flex items-start gap-2 text-xs leading-5 text-[#f0b49a]"><AlertTriangle className="mt-0.5 size-4 shrink-0" />USDT 余额不足，还差 {money(trade.amountCents - state.usdt)} USDT。请先补足 USDT 余额，再回来结算。</p><div className="mt-3"><ProfileButtonLink href="/me/wallet" size="large">查看我的资产</ProfileButtonLink></div></>
         : confirming ? <div className="trade-confirm mt-3"><p className="text-xs leading-6">将从 USDT 余额向传承人 <code>{trade.counterparty.uid}</code> 结算 <strong className="text-[var(--gold-100)]">{money(trade.amountCents)} USDT</strong>。结算后无法撤回，系统会通知传承人核实到账。</p><div className="mt-3 grid grid-cols-2 gap-2"><ProfileButton secondary onClick={() => setConfirming(false)}>取消</ProfileButton><ProfileButton onClick={() => { act({ type: 'trade-pay', id: trade.id }); setConfirming(false) }}>确认结算</ProfileButton></div></div>
@@ -67,13 +67,13 @@ export function TradeView({ id }: { id: string }) {
     </section>}
 
     {trade.status === 'awaiting_confirm' && payer && <p className="profile-surface text-center text-xs leading-6 text-[var(--profile-muted)]">已结算，等待传承人核实到账并确认。确认后 {level.name} 自动进入猴舍。</p>}
-    {trade.status === 'awaiting_payment' && !payer && <p className="profile-surface text-center text-xs leading-6 text-[var(--profile-muted)]">已匹配到承接人，等待对方在结算期内完成资金结算。到账后这里会提示你确认收款。</p>}
+    {trade.status === 'awaiting_payment' && !payer && <p className="profile-surface text-center text-xs leading-6 text-[var(--profile-muted)]">已匹配到承接人，等待对方在结算期内完成支付结算。到账后这里会提示你确认收款。</p>}
     {trade.status === 'completed' && <section className="profile-surface text-center">
       <p className="text-sm text-[var(--gold-100)]">{payer ? `交易完成，${level.name}已进入猴舍` : `传承完成，${money(trade.amountCents)} USDT 已转入 USDT 余额`}</p>
       <div className="mt-3 flex justify-center">{payer ? <Link href={`/house/room/${trade.stage}`} className="btn-gold profile-button inline-flex items-center justify-center">进入猴舍修炼</Link> : <Link href="/house/history" className="btn-ghost-gold profile-button inline-flex items-center justify-center">查看传承历史</Link>}</div>
     </section>}
     {trade.status === 'overdue' && <section className="profile-surface text-center">
-      <p className="text-sm text-[#f0b49a]">召唤成功后 {PAYMENT_WINDOW_HOURS} 小时内未完成资金结算，判定逾期违约</p>
+      <p className="text-sm text-[#f0b49a]">召唤成功后 {PAYMENT_WINDOW_HOURS} 小时内未完成支付结算，判定逾期违约</p>
       <p className="mt-2 text-xs leading-6 text-[var(--profile-muted)]">暂扣的召唤蟠桃已全部充公，不予退还，系统保留违约记录。可继续参与后续召唤。</p>
       <div className="mt-3 flex justify-center"><Link href="/world" className="btn-ghost-gold profile-button inline-flex items-center justify-center">返回悟空世界</Link></div>
     </section>}

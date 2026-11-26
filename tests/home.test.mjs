@@ -41,16 +41,16 @@ test('仙境状态：可召唤 → 召唤已截止 → 匹配中 → 今日已�
   assert.equal(realmStatus('stone_spirit', s.entries, at('11:30')), 'live-reserved')
 })
 const status = (st, time) => dailyTodos(st, at(time)).map(t => t.status).join(',')
-test('今日待办固定四行：召唤、资金结算、修炼、收款', () => {
+test('今日待办固定四行：召唤、支付结算、修炼、收款', () => {
   assert.deepEqual(dailyTodos(initial, at('09:00')).map(t => t.kind), ['summon', 'pay', 'train', 'receive'])
-  assert.deepEqual(dailyTodos(initial, at('09:00')).map(t => t.label), ['召唤', '资金结算', '修炼', '收款'])
+  assert.deepEqual(dailyTodos(initial, at('09:00')).map(t => t.label), ['召唤', '支付结算', '修炼', '收款'])
   // 新用户：只有召唤是待处理
   assert.equal(status(initial, '09:00'), 'todo,none,none,none')
   // 点过召唤：等待系统匹配，到点前不用再操作
   let s = reserve(initial, 'stone_spirit', '09:00')
   assert.equal(status(s, '09:30'), 'wait,none,none,none')
   assert.equal(dailyTodos(s, at('09:30'))[0].until, at('11:00'))
-  // 11:00 自动匹配成功：资金结算待处理，带金额和倒计时
+  // 11:00 自动匹配成功：支付结算待处理，带金额和倒计时
   s = transition(s, { type: 'tick' }, at('11:00')).state
   const pay = dailyTodos(s, at('11:01'))
   assert.equal(pay[0].status, 'done'); assert.equal(pay[1].status, 'todo'); assert.equal(pay[1].amountCents, 1000); assert.equal(pay[1].until, at('12:00'))

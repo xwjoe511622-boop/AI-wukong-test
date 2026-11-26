@@ -46,7 +46,7 @@ export const REALM_STATUS_LABEL: Record<RealmStatus, string> = { live: '匹配�
 // ───────── 首页：今日待办 ─────────
 /**
  * 一只悟空的一生里，玩家要亲手做的事只有四种，首页固定显示这四行，顺序不变：
- * 召唤 → 资金结算 → 修炼 → 收款。
+ * 召唤 → 支付结算 → 修炼 → 收款。
  * 召唤只点一次，到点系统自动匹配；修炼要每天自己点，没点的那天没有修炼加成，过后不能补。
  * 每行四种状态：todo 待处理（可以现在做）、wait 等待中（等时间或等对方）、done 今日已完成、none 今日无。
  */
@@ -80,13 +80,13 @@ export function dailyTodos(state: DailyState, now: number): DailyTodo[] {
   else if (settled.length) { const ok = settled.filter(e => e.status !== 'refunded'); summon = { kind: 'summon', label: '召唤', status: 'done', title: bookable.length ? `还可召唤 ${bookable.length} 个仙境` : '今日召唤已完成', sub: `${ok.length ? `成功 ${names(ok.map(e => e.stage))}` : ''}${ok.length && ok.length < settled.length ? ' · ' : ''}${ok.length < settled.length ? `未成功 ${settled.length - ok.length} 个，蟠桃已退还` : ''}`, until: bookable[0]?.round.cutoff, href: bookable.length ? '/world' : '/me/summons' } }
   else summon = { kind: 'summon', label: '召唤', status: 'none', title: '今日召唤已全部截止', sub: '明日 00:00 重新开放', until: rounds[0]?.round.nextOpen, href: '/world' }
 
-  // 2. 资金结算（我是承接人）
+  // 2. 支付结算（我是承接人）
   const toPay = state.trades.filter(t => t.role === 'payer' && t.status === 'awaiting_payment').sort((a, b) => a.deadline - b.deadline)
   const paid = state.trades.filter(t => t.role === 'payer' && t.status === 'awaiting_confirm')
   let pay: DailyTodo
-  if (toPay.length) { const short = state.usdt < toPay[0].amountCents; pay = { kind: 'pay', label: '资金结算', status: 'todo', title: `${LEVEL_BY_ID[toPay[0].stage].name} · 待我结算${toPay.length > 1 ? `（共 ${toPay.length} 笔）` : ''}`, sub: short ? 'USDT 余额不足，请先充值' : `逾期 ${PAYMENT_WINDOW_HOURS} 小时未结算，暂扣的蟠桃全部充公`, until: toPay[0].deadline, amountCents: toPay[0].amountCents, href: tradeHref(toPay), cta: '去结算', warn: short } }
-  else if (paid.length) pay = { kind: 'pay', label: '资金结算', status: 'wait', title: `已结算 · 等待传承人确认${paid.length > 1 ? `（${paid.length} 笔）` : ''}`, sub: `确认到账后，${names(paid.map(t => t.stage))}进入猴舍`, href: tradeHref(paid) }
-  else pay = { kind: 'pay', label: '资金结算', status: 'none', title: '无待结算', sub: '召唤成功后，在这里完成资金结算', href: '/me/trades' }
+  if (toPay.length) { const short = state.usdt < toPay[0].amountCents; pay = { kind: 'pay', label: '支付结算', status: 'todo', title: `${LEVEL_BY_ID[toPay[0].stage].name} · 待我结算${toPay.length > 1 ? `（共 ${toPay.length} 笔）` : ''}`, sub: short ? 'USDT 余额不足，请先充值' : `逾期 ${PAYMENT_WINDOW_HOURS} 小时未结算，暂扣的蟠桃全部充公`, until: toPay[0].deadline, amountCents: toPay[0].amountCents, href: tradeHref(toPay), cta: '去结算', warn: short } }
+  else if (paid.length) pay = { kind: 'pay', label: '支付结算', status: 'wait', title: `已结算 · 等待传承人确认${paid.length > 1 ? `（${paid.length} 笔）` : ''}`, sub: `确认到账后，${names(paid.map(t => t.stage))}进入猴舍`, href: tradeHref(paid) }
+  else pay = { kind: 'pay', label: '支付结算', status: 'none', title: '无待结算', sub: '召唤成功后，在这里完成支付结算', href: '/me/trades' }
 
   // 3. 修炼：每天自己点，没点的那天没有修炼加成，过后不能补
   const training = state.contracts.filter(c => phase(c, now) === '修炼中')

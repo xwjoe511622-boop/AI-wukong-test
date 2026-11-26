@@ -171,7 +171,7 @@ export function transition(state: PreviewState, action: Action, now: number): { 
   const c = state.contracts.find(c => c.id === action.id)
   if (!c) return { state, message: '这只悟空已归档' }
   if (action.type === 'claim') {
-    if (phase(c, now) !== '传承完成') return { state, message: '需修炼周期结束、承接人完成资金结算后方可确认' }
+    if (phase(c, now) !== '传承完成') return { state, message: '需修炼周期结束、承接人完成支付结算后方可确认' }
     return { state: { ...state, contracts: state.contracts.filter(item => item.id !== c.id), history: [{ ...c, claimedAt: now }, ...state.history] }, message: '已确认传承所得（USDT），本次传承已归档' }
   }
   const days = RULES[c.stage].days
