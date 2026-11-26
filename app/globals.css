@@ -1088,8 +1088,6 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .asset-field button { flex-shrink: 0; min-height: 32px; padding: 0 10px; border-radius: 999px; border: 1px solid #c59b5280; font-size: 12px; color: #f3c969; }
 .asset-field .unit { margin: 0; font-size: 13px; }
 .asset-label { display: block; margin: 16px 0 8px; font-size: 12px; color: var(--profile-muted); }
-/* 没有顶部返回条的页面（首页、悟空世界、猴舍、我的）：铃铛收进内容区右上角，不压在边框上 */
-body:not(:has(.page-bar)) .notice-bell { top: calc(22px + env(safe-area-inset-top)); right: max(24px, calc(50% - 216px)); }
 
 /* 部族等级徽章：只是标识，不能点 */
 .tier-badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; border: 1px solid transparent; background: linear-gradient(180deg, #5a4212, #2a1d08) padding-box, linear-gradient(160deg, #ffe7a3, #b9862c 50%, #f3c969) border-box; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: .04em; line-height: 1; white-space: nowrap; color: #ffe39a; box-shadow: 0 0 10px #ffcf5c33; }
@@ -1127,7 +1125,7 @@ body:not(:has(.page-bar)) .notice-bell { top: calc(22px + env(safe-area-inset-to
 .match-track li.is-on { background: #ffcf5c; box-shadow: 0 0 10px #ffcf5c; }
 .match-vignette { position: fixed; inset: 0; z-index: 30; pointer-events: none; animation: match-vignette 1.6s ease-in-out infinite; }
 @keyframes match-vignette { 0%, 100% { box-shadow: inset 0 0 40px 4px #ffcf5c1f; } 50% { box-shadow: inset 0 0 90px 14px #ffcf5c59; } }
-.match-banner { pointer-events: auto; display: flex; align-items: center; gap: 8px; min-height: 40px; margin: 10px 60px 0 12px; padding: 0 12px; border-radius: 999px; border: 1px solid #ffcf5c; background: rgb(42 28 6 / 97%); font-size: 12.5px; color: #ffe9c2; box-shadow: 0 10px 28px #000c, 0 0 18px #ffcf5c40; animation: match-banner-in .4s ease-out, match-glow 1.6s ease-in-out infinite; }
+.match-banner { pointer-events: auto; display: flex; align-items: center; gap: 8px; min-height: 40px; margin: 10px 12px 0; padding: 0 12px; border-radius: 999px; border: 1px solid #ffcf5c; background: rgb(42 28 6 / 97%); font-size: 12.5px; color: #ffe9c2; box-shadow: 0 10px 28px #000c, 0 0 18px #ffcf5c40; animation: match-banner-in .4s ease-out, match-glow 1.6s ease-in-out infinite; }
 @keyframes match-banner-in { from { transform: translateY(-140%); opacity: 0; } }
 .match-banner-dot { width: 8px; height: 8px; flex-shrink: 0; border-radius: 999px; background: #ffcf5c; box-shadow: 0 0 10px #ffcf5c; animation: match-dot 1s ease-in-out infinite; }
 /* 首页待办：正在匹配的那一行 */
@@ -1150,16 +1148,11 @@ body:not(:has(.page-bar)) .notice-bell { top: calc(22px + env(safe-area-inset-to
 .wallet-steps .is-done { color: #a9dba3; }
 .wallet-steps .is-done span { border-color: #8fc98a; background: #1f3a1e; }
 .wallet-tip { margin-top: 14px; padding: 12px; border-radius: 12px; border: 1px solid #e0a05a80; background: #3a220c80; text-align: left; }
-/* 右上角钱包入口：没连接是按钮，连接后是铃铛左边的小图标 */
-.wallet-slot { position: fixed; z-index: 45; top: calc(6px + env(safe-area-inset-top)); right: max(8px, calc(50% - 232px)); }
-.wallet-slot.is-connected { top: 0; right: 0; }
-.wallet-slot .wallet-connect { min-width: 112px; font-family: var(--font-display); filter: drop-shadow(0 4px 10px #000a); }
-.notice-bell.wallet-icon { right: max(56px, calc(50% - 184px)); }
-body:not(:has(.page-bar)) .wallet-slot:not(.is-connected) { top: calc(10px + env(safe-area-inset-top)); right: max(12px, calc(50% - 228px)); }
-/* 没连接钱包、又没有返回条的页面（悟空世界）：给右上角的连接按钮让出一行 */
-.app-plain:has(.wallet-slot:not(.is-connected)):not(:has(.page-bar)) main { padding-top: calc(60px + env(safe-area-inset-top)); }
-body:not(:has(.page-bar)) .notice-bell.wallet-icon { right: max(68px, calc(50% - 172px)); }
-.wallet-pop { position: fixed; z-index: 59; top: calc(56px + env(safe-area-inset-top)); right: max(12px, calc(50% - 228px)); width: min(300px, calc(100vw - 24px)); padding: 14px; border-radius: 14px; border: 1px solid #e3c07a; background: linear-gradient(165deg, #241c0e, #100d09); box-shadow: 0 18px 44px #000d, 0 0 0 1px #ffe39a1a inset; }
+/* 钱包和通知铃铛：只在首页左上角。没连接是「连接钱包」按钮，连接后是钱包图标 + 铃铛 */
+.home-tools { position: fixed; z-index: 45; top: calc(10px + env(safe-area-inset-top)); left: max(12px, calc(50% - 228px)); display: flex; align-items: center; gap: 10px; }
+.home-tools .notice-bell { position: relative; top: auto; right: auto; }
+.home-tools .wallet-connect { min-width: 112px; font-family: var(--font-display); filter: drop-shadow(0 4px 10px #000a); }
+.wallet-pop { position: fixed; z-index: 59; top: calc(56px + env(safe-area-inset-top)); left: max(12px, calc(50% - 228px)); width: min(300px, calc(100vw - 24px)); padding: 14px; border-radius: 14px; border: 1px solid #e3c07a; background: linear-gradient(165deg, #241c0e, #100d09); box-shadow: 0 18px 44px #000d, 0 0 0 1px #ffe39a1a inset; }
 .wallet-pop-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; border-radius: 10px; border: 1px solid #c59b5299; font-size: 12.5px; color: #ffe9c2; }
 .wallet-pop-btn.is-out { border-color: #e0703f99; color: #f0b49a; }
 /* 首页：没连接钱包时四行待办是灰的，最上面一行提示连接 */

@@ -23,7 +23,7 @@ export function PlayerIdentity({ playerId, settingsHref, avatar, tier }: { playe
 
   return (
     <div className="pt-[env(safe-area-inset-top)]">
-      <header className="flex min-h-16 items-center gap-2.5 pr-11">
+      <header className="flex min-h-16 items-center gap-2.5">
         {settingsHref ? <Link href={settingsHref} aria-label="设置头像" className="shrink-0"><Avatar src={avatar} size={52} /></Link> : <Avatar src={avatar} size={60} />}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">

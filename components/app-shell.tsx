@@ -22,8 +22,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <TrialRibbon />
       <NoticeToast />
       <MatchBanner />
-      {connected && <NoticeBell />}
-      <div className={`wallet-slot ${connected ? 'is-connected' : ''}`}><WalletButton /></div>
+      {/* 钱包和通知铃铛只在首页左上角显示，其他页面不显示 */}
+      <div className="home-tools"><WalletButton />{connected && <NoticeBell />}</div>
       <main>{children}</main>
       <BottomNav />
     </div>
@@ -35,9 +35,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <TrialRibbon />
       <NoticeToast />
       <MatchBanner />
-      {connected && <NoticeBell />}
-      {/* 「我的」页头部已经显示地址，右上角不再重复钱包图标 */}
-      {!needsWallet && !(connected && pathname === '/me') && <div className={`wallet-slot ${connected ? 'is-connected' : ''}`}><WalletButton /></div>}
       <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col">
         <main className="flex-1 px-4 pb-40 pt-4">
           {needsWallet ? <ConnectCard links={pathname === '/me'} title={pathname.startsWith('/house') ? '连接钱包，进入你的猴舍' : undefined} note={pathname.startsWith('/house') ? '连接后可以看到你的悟空，并每天为它修炼。' : undefined} /> : isCultivationPreview ? children : error ? (
