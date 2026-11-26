@@ -28,7 +28,7 @@ export function TradeView({ id }: { id: string }) {
   return <div className="flex flex-col gap-5">
     <PageBar title="交易详情" back="/me/trades" />
     <header>
-      <div className="flex flex-wrap items-center gap-2"><TradeChip trade={trade} /><span className="text-[11px] text-[var(--profile-muted)]">{TRADE_ROLE_LABEL[trade.role]}</span></div>
+      <div className="flex flex-wrap items-center gap-2"><TradeChip trade={trade} /><span className="text-[12px] text-[var(--profile-muted)]">{TRADE_ROLE_LABEL[trade.role]}</span></div>
       <h2 className="mt-2 font-display text-2xl font-bold text-[var(--gold-100)]">{tradeTitle(trade)}</h2>
       <p className="mt-1 text-xs text-[var(--profile-muted)]">{level.realm} · 匹配于 {dateTime(trade.matchedAt)}（北京时间）</p>
     </header>
@@ -37,7 +37,7 @@ export function TradeView({ id }: { id: string }) {
       <p className="text-xs text-[var(--profile-muted)]">{payer ? '应支付修炼值' : '本次传承应收'}</p>
       <UsdtValue cents={trade.amountCents} size="xl" className="mt-2" />
       {trade.status === 'awaiting_payment' && <p className="mt-3 text-xs text-[var(--profile-muted)]">{payer ? '支付剩余时间' : '承接人支付剩余时间'}　<Countdown ms={left} /></p>}
-      {payer && trade.status === 'awaiting_payment' && <p className="mt-2 text-[11px] leading-5 text-[#f0b49a]">超过 {PAYMENT_WINDOW_HOURS} 小时未支付判定逾期违约，暂扣的召唤蟠桃全部充公、不予退还。</p>}
+      {payer && trade.status === 'awaiting_payment' && <p className="mt-2 text-[12px] leading-5 text-[#f0b49a]">超过 {PAYMENT_WINDOW_HOURS} 小时未支付判定逾期违约，暂扣的召唤蟠桃全部充公、不予退还。</p>}
     </section>
 
     <section className="profile-surface"><h2 className="profile-heading mb-3">交易进度</h2><TradeSteps trade={trade} /></section>
@@ -46,7 +46,7 @@ export function TradeView({ id }: { id: string }) {
       <h2 className="profile-heading mb-3">{payer ? '传承人信息' : '承接人信息'}</h2>
       <dl className="flex flex-col gap-3">
         <div className="trade-field"><dt>{payer ? '传承人' : '承接人'}钱包地址</dt><dd><code className="break-all">{trade.counterparty.uid}</code></dd></div>
-        <p className="rounded-lg border border-[#e0a05a66] bg-[#3a220c80] px-3 py-2 text-[11.5px] leading-5 text-[#f3d6a8]">支付结算在平台内完成，从你的 USDT 余额扣除。请勿向该地址直接转账，链上转账无法到账，也无法找回。</p>
+        <p className="rounded-lg border border-[#e0a05a66] bg-[#3a220c80] px-3 py-2 text-[12px] leading-5 text-[#f3d6a8]">支付结算在平台内完成，从你的 USDT 余额扣除。请勿向该地址直接转账，链上转账无法到账，也无法找回。</p>
         {trade.paidAt && <div className="trade-field"><dt>支付时间</dt><dd>{dateTime(trade.paidAt)}</dd></div>}
         {trade.confirmedAt && <div className="trade-field"><dt>确认到账时间</dt><dd>{dateTime(trade.confirmedAt)}</dd></div>}
       </dl>
@@ -80,7 +80,7 @@ export function TradeView({ id }: { id: string }) {
       <div className="mt-3 flex justify-center"><Link href="/world" className="btn-ghost-gold profile-button inline-flex items-center justify-center">返回悟空世界</Link></div>
     </section>}
 
-    <p role="status" aria-live="polite" className="min-h-4 text-center text-[11px] leading-5 text-[var(--gold-200)]">{notice}</p>
+    <p role="status" aria-live="polite" className="min-h-4 text-center text-[12px] leading-5 text-[var(--gold-200)]">{notice}</p>
     <p className="text-center text-xs text-[var(--profile-muted)]">这笔交易有问题？<Link href="/me/support" className="ml-1 text-[var(--gold-200)] underline underline-offset-4">联系客服申诉</Link></p>
   </div>
 }

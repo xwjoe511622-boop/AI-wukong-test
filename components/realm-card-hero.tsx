@@ -100,11 +100,11 @@ export function RealmCardHero({ level }: { level: WukongLevel }) {
 
       {/* 人物名与介绍：独立于舞台，落在人物脚下的实底标题带上，不与立绘重叠 */}
       <div className="realm-hero-caption">
-        <p className="flex items-center justify-center gap-3 text-[11px] tracking-widest text-[var(--gold-200)]">
+        <p className="flex items-center justify-center gap-3 text-[12px] tracking-wide text-[var(--gold-200)]">
           <span aria-label={`${level.stars}星`} className="text-[var(--gold-400)]">{starText(level.stars)}</span>
           <span>{level.tier}</span>
           {!level.isOpen && (
-            <span className="rounded-full border border-[var(--gold-600)]/50 px-2 py-0.5 text-[10px] tracking-widest text-[var(--gold-200)]">未开放</span>
+            <span className="rounded-full border border-[var(--gold-600)]/50 px-2 py-0.5 text-[12px] tracking-wide text-[var(--gold-200)]">未开放</span>
           )}
         </p>
         <h2 id={`realm-character-${level.id}`} className="realm-hero-title font-display text-[2.4rem] font-black leading-none tracking-[0.18em] text-gold">

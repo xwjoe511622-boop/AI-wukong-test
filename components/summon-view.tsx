@@ -113,7 +113,7 @@ export function SummonView() {
       <div className="panel gold-hairline rounded-2xl p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[11px] text-[var(--gold-600)]">召唤时间</p>
+            <p className="text-[12px] text-[var(--gold-600)]">召唤时间</p>
             <p className="whitespace-nowrap font-latin text-lg font-bold text-gold">{level.summonWindow}</p>
           </div>
           {open ? (
@@ -122,7 +122,7 @@ export function SummonView() {
             </span>
           ) : (
             <div className="text-right">
-              <p className="text-[11px] text-[var(--gold-600)]">距离开启</p>
+              <p className="text-[12px] text-[var(--gold-600)]">距离开启</p>
               <Countdown ms={untilOpen} />
             </div>
           )}
@@ -140,7 +140,7 @@ export function SummonView() {
         </button>
         {error && <p role="alert" className="mt-3 text-center text-sm text-[var(--crimson-soft)]">{error}</p>}
         {open && !affordable && (
-          <p className="mt-2 text-center text-[11px] text-[var(--crimson-soft)]">
+          <p className="mt-2 text-center text-[12px] text-[var(--crimson-soft)]">
             当前蟠桃 <PeachAmount value={balance} size="sm" className="!gap-0.5" /> ，不足以结契
           </p>
         )}
@@ -161,7 +161,7 @@ export function SummonView() {
 function InfoCell({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="gold-hairline rounded-xl px-3 py-2.5 text-center">
-      <dt className="text-[11px] text-[var(--gold-600)]">{label}</dt>
+      <dt className="text-[12px] text-[var(--gold-600)]">{label}</dt>
       <dd className="mt-1">{children}</dd>
     </div>
   )

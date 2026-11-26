@@ -41,7 +41,7 @@ export function SummonSuccess({ monkey, onClose }: { monkey: OwnedMonkey | null;
             <h3 className="mt-1 font-display text-2xl font-black text-gold">{level.name}结契成功</h3>
             <div className="mx-auto mt-2 flex items-center justify-center gap-2">
               <span className="h-1.5 w-1.5 animate-pulse-glow rounded-full bg-[var(--ember)]" />
-              <span className="font-display text-[11px] tracking-[0.25em] text-[var(--gold-400)]">
+              <span className="font-display text-[12px] tracking-[0.25em] text-[var(--gold-400)]">
                 {level.realm}
               </span>
               <span className="h-1.5 w-1.5 animate-pulse-glow rounded-full bg-[var(--ember)]" />
@@ -95,7 +95,7 @@ export function SummonSuccess({ monkey, onClose }: { monkey: OwnedMonkey | null;
 function Stat({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="gold-hairline rounded-xl px-3 py-2.5 text-center">
-      <dt className="text-[11px] text-[var(--gold-600)]">{label}</dt>
+      <dt className="text-[12px] text-[var(--gold-600)]">{label}</dt>
       <dd className="mt-1">{children}</dd>
     </div>
   )

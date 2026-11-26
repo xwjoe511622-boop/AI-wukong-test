@@ -50,8 +50,8 @@ export function MeView() {
       <h2 id="me-team" className="profile-heading">我的团队</h2>
       <div className="profile-surface !p-0">
         <div className="grid grid-cols-2">
-          <Link href="/me/companions" className="p-4" aria-label="我的同行者"><p className="flex items-center justify-between text-[11px] text-[var(--profile-muted)]">我的同行者<ChevronRight className="size-3.5" /></p><p className="relation-count num">{data?.companions ?? '—'}<small>人</small></p></Link>
-          <Link href="/me/tribe" className="border-l border-[var(--profile-border)] p-4" aria-label="我的部族"><p className="flex items-center justify-between text-[11px] text-[var(--profile-muted)]">我的部族<ChevronRight className="size-3.5" /></p><p className="relation-count num">{data?.members ?? '—'}<small>人</small></p></Link>
+          <Link href="/me/companions" className="p-4" aria-label="我的同行者"><p className="flex items-center justify-between text-[12px] text-[var(--profile-muted)]">我的同行者<ChevronRight className="size-3.5" /></p><p className="relation-count num">{data?.companions ?? '—'}<small>人</small></p></Link>
+          <Link href="/me/tribe" className="border-l border-[var(--profile-border)] p-4" aria-label="我的部族"><p className="flex items-center justify-between text-[12px] text-[var(--profile-muted)]">我的部族<ChevronRight className="size-3.5" /></p><p className="relation-count num">{data?.members ?? '—'}<small>人</small></p></Link>
         </div>
       </div>
       <ProfileInvite code={data?.inviteCode} />
@@ -63,6 +63,6 @@ export function MeView() {
     <ProfileMenu title="服务" items={[
       { label: '通知', href: '/me/notifications', icon: Bell }, { label: '悟空百科', href: '/me/encyclopedia', icon: BookOpen }, { label: '公告中心', href: '/me/announcements', icon: Megaphone }, { label: '客服中心', href: '/me/support', icon: Headphones }, { label: '设置', href: '/me/security', icon: Settings }, { label: '关于 AI WUKONG', href: '/me/about', icon: Info },
     ]} />
-    <p className="pb-2 text-center text-[10px] tracking-[.2em] text-[var(--profile-muted)]">AI WUKONG · 与君同行</p>
+    <p className="pb-2 text-center text-[12px] tracking-wide text-[var(--profile-muted)]">AI WUKONG · 与君同行</p>
   </div>
 }

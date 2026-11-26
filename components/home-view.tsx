@@ -52,7 +52,7 @@ function Row({ todo, now }: { todo: DailyTodo; now: number }) {
     <span className="flex shrink-0 flex-col items-end gap-1">
       {todo.amountCents !== undefined && <span className="home-amount">{money(todo.amountCents)}<span className="unit">USDT</span></span>}
       {left !== null && <span className={`home-timer ${todo.status === 'todo' && todo.kind === 'pay' && left < 10 * 60_000 ? '!text-[#f08a6a]' : ''}`}>{durationText(left)}</span>}
-      {todo.cta ? <span className="home-cta">{todo.cta}<ChevronRight className="size-3.5" /></span> : todo.amountCents === undefined && left === null && <ChevronRight className="size-4 text-stone-600" />}
+      {todo.cta ? <span className="home-cta">{todo.cta}<ChevronRight className="size-3.5" /></span> : todo.amountCents === undefined && left === null && <ChevronRight className="size-4 text-stone-500" />}
     </span>
   </>
   const label = `${todo.label}：${todo.title}`

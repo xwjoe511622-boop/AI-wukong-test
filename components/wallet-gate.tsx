@@ -77,7 +77,7 @@ function ConnectDialog({ onClose, onDone }: { onClose: () => void; onDone: (sess
     </ol>
     {pending && <p className="mb-3 text-xs text-[var(--gold-200)]">已连接 <code className="font-mono text-[var(--gold-100)]">{shortAddress(pending)}</code></p>}
     <button type="button" autoFocus className="btn-gold w-full text-sm" disabled={busy} onClick={connect}>{step === 'connecting' ? '请在钱包中确认连接…' : step === 'signing' ? '请在钱包中签名…' : pending ? '签名登录' : '连接钱包'}</button>
-    <p className="mt-3 text-[11.5px] leading-5 text-[var(--gold-200)]/80">签名只用于验证这是你的钱包，不会发起任何交易，也不消耗矿工费。资产与支付结算都在平台内完成，不会从你的钱包直接扣款。</p>
+    <p className="mt-3 text-[12px] leading-5 text-[var(--gold-200)]/80">签名只用于验证这是你的钱包，不会发起任何交易，也不消耗矿工费。资产与支付结算都在平台内完成，不会从你的钱包直接扣款。</p>
     {error && <p role="alert" className="mt-3 text-sm text-[#f0a58a]">{error}</p>}
     {noWallet && <div role="alert" className="wallet-tip">
       <p className="text-sm text-[#f3d6a8]">没有检测到钱包</p>
@@ -105,7 +105,7 @@ export function WalletButton() {
     {open && <>
       <button type="button" aria-label="关闭钱包面板" className="fixed inset-0 z-[58] cursor-default" onClick={() => setOpen(false)} />
       <div role="dialog" aria-label="我的钱包" className="wallet-pop">
-        <p className="text-[11px] text-[var(--profile-muted)]">{session.demo ? '演示地址 · 未连接钱包' : '已连接钱包'}</p>
+        <p className="text-[12px] text-[var(--profile-muted)]">{session.demo ? '演示地址 · 未连接钱包' : '已连接钱包'}</p>
         <p className="mt-1.5 select-text break-all font-mono text-[12.5px] leading-5 text-[var(--gold-100)]">{session.address}</p>
         <div className="mt-3 grid grid-cols-2 gap-2">
           <button type="button" onClick={copy} className="wallet-pop-btn"><Copy className="size-3.5" aria-hidden />{copied ? '已复制' : '复制地址'}</button>
@@ -126,7 +126,7 @@ export function ConnectCard({ title = '连接钱包，开启你的悟空之旅',
       <h1 className="font-display text-xl font-bold leading-8 text-gold">{title}</h1>
       <p className="mx-auto mt-2 max-w-[18rem] text-xs leading-6 text-[var(--gold-200)]">{note}</p>
       <button type="button" onClick={connect} className="btn-gold mt-5 w-full text-sm">连接钱包</button>
-      <p className="mt-3 text-[11px] leading-5 text-[var(--gold-200)]/70">只需签名验证，不发起交易，不消耗矿工费。</p>
+      <p className="mt-3 text-[12px] leading-5 text-[var(--gold-200)]/85">只需签名验证，不发起交易，不消耗矿工费。</p>
     </section>
     {links && <nav aria-label="不用连接也能看" className="profile-surface !p-0">{([['/me/encyclopedia', '悟空百科', BookOpen], ['/me/announcements', '公告中心', Megaphone], ['/me/support', '客服中心', Headset]] as const).map(([href, label, Icon]) => <Link key={href} href={href} className="flex min-h-12 items-center gap-3 border-b border-[var(--profile-border)] px-4 text-sm text-[var(--gold-100)] last:border-0"><Icon className="size-4 text-[var(--gold-300)]" aria-hidden /><span className="flex-1">{label}</span><ChevronRight className="size-4 text-[var(--gold-400)]" aria-hidden /></Link>)}</nav>}
   </div>

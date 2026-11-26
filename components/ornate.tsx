@@ -45,7 +45,7 @@ export function TitlePlaque({
       </div>
       <div className="relative text-center">
         <h2 className="font-display text-xl font-black tracking-[0.18em] text-gold">{zh}</h2>
-        {en && <p className="font-latin text-[9px] text-[var(--gold-500)]">{en}</p>}
+        {en && <p className="font-latin text-[12px] text-[var(--gold-500)]">{en}</p>}
       </div>
     </div>
   )

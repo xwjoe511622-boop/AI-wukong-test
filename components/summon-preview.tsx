@@ -53,10 +53,10 @@ export function SummonPreview({ stage }: { stage: Stage }) {
   }, [matching, settled, entry?.status])
   const steps = [
     ['召唤', `${level.summonStopTime} 前`],
-    ['匹配', `${level.summonStartTime} 自动`],
-    ['支付结算', `成功后 ${PAYMENT_WINDOW_HOURS} 小时内`],
-    ['修炼', `每天点 · ${level.cycleDays} 天`],
-    ['传承', '到期后收款'],
+    ['匹配', level.summonStartTime],
+    ['支付结算', `${PAYMENT_WINDOW_HOURS} 小时内`],
+    ['修炼', `${level.cycleDays} 天`],
+    ['传承', '到期后'],
   ]
 
   return <div className="stage-page flex flex-col gap-4">
@@ -70,7 +70,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
 
     {/* 本轮数据：修炼值、修炼天数、修炼加成、每日修炼消耗、修炼范围 */}
     <section aria-labelledby="round-title" className="hud-panel rounded-xl px-4 py-4">
-      <h2 id="round-title" className="text-[11px] tracking-wider text-[var(--gold-200)]/80">{ROUND_LABEL} · {level.name}</h2>
+      <h2 id="round-title" className="text-[12px] tracking-wider text-[var(--gold-200)]/80">{ROUND_LABEL} · {level.name}</h2>
       <dl className="stage-sum mt-3">
         <div><dt>本轮修炼值</dt><dd className="font-latin text-gold">{peachText(cost)}<span className="unit">USDT</span></dd></div>
         <div><dt>修炼天数</dt><dd className="text-[var(--gold-100)]">{level.cycleDays}<small>天</small></dd></div>
@@ -78,11 +78,11 @@ export function SummonPreview({ stage }: { stage: Stage }) {
         <div><dt>每日修炼消耗</dt><dd className="flex items-center justify-center gap-1.5 text-[var(--gold-100)]">{free ? <span className="text-base font-normal">不消耗</span> : <>{peachWhole(level.perCycleCost)}<PeachIcon size={16} /></>}</dd></div>
       </dl>
       <div className="mt-4 border-t border-[var(--gold-600)]/25 pt-3">
-        <p className="flex items-baseline justify-between text-[11px] text-[var(--gold-200)]/80"><span>修炼范围</span><span>{peachWhole(level.rangeMin)} – {peachWhole(level.rangeMax)}<span className="unit">USDT</span></span></p>
+        <p className="flex items-baseline justify-between text-[12px] text-[var(--gold-200)]/80"><span>修炼范围</span><span>{peachWhole(level.rangeMin)} – {peachWhole(level.rangeMax)}<span className="unit">USDT</span></span></p>
         <div className="stage-range mt-2" role="img" aria-label={`修炼范围 ${level.rangeMin} 到 ${level.rangeMax}，本轮修炼值 ${level.cost}`}><span style={{ width: `${Math.max(3, position * 100)}%` }} /></div>
-        <p className="mt-1.5 flex justify-between text-[10px] text-[var(--gold-200)]/70"><span>起点</span><span>上限</span></p>
+        <p className="mt-1.5 flex justify-between text-[12px] text-[var(--gold-200)]/85"><span>起点</span><span>上限</span></p>
       </div>
-      {level.notes && <ul className="mt-4 flex flex-col gap-1 rounded-lg border border-[var(--gold-600)]/40 bg-black/30 px-3 py-2 text-[11px] leading-5 text-[var(--gold-100)]">{level.notes.map(note => <li key={note}>· {note}</li>)}</ul>}
+      {level.notes && <ul className="mt-4 flex flex-col gap-1 rounded-lg border border-[var(--gold-600)]/40 bg-black/30 px-3 py-2 text-[12px] leading-5 text-[var(--gold-100)]">{level.notes.map(note => <li key={note}>· {note}</li>)}</ul>}
     </section>
 
     {/* 操作区：紧跟在算账卡下面，不固定在屏幕底部，不挡导航栏 */}
@@ -97,7 +97,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
 
     <details className="hud-panel rounded-xl">
       <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 text-sm text-[var(--gold-100)]">召唤规则<ChevronRight className="size-4 text-[var(--gold-400)]" aria-hidden /></summary>
-      <ul className="flex flex-col gap-2 px-4 pb-4 text-[11px] leading-5 text-[var(--gold-200)]">
+      <ul className="flex flex-col gap-2 px-4 pb-4 text-[12px] leading-5 text-[var(--gold-200)]">
         <li>{level.summonStopTime}（北京时间）前点「召唤」即参与本轮，每轮每人一次；{level.summonStartTime} 系统自动匹配并公布结果，不需要再操作。没在截止前点召唤的，不参与本轮匹配。</li>
         <li>修炼值以 USDT 计，由承接人向传承人完成支付结算；蟠桃只是召唤与修炼的消耗单位，{PEACH_UNIT_TEXT}。</li>
         <li>{free ? '本阶段不需要消耗蟠桃：召唤与修炼均不扣费。' : `蟠桃消耗：召唤 ${peachWhole(level.summonCost)}，点召唤时暂扣，召唤失败全额退还，悟空进猴舍时正式扣除；修炼每日 ${peachWhole(level.perCycleCost)}，每天点修炼时扣当天的。`}</li>
@@ -136,7 +136,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
     const canReserve = level.isOpen && !entry && round.open
     return <section id="summon-action" className={`stage-action scroll-mt-20 ${matching ? `is-matching is-${matching}` : ''}`} aria-label="召唤操作" aria-live={matching ? 'polite' : undefined}>
       <div className="flex items-center gap-3">
-        <div className="min-w-0 flex-1"><p className={`truncate text-[10.5px] ${matching ? 'text-[#ffd27a]' : 'text-[var(--gold-200)]/80'}`}>{label}</p>
+        <div className="min-w-0 flex-1"><p className={`truncate text-[12px] ${matching ? 'text-[#ffd27a]' : 'text-[var(--gold-200)]/80'}`}>{label}</p>
           {matching === 'soon' ? <p key={secondsLeft} className={`match-count ${secondsLeft <= 3 ? 'is-final' : ''}`}>{secondsLeft}<small>秒</small></p>
             : matching ? <p key={step} className="match-step">{MATCH_STEPS[step]}<span className="match-dots" aria-hidden><i /><i /><i /></span></p>
             : <p className="mt-0.5 font-latin text-xl font-bold leading-none tabular-nums text-[var(--gold-100)]">{ready && until !== null ? durationText(Math.max(0, until - now)) : '--:--:--'}</p>}
@@ -144,7 +144,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
         {button}
       </div>
       {matching === 'matching' && <ol className="match-track" aria-hidden>{MATCH_STEPS.map((_, i) => <li key={i} className={i <= step ? 'is-on' : ''} />)}</ol>}
-      <p className={`mt-1.5 flex flex-wrap items-center gap-x-1.5 text-[10.5px] ${!product.guest && canReserve && (shortPeach || shortUsdt) ? 'text-[#f0a58a]' : 'text-[var(--gold-200)]/70'}`}>
+      <p className={`mt-1.5 flex flex-wrap items-center gap-x-1.5 text-[12px] ${!product.guest && canReserve && (shortPeach || shortUsdt) ? 'text-[#f0a58a]' : 'text-[var(--gold-200)]/85'}`}>
         {product.guest ? <>连接钱包后即可召唤<button type="button" onClick={wallet.connect} className="underline underline-offset-2">连接钱包</button></> : matching ? (matching === 'soon' ? '不需要操作，结果会立即揭晓' : '请留在此页，结果马上揭晓') : error ? error : product.notice && !entry ? product.notice
           : entry ? null
           : canReserve && shortPeach ? <>蟠桃不足：召唤需暂扣 {peachText(lockCents)}，余额 {peachText(state.balance)}<PeachIcon size={11} /><Link href="/me/wallet?mode=buy" className="underline underline-offset-2">购买蟠桃</Link></>

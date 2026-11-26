@@ -214,8 +214,8 @@
       'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', serif;
   }
   .font-latin {
-    font-family: var(--font-latin), serif;
-    letter-spacing: 0.18em;
+    font-family: 'Cinzel', 'Noto Serif SC', serif;
+    letter-spacing: 0;
   }
 
   /* Gold gradient text used for all titles */
@@ -811,7 +811,7 @@
 .profile-page { --profile-surface: #191713; --profile-border: #b0904b38; --profile-muted: #d2cbbf; color: #ece6da; display: flex; flex-direction: column; gap: 20px; }
 .profile-heading { font-family: var(--font-display); font-weight: 700; font-size: 15px; letter-spacing: .06em; color: var(--gold-200); }
 .profile-surface { background: linear-gradient(135deg,rgba(22,21,19,.9),rgba(14,15,15,.94)); border: 1px solid var(--profile-border); border-radius: 12px; padding: 16px; }
-.profile-inline-link { display: inline-flex; align-items: center; gap: 2px; font-size: 11px; color: #c4b48c; min-height: 36px; }
+.profile-inline-link { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; color: #c4b48c; min-height: 36px; }
 .profile-amount { display: inline-flex; align-items: center; gap: 5px; font-variant-numeric: tabular-nums; font-family: var(--font-latin),sans-serif; font-weight: 600; color: #f1eada; white-space: nowrap; line-height: 1.25; }
 .profile-amount img { flex-shrink: 0; object-fit: contain; }
 .profile-amount-sm { font-size: 13px; }
@@ -825,7 +825,7 @@
 .profile-relation > svg { color: #c3a767; }
 .profile-relation strong { font-family: var(--font-display); font-size: 14px; font-weight: 600; color: #e5d5b1; }
 .profile-relation .relation-count { font-size: 27px; font-weight: 500; line-height: 1; font-variant-numeric: tabular-nums; }
-.profile-relation .relation-count small { font-size: 11px; margin-left: 6px; color: #a9a294; }
+.profile-relation .relation-count small { font-size: 12px; margin-left: 6px; color: #a9a294; }
 .profile-menu { border-top: 1px solid #b0904b35; }
 .profile-menu li + li { border-top: 1px solid #b0904b1f; }
 .profile-menu a { display: flex; align-items: center; gap: 12px; padding: 15px 4px; font-size: 13px; }
@@ -871,7 +871,7 @@
 .profile-tabs > .btn-compact { flex: 1 1 0; min-width: 0; padding-inline: 10px; }
 
 /* 甲乙双方交易 */
-.trade-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: #d6cfc2; }
+.trade-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #d6cfc2; }
 .trade-chip::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: #8f8574; }
 .trade-chip.is-todo { color: #ffd9a0; }
 .trade-chip.is-todo::before { background: #e0703f; box-shadow: 0 0 8px #e0703faa; }
@@ -894,10 +894,10 @@
 .trade-steps .is-fail { color: #f0a58a; }
 .trade-steps .is-fail .trade-step-dot { border-color: #c4553a; color: #f0a58a; }
 .trade-field { display: flex; flex-direction: column; gap: 4px; }
-.trade-field dt { font-size: 11px; color: var(--profile-muted, #d2cbbf); }
+.trade-field dt { font-size: 12px; color: var(--profile-muted, #d2cbbf); }
 .trade-field dd { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; font-size: 12px; color: #ece6da; }
-.trade-field code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; line-height: 1.6; color: #f3e6c8; }
-.trade-copy { display: inline-flex; flex: none; align-items: center; gap: 4px; min-height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid #b0904b66; font-size: 11px; color: #e9cf9f; }
+.trade-field code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1.6; color: #f3e6c8; }
+.trade-copy { display: inline-flex; flex: none; align-items: center; gap: 4px; min-height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid #b0904b66; font-size: 12px; color: #e9cf9f; }
 .trade-confirm { padding: 12px; border-radius: 10px; border: 1px solid #e0a05a66; background: #2a1d0e88; }
 .nav-badge { position: absolute; top: 6%; right: 16%; z-index: 2; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #d9502e; color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #120d07, 0 0 10px #d9502e99; pointer-events: none; }
 
@@ -905,7 +905,7 @@
 .home-page { display: flex; flex-direction: column; height: 100dvh; min-height: 560px; overflow: hidden; background: #050506; }
 .home-panel { position: relative; z-index: 1; flex: none; width: 100%; max-width: 480px; margin: -72px auto 0; padding: 0 16px calc(112px + env(safe-area-inset-bottom)); }
 .home-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 0 6px 12px; }
-.home-date { min-height: 16px; font-size: 11px; letter-spacing: .28em; color: #d9bb7c; text-shadow: 0 1px 8px #000; }
+.home-date { min-height: 16px; font-size: 12px; letter-spacing: .28em; color: #d9bb7c; text-shadow: 0 1px 8px #000; }
 .home-title { margin-top: 4px; font-family: var(--font-display); font-size: 28px; font-weight: 900; letter-spacing: .12em; line-height: 1.1; color: #fff2d6; text-shadow: 0 2px 18px #000; }
 .home-count { padding-bottom: 4px; font-size: 12px; color: #c9c0ae; text-shadow: 0 1px 8px #000; }
 .home-count strong { margin-right: 3px; font-family: var(--font-latin); font-size: 22px; color: #ffd27a; }
@@ -915,9 +915,9 @@
 .home-list li + li { border-top: 1px solid #b0904b24; }
 .home-row { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: clamp(56px, 8.2dvh, 72px); padding: 8px 14px; text-align: left; }
 .home-node { position: relative; z-index: 1; display: inline-flex; flex: none; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 999px; border: 1px solid #8f7a4c; background: #100e0b; color: #a8946a; }
-.home-label { display: block; font-size: 10px; letter-spacing: .3em; color: #9c8a63; }
+.home-label { display: block; font-size: 12px; letter-spacing: .3em; color: #9c8a63; }
 .home-row-title { display: block; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14.5px; font-weight: 500; color: #e6ddcc; }
-.home-sub { display: block; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: #958c7c; }
+.home-sub { display: block; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: #958c7c; }
 .home-amount { font-family: var(--font-latin); font-size: 15px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; color: #ffd27a; }
 
 .home-timer { font-family: var(--font-latin); font-size: 12px; line-height: 1; font-variant-numeric: tabular-nums; color: #cfc6b4; }
@@ -939,7 +939,7 @@
 .realm-cover.is-live, .realm-cover.is-live-reserved { outline: 2px solid #ffcf5c; outline-offset: 2px; box-shadow: 0 0 36px #ffcf5c55; }
 .realm-cover.is-reserved { outline: 1px solid #7fb06a99; outline-offset: 2px; }
 .realm-cover.is-ended { opacity: .62; filter: grayscale(.45); }
-.realm-state { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; border: 1px solid #b0904b80; padding: 2px 9px; font-size: 10px; letter-spacing: .08em; color: #e9cf9f; }
+.realm-state { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; border: 1px solid #b0904b80; padding: 2px 9px; font-size: 12px; letter-spacing: .08em; color: #e9cf9f; }
 .realm-state.is-live, .realm-state.is-live-reserved { border-color: #ffcf5c; background: #ffcf5c26; color: #ffe39a; }
 .realm-state.is-live::before, .realm-state.is-live-reserved::before { content: ''; width: 5px; height: 5px; border-radius: 999px; background: #e0703f; box-shadow: 0 0 8px #e0703f; }
 .realm-state.is-reserved { border-color: #7fb06a; background: #7fb06a1f; color: #c5e2b5; }
@@ -950,13 +950,13 @@
 button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ffcf5c14; }
 .relation-filter { display: flex; gap: 6px; overflow-x: auto; }
 .relation-filter button { display: inline-flex; flex: none; align-items: center; gap: 5px; min-height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #b0904b55; font-size: 12px; color: #d2cbbf; }
-.relation-filter button small { font-size: 10px; opacity: .7; }
+.relation-filter button small { font-size: 12px; opacity: .7; }
 .relation-filter button[aria-pressed=true] { border-color: #ffcf5c; background: #ffcf5c1f; color: #ffe9c2; }
 .relation-count { margin-top: 8px; font-size: 27px; font-weight: 500; line-height: 1; font-variant-numeric: tabular-nums; }
-.relation-count small { font-size: 11px; margin-left: 6px; color: #a9a294; }
+.relation-count small { font-size: 12px; margin-left: 6px; color: #a9a294; }
 .relation-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px; border-radius: 12px; border: 1px solid #b0904b38; background: #00000059; }
 .relation-tabs button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 38px; border-radius: 9px; font-size: 13px; color: #d2cbbf; }
-.relation-tabs button small { font-size: 10px; opacity: .7; }
+.relation-tabs button small { font-size: 12px; opacity: .7; }
 .relation-tabs button[aria-selected=true] { background: linear-gradient(180deg,#5a4318,#2e220d); color: #ffe9c2; box-shadow: inset 0 0 0 1px #ffcf5c80; }
 .relation-search { display: flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid #b0904b55; background: #00000059; }
 .relation-search:focus-within { border-color: #ffcf5c; }
@@ -966,7 +966,7 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .relation-search button { color: #d2cbbf; }
 .relation-quick { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid #b0904b55; background: linear-gradient(135deg,rgba(22,21,19,.9),rgba(14,15,15,.94)); font-size: 12px; color: #d2cbbf; text-align: left; }
 .relation-quick strong { margin-left: auto; font-size: 17px; font-variant-numeric: tabular-nums; color: #ffe9c2; }
-.relation-quick strong small { margin-left: 3px; font-size: 10px; font-weight: 400; color: #a9a294; }
+.relation-quick strong small { margin-left: 3px; font-size: 12px; font-weight: 400; color: #a9a294; }
 .relation-quick svg { color: #c59b52; }
 .relation-sort { display: flex; flex: none; align-items: center; gap: 4px; min-height: 42px; padding: 0 10px; border-radius: 10px; border: 1px solid #b0904b55; background: #00000059; }
 .relation-sort select { max-width: 7.5em; appearance: none; background: transparent; font-size: 12px; color: #ece6da; outline: none; }
@@ -995,9 +995,9 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .stage-sum > div { padding: 10px 4px; }
 .stage-sum > div:nth-child(even) { border-left: 1px solid #b0904b38; }
 .stage-sum > div:nth-child(n+3) { border-top: 1px solid #b0904b38; }
-.stage-sum dt { font-size: 11px; letter-spacing: .1em; color: #c9a866; }
+.stage-sum dt { font-size: 12px; letter-spacing: .1em; color: #c9a866; }
 .stage-sum dd { margin-top: 6px; font-size: 24px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.stage-sum dd small { margin-left: 3px; font-family: var(--font-sans, inherit); font-size: 11px; font-weight: 400; color: #a59c8c; }
+.stage-sum dd small { margin-left: 3px; font-family: var(--font-sans, inherit); font-size: 12px; font-weight: 400; color: #a59c8c; }
 .stage-range { position: relative; height: 6px; border-radius: 999px; background: #d6b06522; overflow: hidden; }
 .stage-range span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #816330, #ffd27a); }
 .stage-steps { display: grid; grid-template-columns: repeat(5, 1fr); }
@@ -1005,10 +1005,10 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .stage-steps li + li::before { content: ''; position: absolute; top: 11px; right: calc(50% + 14px); width: calc(100% - 28px); height: 1px; background: #c59b5255; }
 .stage-step-dot { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 999px; border: 1px solid #c59b52; font-family: var(--font-latin); font-size: 11px; color: #e9cf9f; background: #100e0b; }
 .stage-steps strong { font-size: 12.5px; font-weight: 600; color: #f3e6c8; }
-.stage-steps em { font-style: normal; font-size: 9.5px; line-height: 1.35; color: #a59c8c; }
+.stage-steps em { font-style: normal; font-size: 12px; line-height: 1.35; color: #a59c8c; }
 .stage-action { padding: 12px 12px 10px 16px; border-radius: 16px; border: 1px solid #d9b26a99; background: radial-gradient(130% 120% at 0% 0%, #3d2a10 0%, #17130d 55%, #100e0b 100%); box-shadow: 0 0 0 1px #ffe39a12 inset; }
 .stage-cta { flex: none; min-width: 148px; font-size: 14px; }
-.confirm-heading { margin: 18px 0 8px; padding-bottom: 6px; border-bottom: 1px solid #b0904b38; font-size: 11px; letter-spacing: .2em; color: #c9a866; }
+.confirm-heading { margin: 18px 0 8px; padding-bottom: 6px; border-bottom: 1px solid #b0904b38; font-size: 12px; letter-spacing: .2em; color: #c9a866; }
 
 /* 资产卡：图标和数字要醒目 */
 .asset-card { position: relative; overflow: hidden; border-radius: 18px; border: 1px solid #e3c07a; background: radial-gradient(80% 90% at 100% 0%, #4a3310 0%, transparent 62%), radial-gradient(70% 80% at 0% 100%, #33250e 0%, transparent 65%), linear-gradient(165deg, #211a0d, #0f0c08); box-shadow: 0 0 0 1px #ffe39a1f inset, 0 0 0 3px #0b0906, 0 0 0 4px #c59b5255, 0 12px 26px #0009; }
@@ -1019,7 +1019,7 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .asset-name img { width: 26px; height: 26px; filter: drop-shadow(0 2px 6px #ff783c80); }
 .asset-name.is-usdt { font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: 15px; }
 .asset-number { margin-top: 8px; font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: clamp(22px, 6.6vw, 28px); font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; color: #fff1cf; text-shadow: 0 0 18px #ffcf5c40, 0 2px 0 #0008 !important; }
-.asset-note { margin-top: 5px; font-size: 11px; color: #a59c8c; }
+.asset-note { margin-top: 5px; font-size: 12px; color: #a59c8c; }
 .asset-note.is-on { color: #a9dba3; }
 .asset-locked { display: flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 12px 0 16px; border-top: 1px solid #e0a05a80; background: linear-gradient(90deg, #4a2c10cc, #2a1a0acc); font-size: 13px; color: #f3d6a8; }
 .asset-locked strong { font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; color: #ffd27a; }
@@ -1051,7 +1051,7 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .notice-toast { display: flex; align-items: center; gap: 10px; margin: 10px 12px 0; padding: 10px 12px; border-radius: 14px; border: 1px solid #ffcf5c; background: rgb(28 21 10 / 97%); box-shadow: 0 12px 32px #000c; transform: translateY(-140%); opacity: 0; transition: transform .45s ease, opacity .45s ease; }
 .notice-toast.is-shown { transform: none; opacity: 1; pointer-events: auto; }
 .notice-toast strong { display: block; font-size: 13px; color: #ffe9c2; }
-.notice-toast span span { display: block; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: #cfc6b4; }
+.notice-toast span span { display: block; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: #cfc6b4; }
 @media (prefers-reduced-motion: reduce) { .notice-toast { transition: none; } }
 
 /* ── 数值与单位：全站统一 ── */
@@ -1160,3 +1160,72 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .home-connect .home-node { border-color: #ffcf5c; background: #2e220d; color: #ffd27a; box-shadow: 0 0 14px #ffcf5c66; }
 .home-connect .home-row-title { color: #fff2d6; font-weight: 700; }
 .home-list.is-guest li:not(.home-connect) { opacity: .5; pointer-events: none; }
+
+/* ═══ 全站数字统一：同一款字体、不拉字距、数字等宽；整数和小数同一字号 ═══
+   四档大小：特大 34（页面主角）、大 26（余额、交易金额）、中 20（四格数据、倒计时）、小 14（列表金额）。
+   余额和修炼值用暖白，金额和加成用金色；单位 USDT 金色、比数字小一号。 */
+:root { --num: 'Cinzel', 'Noto Serif SC', 'Songti SC', serif; }
+.num, .tabular-nums, .font-latin, .profile-amount, .relation-count, .home-amount, .home-timer, .stage-sum dd, .asset-number, .asset-locked strong, .asset-pick strong, .slip-value, .slip-spent, .match-count, .trade-amount {
+  font-family: var(--num); font-variant-numeric: tabular-nums lining-nums; letter-spacing: 0;
+}
+.slip-value, .locked-hero-value, .lock-total .lock-value, .match-count { font-size: 34px !important; }
+.asset-number { font-size: clamp(22px, 6.6vw, 26px); }
+.stage-sum dd { font-size: 20px; font-weight: 700; }
+.relation-count, .profile-relation .relation-count { font-size: 26px; font-weight: 700; color: #fff1cf; }
+.home-amount { font-size: 15px; }
+.home-timer { font-size: 13px; }
+.profile-amount-sm { font-size: 14px; }
+.profile-amount-md { font-size: 20px; }
+.profile-amount-lg { font-size: 26px; letter-spacing: 0; }
+.unit { font-family: var(--num); letter-spacing: 0; }
+/* 英文小标题仍可以用字距工具类单独拉开 */
+.font-latin[class*="tracking-"] { letter-spacing: revert-layer; }
+/* ═══ 小字：次要说明提亮、行距放宽 ═══ */
+:root { --profile-muted: #b7afa0; }
+.home-sub, .asset-note, .stage-sum dt, .trade-field dt, .house-stat dt, .contract-slip-grid dt { color: #b7afa0; letter-spacing: 0; }
+.home-label { letter-spacing: .08em; }
+.home-sub { line-height: 1.5; }
+
+/* ═══ 工具页（交易、资产明细、通知、同行与部族等）配上华丽风：换外框和细节，列表本身不动 ═══ */
+/* 卡片外框：和资产卡同款的金色双线框 */
+.app-plain :is(.profile-surface, .trade-row, .locked-row) { position: relative; border: 1px solid #c9a35a8c; border-radius: 16px; background: radial-gradient(120% 90% at 100% 0%, #3a2a1038 0%, transparent 60%), linear-gradient(170deg, #1b1610, #0f0c09); box-shadow: 0 0 0 1px #ffe39a12 inset, 0 0 0 3px #0b0906, 0 0 0 4px #c59b5233, 0 10px 22px #0007; }
+.app-plain .trade-row.is-todo { border-color: #ffcf5c; background: radial-gradient(120% 120% at 0% 0%, #4a3214cc, #14120e 65%); box-shadow: 0 0 0 1px #ffe39a2e inset, 0 0 0 3px #0b0906, 0 0 0 4px #ffcf5c59, 0 0 22px #ffcf5c26; }
+/* 四角纹饰 */
+.app-plain .profile-surface::before, .app-plain .profile-surface::after { content: ''; position: absolute; width: 14px; height: 14px; border: 1.5px solid #f3c969; pointer-events: none; opacity: .85; }
+.app-plain .profile-surface::before { top: 6px; left: 6px; border-right: 0; border-bottom: 0; border-top-left-radius: 8px; }
+.app-plain .profile-surface::after { right: 6px; bottom: 6px; border-left: 0; border-top: 0; border-bottom-right-radius: 8px; }
+/* 分区标题：后面一条带菱形的金线 */
+.profile-heading { display: flex; align-items: center; gap: 10px; font-size: 16px; color: #f3d6a8; }
+.profile-heading::after { content: '◆'; flex: 1; min-width: 24px; font-size: 8px; line-height: 10px; color: #f3c969; background: linear-gradient(90deg, #e3c07a99, #e3c07a00) 14px center / calc(100% - 14px) 1px no-repeat; }
+/* 返回条下面一条窄的金色纹饰带，和召唤、修炼那几页是同一个世界 */
+.page-bar { border-bottom: 0; }
+.page-bar::after { content: '◆'; position: absolute; left: 0; right: 0; bottom: 0; height: 10px; transform: translateY(50%); font-size: 9px; line-height: 10px; text-align: center; color: #f3c969; background: linear-gradient(90deg, #e3c07a00, #e3c07a) left center / calc(50% - 12px) 1px no-repeat, linear-gradient(90deg, #e3c07a, #e3c07a00) right center / calc(50% - 12px) 1px no-repeat; pointer-events: none; }
+.page-intro { margin-top: 6px; }
+/* 行前的金色圆环节点（和首页待办同款） */
+.ornate-node { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0; border-radius: 999px; border: 1px solid #c9a35a; background: radial-gradient(circle at 50% 30%, #3a2a10, #15100a 75%); color: #f3c969; box-shadow: 0 0 0 2px #0b0906, 0 0 10px #ffcf5c26; }
+.ornate-node.is-in { border-color: #ffcf5c; color: #ffe39a; box-shadow: 0 0 0 2px #0b0906, 0 0 14px #ffcf5c59; }
+.ornate-list { display: flex; flex-direction: column; border: 1px solid #c9a35a8c; border-radius: 16px; background: linear-gradient(170deg, #1b1610, #0f0c09); box-shadow: 0 0 0 1px #ffe39a12 inset, 0 0 0 3px #0b0906, 0 0 0 4px #c59b5233; }
+.ornate-row { display: flex; align-items: flex-start; gap: 12px; padding: 14px; }
+.ornate-row + .ornate-row { border-top: 1px solid transparent; border-image: linear-gradient(90deg, transparent, #c9a35a66 15%, #c9a35a66 85%, transparent) 1; }
+/* 状态标签：印章样式 */
+.trade-chip { padding: 2px 8px; border-radius: 4px; border: 1px solid #c59b5299; background: #2a1d0899; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: .04em; color: #f3d6a8; }
+.trade-chip::before { display: none; }
+.trade-chip.is-todo { border-color: #ff9a5c; background: #4a1f0c99; color: #ffc49a; box-shadow: 0 0 10px #ff783c40; }
+.trade-chip.is-wait { border-color: #c59b52; }
+.trade-chip.is-done { border-color: #8fc98a80; background: #1f3a1e66; color: #a9dba3; }
+.trade-chip.is-fail { border-color: #c96a5a; background: #3a140f99; color: #f0a58a; }
+/* 通知：未读左边一条金色亮边，已读变暗 */
+.notice-row { align-items: flex-start; }
+.notice-row.is-unread { box-shadow: inset 3px 0 0 #ffcf5c, 0 0 0 1px #ffe39a2e inset, 0 0 0 3px #0b0906, 0 0 0 4px #ffcf5c59 !important; }
+.notice-row.is-read { opacity: .78; }
+.notice-row.is-read .ornate-node { color: #a59c8c; border-color: #6b6557; box-shadow: 0 0 0 2px #0b0906; }
+/* 成员头像金边 */
+.avatar-ring { display: inline-flex; flex-shrink: 0; padding: 2px; border-radius: 999px; background: linear-gradient(160deg, #ffe7a3, #b9862c 50%, #f3c969); box-shadow: 0 0 10px #ffcf5c33; }
+.avatar-ring > * { border-radius: 999px; box-shadow: 0 0 0 2px #0b0906; }
+/* 同行与部族：切换页签、人数格子用同一套金色 */
+.relation-tabs { border-color: #c9a35a8c; border-radius: 14px; box-shadow: 0 0 0 3px #0b0906, 0 0 0 4px #c59b5233; }
+.relation-tabs button[aria-selected=true] { background: linear-gradient(180deg, #6a4f1a, #2e220d); box-shadow: inset 0 0 0 1px #ffcf5c, 0 0 14px #ffcf5c33; }
+.relation-filter button[aria-pressed=true] { border-color: #ffcf5c; background: linear-gradient(180deg, #5a4318, #2e220d); color: #ffe9c2; box-shadow: 0 0 10px #ffcf5c33; }
+/* 空状态 */
+.profile-empty { border: 1px dashed #c9a35a66; border-radius: 16px; }
+.trade-chip { flex-shrink: 0; white-space: nowrap; }

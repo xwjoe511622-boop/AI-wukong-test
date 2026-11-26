@@ -25,7 +25,7 @@ export function TrialRibbon() {
   }, [])
   if (!TRIAL_MODE) return null
   return <div className="pointer-events-none fixed inset-x-0 top-0 z-50 mx-auto w-full max-w-[480px] pt-[env(safe-area-inset-top)]">
-    <div role="note" aria-hidden={!shown} className={`ml-3 mr-3 mt-14 flex min-h-9 items-center gap-2 rounded-full border border-[var(--gold-500)]/60 bg-[#2a1c06]/95 px-3.5 text-[11px] text-[var(--gold-100)] shadow-[0_8px_24px_rgba(0,0,0,.6)] backdrop-blur-sm transition-[transform,opacity] duration-500 motion-reduce:transition-none ${shown ? 'translate-y-0 opacity-100' : '-translate-y-[160%] opacity-0'}`}>
+    <div role="note" aria-hidden={!shown} className={`ml-3 mr-3 mt-14 flex min-h-9 items-center gap-2 rounded-full border border-[var(--gold-500)]/60 bg-[#2a1c06]/95 px-3.5 text-[12px] text-[var(--gold-100)] shadow-[0_8px_24px_rgba(0,0,0,.6)] backdrop-blur-sm transition-[transform,opacity] duration-500 motion-reduce:transition-none ${shown ? 'translate-y-0 opacity-100' : '-translate-y-[160%] opacity-0'}`}>
       <strong className="shrink-0 font-display tracking-widest text-[var(--gold-200)]">体验版</strong>
       <span className="min-w-0 flex-1 truncate">所有阶段均已时间加速，修炼周期统一为 1 天</span>
     </div>

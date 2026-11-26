@@ -47,6 +47,6 @@ export function AvatarSetting() {
       </div>
     </div>
     <input ref={input} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" aria-label="选择头像图片" onChange={event => pick(event.target.files?.[0])} />
-    <p role="status" aria-live="polite" className="mt-2 min-h-4 text-[11px] text-[var(--gold-200)]">{notice}</p>
+    <p role="status" aria-live="polite" className="mt-2 min-h-4 text-[12px] text-[var(--gold-200)]">{notice}</p>
   </section>
 }

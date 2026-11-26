@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Check, ChevronRight } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, Check, ChevronRight } from 'lucide-react'
 import { LEVEL_BY_ID } from '@/lib/game-data'
 import { dateTime, money } from '@/lib/cultivation-preview'
 import { durationText } from '@/lib/summon-preview'
@@ -42,12 +42,13 @@ export function Countdown({ ms }: { ms: number }) {
 export function TradeRow({ trade, now }: { trade: Trade; now: number }) {
   const ticking = trade.status === 'awaiting_payment'
   return <li><Link href={`/me/trades/${encodeURIComponent(trade.id)}`} className={cn('trade-row', needsMyAction(trade) && 'is-todo')}>
+    <span className={cn('ornate-node', trade.role === 'receiver' && 'is-in')} aria-hidden>{trade.role === 'payer' ? <ArrowUpRight className="size-4" /> : <ArrowDownLeft className="size-4" />}</span>
     <div className="min-w-0 flex-1">
-      <div className="flex items-center gap-2"><TradeChip trade={trade} /><span className="text-[10px] text-[var(--profile-muted)]">{trade.role === 'payer' ? '承接人' : '传承人'} · {LEVEL_BY_ID[trade.stage].realm}</span></div>
+      <div className="flex items-center gap-2"><TradeChip trade={trade} /><span className="min-w-0 truncate text-[12px] text-[var(--profile-muted)]">{trade.role === 'payer' ? '承接人' : '传承人'} · {LEVEL_BY_ID[trade.stage].realm}</span></div>
       <p className="mt-1.5 truncate font-display text-sm text-[var(--gold-100)]">{tradeTitle(trade)}</p>
-      <p className="mt-1 text-[11px] text-[var(--profile-muted)]">{ticking ? <>{trade.role === 'payer' ? '支付剩余' : '承接人支付剩余'} <Countdown ms={trade.deadline - now} /></> : dateTime(trade.confirmedAt ?? trade.overdueAt ?? trade.paidAt ?? trade.matchedAt)}</p>
+      <p className="mt-1 text-[12px] text-[var(--profile-muted)]">{ticking ? <>{trade.role === 'payer' ? '支付剩余' : '承接人支付剩余'} <Countdown ms={trade.deadline - now} /></> : dateTime(trade.confirmedAt ?? trade.overdueAt ?? trade.paidAt ?? trade.matchedAt)}</p>
     </div>
-    <div className="shrink-0 text-right"><p className="font-latin text-base font-bold tabular-nums text-gold">{trade.role === 'payer' ? '−' : '+'}{money(trade.amountCents)}</p><p className="unit !ml-0 !text-[11px]">USDT</p></div>
+    <div className="shrink-0 text-right"><p className="font-latin text-base font-bold tabular-nums text-gold">{trade.role === 'payer' ? '−' : '+'}{money(trade.amountCents)}</p><p className="unit !ml-0 !text-[12px]">USDT</p></div>
     <ChevronRight className="size-4 shrink-0 text-[var(--gold-400)]" />
   </Link></li>
 }

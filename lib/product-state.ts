@@ -188,7 +188,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
     for (const part of rewardParts(profit, member.generation, tier?.level ?? 0)) {
       const reward: RewardRecord = { id: `${eventId}-${part.type}`, rewardType: part.type, relationshipGeneration: member.generation, tribeLevel: part.type === 'tribe' ? tier!.level : null, rewardRate: part.rate, sourceUserId: member.uid, sourceProfitCents: profit, amountCents: part.amountCents, createdAt: new Date(now).toISOString() }
       next = { ...next, usdt: next.usdt + part.amountCents, rewards: [reward, ...next.rewards] }
-      next = record(next, part.type, part.amountCents, `演示成员 ${member.uid} 传承完成，修炼增长 ${money(profit)} USDT；${part.type === 'companion' ? '同行' : '部族'}奖励 ${part.rate}%，返 USDT，不扣成员的修炼增长。`, now, 'usdt')
+      next = record(next, part.type, part.amountCents, `成员 ${shortAddress(member.uid)} 传承完成，修炼增长 ${money(profit)} USDT；${part.type === 'companion' ? '同行' : '部族'}奖励 ${part.rate}%，返 USDT，不扣成员的修炼增长。`, now, 'usdt')
     }
     return { state: next, message: '示例成员已完成传承，同行奖励与部族奖励已分别返到 USDT 余额（演示数据）。' }
   }

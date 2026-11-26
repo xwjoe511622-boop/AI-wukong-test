@@ -63,7 +63,7 @@ export function CultivationVideo({ stage, locked, empty, active = true, idleText
       {active && <div className="stage-aura" aria-hidden>{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ left: `${6 + (i * 37) % 88}%`, animationDelay: `${(i * 0.53) % 4.2}s`, animationDuration: `${3.6 + (i % 4) * 0.7}s` }} />)}</div>}
       {flash > 0 && <div key={flash} className="stage-flash" aria-hidden />}
       {!active && <p className="stage-idle">{idleText ?? '今日尚未修炼 · 静候运功'}</p>}
-      <span className="absolute bottom-3 left-3 font-display text-xs tracking-[.2em] text-amber-100/90">{rule.realm} · 修炼之境</span>
+      <span className="absolute bottom-3 left-3 font-display text-xs tracking-wide text-amber-100/90">{rule.realm} · 修炼之境</span>
 
     </>}
   </div>

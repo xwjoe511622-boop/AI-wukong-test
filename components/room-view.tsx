@@ -31,11 +31,11 @@ export function RoomView({ stage }: { stage: Stage }) {
     </section>
 
     {contracts.length > 0 && <section aria-label="本室悟空">
-      {contracts.length > 1 && <p className="mb-2 text-center text-[11px] text-stone-400">本室共 {contracts.length} 只 · 左右滑动查看</p>}
+      {contracts.length > 1 && <p className="mb-2 text-center text-[12px] text-stone-400">本室共 {contracts.length} 只 · 左右滑动查看</p>}
       <div className={contracts.length > 1 ? 'room-swipe' : ''}>{contracts.map(c => <ContractSlip key={c.id} contract={c} />)}</div>
     </section>}
 
-    <p role="status" aria-live="polite" className="min-h-4 text-center text-[11px] leading-5 text-amber-100/80"><PeachText>{message || `${room.room} · 修炼有时，传承有序。`}</PeachText></p>
+    <p role="status" aria-live="polite" className="min-h-4 text-center text-[12px] leading-5 text-amber-100/80"><PeachText>{message || `${room.room} · 修炼有时，传承有序。`}</PeachText></p>
 
 
   </div>

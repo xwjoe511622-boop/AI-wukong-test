@@ -21,7 +21,7 @@ export function SettlementDialog({ contract, busy, onClose, onClaim }: { contrac
   useEffect(() => { const node = dialog.current; node?.showModal(); return () => node?.close() }, [])
   return <dialog ref={dialog} className="cultivation-dialog" aria-labelledby="settle-title" onCancel={onClose} onClick={event => { if (event.target === event.currentTarget) onClose() }}>
     <div className="flex items-start justify-between gap-3">
-      <div><p className="mb-2 text-xs tracking-widest text-stone-400">{contractDay(contract.started)} · 结缘</p><h2 id="settle-title" className="font-display text-xl font-bold text-amber-200">传承完成</h2><p className="mt-1 font-display text-sm text-[var(--gold-100)]">{RULES[contract.stage].name}</p></div>
+      <div><p className="mb-2 text-xs tracking-wide text-stone-400">{contractDay(contract.started)} · 结缘</p><h2 id="settle-title" className="font-display text-xl font-bold text-amber-200">传承完成</h2><p className="mt-1 font-display text-sm text-[var(--gold-100)]">{RULES[contract.stage].name}</p></div>
       <button type="button" autoFocus onClick={onClose} aria-label="关闭结算弹窗" className="flex size-10 items-center justify-center text-stone-300"><X className="size-5" /></button>
     </div>
     <div className="my-5 border-y border-amber-200/15 py-4"><SettlementFacts contract={contract} /></div>

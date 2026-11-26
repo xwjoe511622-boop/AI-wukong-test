@@ -42,7 +42,7 @@ export function SummonPreviewConfirm({ level, cost, balance, usdt, expired, onCl
     <h3 className="confirm-heading">我的余额</h3>
     <dl className="cultivation-facts"><div><dt>蟠桃</dt><dd><PeachValue cents={balance} size="sm" muted /></dd></div><div><dt>USDT</dt><dd><UsdtValue cents={usdt} size="sm" muted /></dd></div></dl>
 
-    <p className="mt-4 text-[11px] leading-5 text-[var(--gold-200)]/80">{level.summonStartTime}（北京时间）系统自动匹配并公布结果，不需要再操作；参与不等于召唤成功。成功后须在 {PAYMENT_WINDOW_HOURS} 小时内向传承人完成支付结算。传承所得为预计值，以实际修炼天数、匹配和到账为准。</p>
+    <p className="mt-4 text-[12px] leading-5 text-[var(--gold-200)]/80">{level.summonStartTime}（北京时间）系统自动匹配并公布结果，不需要再操作；参与不等于召唤成功。成功后须在 {PAYMENT_WINDOW_HOURS} 小时内向传承人完成支付结算。传承所得为预计值，以实际修炼天数、匹配和到账为准。</p>
     {blocked && <p role="alert" className="mt-3 text-sm text-[#f0a58a]">{expired ? '本轮召唤已截止。' : balance < lock ? '蟠桃不足，无法参与本次召唤。' : 'USDT 余额不足以完成本轮修炼值的支付结算。'}</p>}
     <button type="button" className="btn-gold mt-4 w-full text-sm" disabled={blocked} onClick={onConfirm}>确认召唤</button><button type="button" className="mt-3 min-h-11 w-full text-sm text-[var(--gold-200)] underline underline-offset-4" onClick={onClose}>暂不召唤</button>
   </dialog>

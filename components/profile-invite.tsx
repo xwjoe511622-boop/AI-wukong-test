@@ -30,15 +30,15 @@ export function ProfileInvite({ code }: { code?: string }) {
         <InviteRow label="邀请链接" value={url} done={copied === 'link'} onCopy={() => copy('link')} />
       </dl>
       <ProfileButton size="large" className="mt-3" disabled={!url} onClick={() => copy('link')}>{copied === 'link' ? '已复制邀请链接' : '邀请同行者'}</ProfileButton>
-      <p role="status" aria-live="polite" className="mt-2 min-h-4 text-center text-[11px] text-[var(--gold-200)]">{notice}</p>
+      <p role="status" aria-live="polite" className="mt-2 min-h-4 text-center text-[12px] text-[var(--gold-200)]">{notice}</p>
     </div>
   </section>
 }
 
 function InviteRow({ label, value, mono, done, onCopy }: { label: string; value?: string; mono?: boolean; done: boolean; onCopy: () => void }) {
-  return <div className="flex items-center gap-3 rounded-lg border border-[#b0904b55] bg-black/55 px-3 py-2">
-    <dt className="w-14 shrink-0 text-[11px] text-[var(--profile-muted)]">{label}</dt>
-    <dd className={`min-w-0 flex-1 select-text truncate text-xs text-[var(--gold-100)] ${mono ? 'font-mono tracking-wider' : ''}`}>{value || '读取中…'}</dd>
+  return <div className="flex items-center gap-2 rounded-lg border border-[#b0904b55] bg-black/55 px-2.5 py-2">
+    <dt className="shrink-0 text-[12px] text-[var(--profile-muted)]">{label}</dt>
+    <dd className={`min-w-0 flex-1 select-text truncate text-xs text-[var(--gold-100)] ${mono ? 'font-mono' : ''}`}>{value || '读取中…'}</dd>
     <button type="button" disabled={!value} onClick={onCopy} aria-label={`复制${label}`} className="trade-copy">{done ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}{done ? '已复制' : '复制'}</button>
   </div>
 }

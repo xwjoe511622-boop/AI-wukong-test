@@ -24,10 +24,10 @@ export function ProfileLocked() {
       : !items.length ? <ProfileEmpty title="没有暂扣">点召唤时会暂扣召唤蟠桃，在这里可以看到每一笔。</ProfileEmpty>
       : <ul className="flex flex-col gap-3">{items.map(item => <li key={item.key}><Link href={item.href} className={`locked-row ${item.phase === 'paying' ? 'is-todo' : ''}`}>
         <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0"><h2 className="font-display text-base text-[var(--gold-100)]">{item.name}<span className="ml-2 text-[11px] font-normal text-[var(--profile-muted)]">{item.realm}</span></h2><p className={`mt-1.5 text-xs ${item.phase === 'paying' ? 'text-[#f3b27a]' : 'text-[var(--gold-200)]'}`}>{item.status}{item.until && item.until > now ? ` · 剩 ${durationText(item.until - now)}` : ''}</p></div>
+          <div className="min-w-0"><h2 className="font-display text-base text-[var(--gold-100)]">{item.name}<span className="ml-2 text-[12px] font-normal text-[var(--profile-muted)]">{item.realm}</span></h2><p className={`mt-1.5 text-xs ${item.phase === 'paying' ? 'text-[#f3b27a]' : 'text-[var(--gold-200)]'}`}>{item.status}{item.until && item.until > now ? ` · 剩 ${durationText(item.until - now)}` : ''}</p></div>
           <span className="flex shrink-0 items-center gap-1"><PeachValue cents={item.cents} size="lg" /><ChevronRight className="size-4 text-[var(--gold-400)]" aria-hidden /></span>
         </div>
-        <p className="mt-3 text-[11.5px] leading-5 text-[var(--profile-muted)]">{item.next}</p>
+        <p className="mt-3 text-[12px] leading-5 text-[var(--profile-muted)]">{item.next}</p>
       </Link></li>)}</ul>}
     <section className="profile-surface text-xs leading-6 text-[var(--profile-muted)]" aria-label="暂扣规则">
       <h2 className="mb-1 font-display text-sm text-[var(--gold-100)]">暂扣的蟠桃会怎样</h2>

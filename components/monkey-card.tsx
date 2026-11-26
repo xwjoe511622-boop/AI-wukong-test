@@ -45,7 +45,7 @@ export function MonkeyCard({
         <div className="relative h-32 w-24 shrink-0 overflow-hidden rounded-xl border border-[rgba(212,148,26,0.4)]">
           <Image src={level.card || '/placeholder.svg'} alt={level.name} fill className="object-cover object-top" />
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent px-1.5 pb-1 pt-4">
-            <p className="text-center font-display text-[10px] tracking-wide text-gold">{level.realm}</p>
+            <p className="text-center font-display text-[12px] tracking-wide text-gold">{level.realm}</p>
           </div>
         </div>
 
@@ -55,7 +55,7 @@ export function MonkeyCard({
             <h3 className="font-display text-lg font-black text-gold">{level.name}</h3>
             <span
               className={cn(
-                'rounded-full px-2 py-0.5 text-[10px] font-bold',
+                'rounded-full px-2 py-0.5 text-[12px] font-bold',
                 cyclesDone
                   ? 'bg-[rgba(242,180,49,0.2)] text-[var(--gold-200)]'
                   : 'bg-[rgba(47,158,107,0.16)] text-[var(--jade)]',
@@ -65,14 +65,14 @@ export function MonkeyCard({
             </span>
           </div>
 
-          <div className="mt-1 flex items-center gap-1.5 text-[11px] text-[var(--gold-600)]">
+          <div className="mt-1 flex items-center gap-1.5 text-[12px] text-[var(--gold-600)]">
             <span>结契消耗</span>
             <PeachAmount value={level.cost} size="sm" className="!gap-0.5" />
           </div>
 
           {/* progress */}
           <div className="mt-2">
-            <div className="flex items-center justify-between text-[11px]">
+            <div className="flex items-center justify-between text-[12px]">
               <span className="text-[var(--gold-600)]">修炼进度</span>
               <span className="font-latin font-bold text-gold">
                 {monkey.cycleProgress} / {monkey.cycleTotal}
@@ -88,11 +88,11 @@ export function MonkeyCard({
 
           {/* current contract value */}
           <div className="mt-2 flex items-center justify-between">
-            <span className="text-[11px] text-[var(--gold-600)]">本轮修炼</span>
+            <span className="text-[12px] text-[var(--gold-600)]">本轮修炼</span>
             <span className="flex items-center gap-1">
               <PeachAmount value={monkey.contractValue} size="sm" className="!gap-0.5" />
               {profit > 0 && (
-                <span className="font-latin text-[10px] font-bold text-[var(--jade)]">
+                <span className="font-latin text-[12px] font-bold text-[var(--jade)]">
                   +{((profit / level.cost) * 100).toFixed(1)}%
                 </span>
               )}
@@ -105,7 +105,7 @@ export function MonkeyCard({
       <div className="border-t border-[rgba(212,148,26,0.25)] bg-[rgba(10,8,13,0.4)] px-3 py-2.5">
         {!cyclesDone && (
           <div className="mb-2.5 flex items-center justify-between">
-            <span className="text-[11px] text-[var(--gold-600)]">距离周期结束</span>
+            <span className="text-[12px] text-[var(--gold-600)]">距离周期结束</span>
             {cycleReady ? (
               <span className="font-display text-xs font-bold text-[var(--jade)]">本期已就绪</span>
             ) : (
@@ -141,7 +141,7 @@ export function MonkeyCard({
         {pending && <p role="status" className="mt-2 text-center text-xs">正在保存，请稍候…</p>}
         {error && <p role="alert" className="mt-2 text-center text-xs text-[var(--crimson-soft)]">{error}</p>}
         {!cyclesDone && !cycleReady && (
-          <div className="mt-1.5 flex items-center justify-center gap-1 text-[10px] text-[var(--gold-600)]">
+          <div className="mt-1.5 flex items-center justify-center gap-1 text-[12px] text-[var(--gold-600)]">
             <span>本期修炼所需</span>
             <PeachAmount value={level.perCycleCost} size="sm" className="!gap-0.5" />
           </div>

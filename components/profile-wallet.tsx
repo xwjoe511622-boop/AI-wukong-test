@@ -70,7 +70,7 @@ export function ProfileWallet({ initialMode }: { initialMode?: string }) {
     </section>
 
     <section aria-labelledby="asset-records"><h2 id="asset-records" className="profile-heading mb-3">最近记录</h2>
-      {records.length ? <ul className="profile-list flex flex-col">{records.map(r => <li key={r.id} className="border-b border-[var(--profile-border)] py-3.5"><div className="flex items-center justify-between gap-2"><h3 className="text-sm text-[var(--gold-100)]">{LEDGER_LABELS[r.kind] ?? '资产变动'}</h3><ProfileAmount cents={r.amountCents} signed size="md" currency={r.currency} /></div><p className="mt-1 text-[11px] text-[var(--profile-muted)]">{r.kind === 'transfer_out' ? `${r.description.replace(/：.*$/, '')} · ` : ''}{profileTime(r.createdAt)}</p></li>)}</ul>
+      {records.length ? <ul className="profile-list flex flex-col">{records.map(r => <li key={r.id} className="border-b border-[var(--profile-border)] py-3.5"><div className="flex items-center justify-between gap-2"><h3 className="text-sm text-[var(--gold-100)]">{LEDGER_LABELS[r.kind] ?? '资产变动'}</h3><ProfileAmount cents={r.amountCents} signed size="md" currency={r.currency} /></div><p className="mt-1 text-[12px] text-[var(--profile-muted)]">{r.kind === 'transfer_out' ? `${r.description.replace(/：.*$/, '')} · ` : ''}{profileTime(r.createdAt)}</p></li>)}</ul>
         : <ProfileEmpty title="暂无记录">充值、转账和购买蟠桃的记录会显示在这里。</ProfileEmpty>}
     </section>
     <ProfileButtonLink href="/me/ledger" size="large" secondary>全部资产明细</ProfileButtonLink>
