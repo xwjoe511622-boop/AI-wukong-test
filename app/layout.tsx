@@ -9,6 +9,7 @@ import { AppOpening } from '@/components/app-opening'
 import { ProductProvider } from '@/components/product-provider'
 import { SoundProvider } from '@/lib/sound'
 import { WalletGate } from '@/components/wallet-gate'
+import { LangProvider } from '@/components/lang-provider'
 
 export const metadata: Metadata = {
   title: 'AI WUKONG · AI悟空数字生命',
@@ -43,6 +44,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="antialiased">
+        <LangProvider>
         <SoundProvider>
           <WalletGate>
             <ProductProvider>
@@ -54,6 +56,7 @@ export default async function RootLayout({
             </ProductProvider>
           </WalletGate>
         </SoundProvider>
+        </LangProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

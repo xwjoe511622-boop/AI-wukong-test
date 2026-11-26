@@ -1,0 +1,165 @@
+/** 每天要用的页面：首页、悟空世界、仙境召唤、猴舍、修炼室、交易、暂扣、资产、钱包连接、通知 */
+const N = '([\\d.,]+)'
+const T = '(\\d\\d:\\d\\d)'
+export const PAGES: Record<string, string> = {
+  // ── 通用 ──
+  '关闭': 'Close', '取消': 'Cancel', '返回': 'Back', '查看': 'View', '全部': 'All', '知道了': 'Got it', '明细': 'Details', '进入': 'Enter', '处理中…': 'Working…', '正在读取…': 'Loading…', '运功中…': 'Channeling…',
+  '天': 'd', '秒': 's', '只': '', '每日': 'Daily', '余额': 'Balance', '上一页': 'Prev', '下一页': 'Next', '记录分页': 'Pages',
+  '周日': 'Sun', '周一': 'Mon', '周二': 'Tue', '周三': 'Wed', '周四': 'Thu', '周五': 'Fri', '周六': 'Sat',
+  'AI悟空': 'AI Wukong', 'AI 悟空': 'AI Wukong',
+  // ── 开场与站点 ──
+  'AI 悟空开场动画': 'AI Wukong intro', 'AI 悟空开场视频': 'AI Wukong intro video', '开启声音': 'Sound on', '关闭声音': 'Sound off', '跳过': 'Skip', '播放开场': 'Play intro', '序章加载中…': 'Loading…', '主导航': 'Main navigation',
+  'AI 悟空 · 神话正在醒来': 'AI Wukong · The Legend Awakens',
+  '神话，不再只是故事。它，正以数字生命的姿态醒来。AI 悟空数字生命，开启召唤、修炼、成长与传承之旅。': 'The legend is no longer just a story. It is waking up as digital life. Summon, train, grow and pass it on.',
+  'AI WUKONG · AI悟空数字生命': 'AI WUKONG · Digital Life',
+  'AI WUKONG：每一只悟空都是一个 AI 智能体。召唤、修炼、传承，让东方神话由参与的人共同写下去。': 'AI WUKONG: every Wukong is an AI agent. Summon, train and pass it on — an Eastern legend written by everyone who joins.',
+  '所有阶段均已时间加速，修炼周期统一为 1 天': 'Trial: time is sped up — every cycle is 1 day',
+  '本次记录暂时没能保存，请先不要关闭页面。': "Couldn't save just now. Please keep this page open.", '没能读取到之前的记录，已为你开启新的旅程。': "Couldn't load your earlier data. Starting fresh.",
+  // ── 首页 ──
+  'AI 悟空 · 今日待办': 'AI Wukong · Today', '今日待办': 'Today', '未连接钱包': 'Not connected', '项待处理': 'to do', '今日暂无待处理': 'All clear today',
+  '连接钱包后查看你的待办': 'Connect your wallet to see your tasks', '召唤、支付结算、修炼、收款都在这里提醒你': 'Summons, payments, training and payouts all show up here',
+  '召唤悟空': 'Summon', '截止前点一次，到点系统自动匹配': 'Tap once before cutoff. Matching is automatic.', '召唤成功后 1 小时内完成': 'Pay within 1h of a match',
+  '每日修炼': 'Train daily', '每天点一次，才有当天的修炼加成': "Train once a day to earn that day's growth", '悟空传承时确认收款': 'Confirm receipt when a Wukong is passed on',
+  '连接钱包，进入你的猴舍': 'Connect to enter your Den', '连接后可以看到你的悟空，并每天为它修炼。': 'See your Wukong and train them every day.',
+  // ── 钱包 ──
+  '连接钱包': 'Connect', '连接中断': 'Connection lost', '重新连接': 'Reconnect', '连接失败，请重试。': 'Connection failed. Try again.',
+  '钱包地址就是你在悟空世界的身份': 'Your wallet address is your identity here', '登录步骤': 'Sign-in steps', '签名登录': 'Sign in', '已连接': 'Connected',
+  '请在钱包中确认连接…': 'Approve the connection in your wallet…', '请在钱包中签名…': 'Sign the message in your wallet…',
+  '签名只用于验证这是你的钱包，不会发起任何交易，也不消耗矿工费。资产与支付结算都在平台内完成，不会从你的钱包直接扣款。': 'Signing only proves the wallet is yours. No transaction, no gas. Balances and payments stay in the app — nothing is taken from your wallet.',
+  '没有检测到钱包': 'No wallet found',
+  '请在 MetaMask、TokenPocket、OKX、imToken 等钱包 App 的内置浏览器里打开本页面，或在电脑浏览器安装钱包插件后刷新。': "Open this page in your wallet app's browser (MetaMask, TokenPocket, OKX, imToken…), or install a wallet extension and refresh.",
+  '链接已复制，去钱包里粘贴打开': 'Link copied — paste it in your wallet browser', '复制本页链接': 'Copy link', '暂不连接，用演示地址进入': 'Skip — try a demo address',
+  '关闭钱包面板': 'Close wallet', '我的钱包': 'My wallet', '演示地址 · 未连接钱包': 'Demo address · Not connected', '已连接钱包': 'Wallet connected', '已复制': 'Copied', '复制地址': 'Copy address', '退出演示': 'Exit demo', '断开钱包': 'Disconnect',
+  '连接钱包，开启你的悟空之旅': 'Connect your wallet to begin', '连接后可以召唤悟空、进入猴舍、查看资产与交易。': 'Summon Wukong, enter your Den, and see your assets and trades.', '只需签名验证，不发起交易，不消耗矿工费。': 'Just a signature. No transaction, no gas.', '不用连接也能看': 'Browse without connecting',
+  '悟空百科': 'Wukong Guide', '公告中心': 'News', '客服中心': 'Support',
+  // ── 通知 ──
+  '通知': 'Notifications', '召唤结果、支付结算与收款提醒都在这里。时间均为北京时间。': 'Summon results, payments and payouts. All times are Beijing time (UTC+8).', '暂无通知': 'No notifications', '召唤出结果、需要支付结算或确认收款时，会在这里通知你。': "We'll notify you here about results, payments and payouts.",
+  // ── 资产卡 ──
+  '我的资产：蟠桃': 'My Peaches', '我的资产：USDT': 'My USDT', '有效用户': 'Active', '可用余额': 'Available', '暂扣中': 'On hold',
+  // ── 悟空世界 ──
+  '悟空世界 · 七大仙境': 'Realms · The Seven Realms', '七大仙境': 'The Seven Realms', '选择仙境 · 发起召唤 · 每日修炼': 'Pick a realm · Summon · Train daily',
+  '选择仙境，发起召唤，召唤成功后进入猴舍修炼。七大仙境自每日 11:00 起依次召唤。': 'Pick a realm and summon. Seven realms open in turn from 11:00 daily.',
+  '未找到该仙境': 'Realm not found', '返回七大仙境': 'Back to Realms', '· 未开放': '· Locked', '未开放': 'Locked', '该阶段尚未开放召唤 · 静待天时': 'Not open yet · Stay tuned',
+  '前 30 分钟召唤截止 · 每日 19:00 可以开启新一天的召唤': "Summons close 30 min before · Next day's opens at 19:00", '· 无极大圣未开放': '· Limitless Sage coming soon',
+  '本轮已匹配 · 距本轮结束': 'Round ends in', '召唤已截止 · 距系统匹配': 'Closed · Matching in',
+  // ── 仙境页 ──
+  '匹配': 'Match', '传承': 'Pass On', '到期后': 'At the end', '本轮修炼值': 'Value', '修炼天数': 'Cycle', '本轮修炼加成': 'Growth', '修炼加成': 'Growth', '每日修炼消耗': 'Daily Cost', '不消耗': 'Free', '修炼范围': 'Value Range', '起点': 'Start', '上限': 'Cap', '流程': 'How it works', '召唤规则': 'Rules',
+  '本阶段不需要消耗蟠桃：召唤与修炼均不扣费。': 'This stage is free: no Peaches for summoning or training.',
+  '轮次已变更，请重新确认本轮。': 'The round changed. Please check again.', '本阶段尚未开放': 'Not open yet', '距召唤截止': 'Summon closes in', '系统正在匹配': 'Matching now', '即将匹配': 'Matching soon',
+  '已参与明日召唤 · 距系统匹配': "Joined tomorrow's round · Matching in", '已参与召唤 · 距系统匹配': 'Joined · Matching in', '明日这一轮 · 距召唤截止': "Tomorrow's round · Closes in", '今日已结束 · 距开放明日召唤': "Ended · Tomorrow's opens in",
+  '已结束': 'Ended', '本轮已匹配 · 未参与': 'Matched · You sat out', '本轮召唤已截止 · 未参与': 'Closed · You sat out', '已截止': 'Closed', '召唤操作': 'Summon',
+  '连接钱包后即可召唤': 'Connect your wallet to summon', '不需要操作，结果会立即揭晓': 'Nothing to do — result coming up', '请留在此页，结果马上揭晓': 'Stay here — result any second',
+  '蟠桃不足：召唤需暂扣': 'Not enough Peaches: need', '，余额': ', balance', 'USDT 不足：本轮修炼值': 'Not enough USDT: need', '去充值': 'Deposit', '· 余额': '· Balance', '自动匹配': 'auto-match', '召唤暂扣': 'Fee on hold',
+  '可继续参与其他仙境的召唤': 'You can still summon in other realms', '已暂扣': 'On hold',
+  '悟空召唤仪式': 'Summoning', '灵印初醒，悟空现世': 'The seal stirs. Wukong appears.', '正在开启本轮数字生命旅程…': 'Starting a new journey…',
+  // 召唤记录卡
+  '召唤成功 · 待支付': 'Matched · Pay now', '已支付 · 等待传承人确认到账': 'Paid · Awaiting keeper', '待支付': 'To pay', '已支付': 'Paid', '支付剩余': 'Time left', '已暂扣蟠桃': 'Peaches on hold', '立即支付': 'Pay Now', '查看交易': 'View Trade',
+  '修炼值已支付 · 传承人已确认到账': 'Paid · Keeper confirmed', '修炼值 · 已支付': 'Value · Paid', '已扣除召唤蟠桃': 'Summon fee charged', '预计传承': 'Est. payout', '进入猴舍': 'Enter Den',
+  '修炼周期结束后进入传承，等下一轮同阶段召唤匹配承接人；承接人完成支付结算、你确认到账后完成传承所得。没修炼的那天没有修炼加成。': 'When the cycle ends, your Wukong is passed on in the next round. Once the successor pays and you confirm, you get your payout. Missed days earn no growth.',
+  '本轮召唤未成功': 'No match this round', '本次召唤使用的蟠桃已全额退还，可继续参与后续召唤': 'Your Peaches were refunded. Try the next round.', '返回悟空世界': 'Back to Realms',
+  '已参与召唤': 'Joined', '已参与召唤，等待匹配': 'Joined — awaiting match', '系统自动匹配，不需要再操作': 'Matching is automatic. Nothing more to do.', '距系统匹配': 'Matching in', '召唤成功扣除召唤蟠桃并进入支付结算；失败全额退还。': 'Matched: fee charged, then payment. No match: full refund.',
+  // 召唤确认
+  '确认召唤': 'Confirm Summon', '本次召唤暂扣': 'On hold for this summon', '召唤失败全额退还 · 悟空进猴舍时扣除': 'Refunded if no match · Charged on move-in', '修炼值怎么算': 'How value works', '本轮修炼值 · 成功后向传承人支付': 'Value · Paid to the keeper if matched',
+  '预计传承所得': 'Est. payout', '蟠桃怎么算': 'Peach costs', '召唤 · 现在暂扣': 'Summon · Held now', '修炼 · 进猴舍后每天点修炼时扣': 'Training · Charged each day you train', '本阶段召唤与修炼均不消耗蟠桃。': 'This stage costs no Peaches.',
+  '修炼要每天自己点：当天没点，就没有当天的修炼加成，过后不能补；一天都没点，按原修炼值传承。召唤成功却逾期未支付，暂扣的召唤蟠桃全部充公。': "You train by hand each day. Miss a day and that day's growth is gone for good. Never train and it passes on at its original value. Miss the payment window and your held Peaches are forfeited.",
+  '我的余额': 'My balance', '本轮召唤已截止。': 'This round is closed.', 'USDT 余额不足以完成本轮修炼值的支付结算。': 'Not enough USDT to cover this round.', '暂不召唤': 'Not Now',
+  '不需要再操作，结果会通知你': "Nothing more to do — we'll notify you", '查看暂扣明细': 'View holds',
+  // 匹配
+  '排队中': 'In queue', '正在为你匹配': 'Finding your match', '结果即将揭晓': 'Result incoming', '去看': 'View',
+  '结契成功': 'Bonded', '结契消耗': 'Cost', '修炼增幅': 'Growth', '本期修炼所需': 'Training cost', '前往猴舍查看修炼进度': 'See progress in your Den', '稍后修炼': 'Later',
+  // ── 猴舍 ──
+  '我的猴舍': 'My Den', '只悟空': 'Wukong', '传承历史': 'History', '猴舍里还没有悟空。': 'No Wukong here yet.', '召唤成功并完成支付结算后，悟空会住进来。': 'Summon one and complete payment — it moves in here.', '召唤你的第一只悟空': 'Summon Your First',
+  '今日待修炼': 'To train today', '逐只去修炼': 'One by one', '· 消耗': '· Cost', '去购买蟠桃': 'Buy Peaches', '按住不放，运功完成后一次修炼全部；没修炼的那天没有修炼加成。': 'Hold to train them all at once. Missed days earn no growth.',
+  '没有修炼中的悟空，等待传承。': 'None in training — awaiting successors.', '七间修炼室': 'Seven Training Halls', '还没有，去召唤': 'Empty — summon one', '· 承接人已支付': '· Paid', '本次传承所得': 'Payout', '确认收款': 'Confirm Receipt',
+  '修炼室': 'Training Hall', '七境修行 · 各有所归': 'Seven realms, seven paths', '修炼有时，传承有序。': 'Train in time. Pass on in turn.',
+  '修炼周期已结束 · 等待传承': 'Cycle complete · Awaiting successor', '今日尚未修炼 · 静候运功': 'Not trained today', '尚未修炼 · 静候运功': 'Not trained yet',
+  '本室悟空': 'In this hall', '空 · 前往召唤': 'Empty · Summon', '前往召唤': 'Summon',
+  '修炼值': 'Value', '修炼进度': 'Progress', '今日还没修炼': 'Not trained today', '还没修炼': 'Not trained yet', '今日已修炼': 'Trained today', '已修炼': 'Trained',
+  '按住不放，运功完成才算；过了今天不能补。': 'Hold until it completes. No make-ups after today.', '按住不放，运功完成才算；修炼周期结束后不能补。': 'Hold until it completes. No make-ups after the cycle.',
+  '· 本次消耗': '· Cost', '· 明天记得再来': '· Come back tomorrow', '传承中 · 已匹配承接人，等待对方支付': 'Passing on · Awaiting payment', '· 查看交易': '· View trade', '承接人已支付 · 去确认收款': 'Confirm Receipt',
+  '修炼手记': 'Training log', '修炼详情': 'Details', '已消耗修炼蟠桃': 'Peaches spent', '猴舍尚无悟空': 'No Wukong yet', '对应悟空': 'Wukong', '前往悟空世界': 'Go to Realms',
+  '按悟空类型筛选历史': 'Filter by type', '传承完成 · 已到账': 'Passed on · Paid out', '传承完成并确认收款后，可以在这里查看。': 'Completed pass-ons show up here.', '返回猴舍': 'Back to Den',
+  '关闭结算弹窗': 'Close', '修炼值不参与平台手续费；结算以 USDT 计，确认后转入 USDT 余额；已消耗的召唤与修炼蟠桃不退还。确认后本次传承归档至传承历史。': 'The fee applies to growth only. Payout is in USDT and goes to your balance once confirmed. Peaches already spent are not refunded.',
+  '确认支付': 'Confirm', '稍后再看': 'Later', '正在开启修炼之境…': 'Opening the hall…',
+  '传承历史 | AI WUKONG': 'History | AI WUKONG', '猴舍 · 修炼之境 | AI WUKONG': 'Den | AI WUKONG', '七境修炼、悟空养成与传承历史。': 'Train your Wukong and view your history.', '修炼室 | AI WUKONG': 'Training Hall | AI WUKONG', '未找到该修炼室': 'Hall not found',
+  // ── 交易 ──
+  '召唤成功 · 匹配传承人': 'Matched with keeper', '向传承人支付': 'Pay the keeper', '传承人确认到账': 'Keeper confirms', '悟空进入猴舍': 'Wukong moves in',
+  '传承 · 匹配承接人': 'Matched with successor', '承接人支付': 'Successor pays', '我确认到账': 'You confirm', '传承完成 · 所得到账': 'Payout received', '承接人支付剩余': 'Successor has',
+  '正在读取交易…': 'Loading trade…', '交易详情': 'Trade', '没有找到这笔交易': 'Trade not found', '这笔交易可能已经归档。': 'It may have been archived.',
+  '交易金额': 'Amount', '应支付修炼值': 'Value to pay', '本次传承应收': 'To receive', '支付剩余时间': 'Time left to pay', '承接人支付剩余时间': 'Successor has',
+  '交易进度': 'Progress', '传承人信息': 'Keeper', '承接人信息': 'Successor',
+  '支付结算在平台内完成，从你的 USDT 余额扣除。请勿向该地址直接转账，链上转账无法到账，也无法找回。': 'Payment happens in the app, from your USDT balance. Do not send funds to this address on-chain — they cannot be credited or recovered.',
+  '支付时间': 'Paid at', '确认到账时间': 'Confirmed at', '可用 USDT 余额': 'USDT available', 'USDT 余额不足，还差': 'Short by', 'USDT。请先补足 USDT 余额，再回来支付。': 'USDT. Deposit first, then come back to pay.', '查看我的资产': 'My Assets',
+  '请核实承接人的支付款已实际到账、金额无误后再确认。确认后交易完成，无法撤回；不得无故拖延或拒绝确认。': 'Make sure the payment has really arrived and the amount is right. Confirming is final. Please do not delay without reason.',
+  '确认已收到承接人的支付款': 'Confirm you received the payment', '再核实一下': 'Check Again', '确认已收到': 'Confirm',
+  '已匹配到承接人，等待对方在支付期内完成支付结算。到账后这里会提示你确认收款。': "Matched with a successor. Once they pay, you'll confirm receipt here.",
+  '进入猴舍修炼': 'Go Train', '查看传承历史': 'View History', '暂扣的召唤蟠桃已全部充公，不予退还，系统保留违约记录。可继续参与后续召唤。': 'Your held Peaches were forfeited and this is on record. You can still join later rounds.',
+  '这笔交易有问题？': 'Problem with this trade?', '联系客服申诉': 'Contact Support',
+  '我的交易': 'My Trades', '召唤成功后向传承人支付（我是承接人），传承时等承接人支付并确认收款（我是传承人）。时间均为北京时间。': 'After a match you pay the keeper. When passing on, your successor pays and you confirm. Times are Beijing time (UTC+8).',
+  '暂无交易': 'No trades yet', '召唤成功或悟空进入传承后，交易会出现在这里。': 'Trades appear after a match or when a Wukong is passed on.', '等待对方': 'Waiting on them', '传承中 · 等待匹配承接人': 'Passing on · Finding successor', '预计应收': 'Est. to receive',
+  '交易详情 · AI WUKONG': 'Trade · AI WUKONG', '我的交易 · AI WUKONG': 'My Trades · AI WUKONG',
+  // ── 暂扣 ──
+  '暂扣中的蟠桃': 'Peaches On Hold', '暂扣合计': 'Total on hold', '一共暂扣': 'Total on hold', '现在没有暂扣的蟠桃': 'Nothing on hold right now', '没有暂扣': 'Nothing on hold', '点召唤时会暂扣召唤蟠桃，在这里可以看到每一笔。': 'Summon fees are held when you tap Summon. Each one is listed here.',
+  '暂扣规则': 'Hold rules', '暂扣的蟠桃会怎样': 'What happens to held Peaches', '召唤失败：全额退还。': 'No match: fully refunded.', '悟空进猴舍：正式扣除。': 'Wukong moves in: charged.', '召唤成功却逾期未支付：全部充公，不退还。': 'Matched but payment missed: forfeited.', '全部资产明细': 'All Activity',
+  // ── 资产 ──
+  '充值': 'Deposit', '我的资产': 'My Assets', '操作': 'Actions', '充值 USDT': 'Deposit USDT', '充值通道即将开放，开放后会在通知里告诉你。': "Deposits are coming soon. We'll notify you.",
+  '转哪种资产': 'Asset', '转账资产': 'Asset', '对方钱包地址': 'Recipient address', '0x 开头的钱包地址': '0x… wallet address', '转账数量': 'Amount', '请核对：向': 'Sending to', '转出': ':', '（北京时间）系统自动匹配': ' (UTC+8) auto-match', '。转出后无法撤回。': '. This cannot be undone.',
+  '确认无误，转出': 'Send', '返回修改': 'Edit', '购买数量': 'Amount', '→ 到账': '→ You get', '确认购买': 'Buy', '最近记录': 'Recent', '暂无记录': 'No activity', '充值、转账和购买蟠桃的记录会显示在这里。': 'Deposits, transfers and purchases show up here.',
+  // 补充
+  '每日北京时间 11:00—17:00，': 'Daily 11:00–17:00 (UTC+8), ', '七': 'seven', '前六': 'six', '阶段依次召唤匹配': ' realms match in turn',
+  '我的往期召唤 ·': 'Past summons ·', '修炼周期': 'Cycle',
+  '没有找到这个页面': 'Page not found', '回到首页': 'Back to Home', '斗战': 'Warrior', '齐天': 'Sage', '天命': 'Destined', '无极': 'Limitless', '修炼之境': 'Training Hall', '召唤成功后，即可开启对应悟空修炼之境。': 'Summon a Wukong to open this hall.',
+}
+const NAME = '(石灵|灵猴|悟空|斗战悟空|齐天大圣|天命大圣|无极大圣)'
+const REALM = '(灵石谷|花果仙山|水帘洞|斗战神境|齐天神境|天命神境|无极神境)'
+export const PAGES_PATTERNS: [string, string | ((m: RegExpMatchArray) => string)][] = [
+  // 补充
+  ['([一二三四五六七八九十]+月[一二三四五六七八九十]+)日 · (周.)', '$1 · $2'],
+  [`${NAME}：还没有，去召唤`, '$1: empty, summon one'], [`${NAME}：未开放`, '$1: locked'], [`${NAME}：(\\d+) 只(，(\\d+) 只今日待修炼)?，进入修炼室`, '$1: $2 here, enter hall'],
+  ['(.+?修炼室)，(.+)', '$1, $2'], ['承接人已支付 (\\d+)只 · 待确认收款', '$1 paid · Confirm receipt'],
+  [`${REALM} · 当前悟空 (\\d+) 只`, '$1 · $2 here'], [`${REALM} · 当前悟空 (\\d+) 只 · 修炼中 (\\d+) 只`, '$1 · $2 here · $3 training'], [`${NAME}的${REALM}修炼之境`, '$1 in $2'], [`${REALM} · 修炼之境`, '$1'], [`召唤成功后，即可开启${REALM}修炼之境。`, 'Summon one to open $1.'],
+  ['(.+?) · 剩 (.+)', '$1 · $2 left'],
+  ['(\\d{4}/\\d\\d/\\d\\d \\d\\d:\\d\\d) 召唤', 'Summoned $1'],
+  // 首页
+  ['(\\d+)月(\\d+)日 · (周.)', (m) => `${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][Number(m[1]) - 1]} ${m[2]} · ${({ 周日: 'Sun', 周一: 'Mon', 周二: 'Tue', 周三: 'Wed', 周四: 'Thu', 周五: 'Fri', 周六: 'Sat' } as Record<string, string>)[m[3]]}`],
+  ['(\\d+) ?项待处理', '$1 to do'], ['(.+?)，(\\d+) 笔交易待处理', '$1, $2 trades pending'], ['通知，(\\d+) 条未读', 'Notifications, $1 unread'], ['钱包 (.+)', 'Wallet $1'], [`满 ${N} 为有效用户`, 'Hold $1+ to stay active'],
+  // 悟空世界
+  ['每日北京时间 11:00—17:00，(七|前六)阶段依次召唤匹配', 'Daily 11:00–17:00 (UTC+8) · Realms match in turn'],
+  ['难度 (\\d) 星', 'Level $1'], ['(\\d)星', 'Level $1'], [`已参与 · (明日 )?${T} 匹配`, 'Joined · Matches $2'], [`(明日 )?${T} 截止 · ${T} 匹配`, 'Closes $2 · Match $3'], ['进入(.+)', 'Enter'], ['(.+?)角色立绘', '$1 artwork'], ['(.+?)仙境封面', '$1 cover'],
+  // 仙境页
+  [`${T} 前`, 'By $1'], ['(\\d+) 小时内', 'Within $1h'], [`修炼范围 ${N} 到 ${N}，本轮修炼值 ${N}`, 'Value range $1 to $2, this round $3'],
+  [`每晚 19:00（北京时间）起可以召唤次日的悟空，到次日 ${T} 截止。.+?；${T} 系统自动匹配.+`, "Summons for the next day open at 19:00 (Beijing time) and close at $1. Tap Summon once before cutoff — one entry per round. Matching runs automatically at $2. Miss the cutoff and you sit this round out."],
+  ['修炼值以 USDT 计，由承接人向传承人完成支付结算；.+', 'Value is in USDT, paid by the successor to the keeper. Peaches only cover summon and training costs. 1 Peach = 1 USDT.'],
+  [`蟠桃消耗：召唤 ${N}，.+?修炼每日 ${N}，.+`, 'Peach costs: $1 to summon (held when you tap, refunded if no match, charged on move-in) and $2 per day of training.'],
+  ['召唤成功后，承接人须在 (\\d+) 小时内向系统匹配的传承人完成支付结算.+', 'After a match, pay your keeper within $1h from your USDT balance. Once they confirm, your Wukong moves into the Den. Miss the window and your held Peaches are forfeited.'],
+  ['修炼周期 (\\d+) 天，从召唤成功时刻起算。.+', "The cycle is $1d from the match. Train once a day in the hall: it charges that day's Peaches and earns that day's growth. Missed days can't be made up. Then your Wukong is passed on."],
+  [`修炼加成 \\+${N}% 是每天都修炼时的总加成，.+?÷ (\\d+)。.+?收取 ${N}% 手续费.+`, '+$1% is the full growth if you train every day: growth = value × $1% × days trained ÷ $2. Never train and it passes on at its original value. The platform takes a $3% fee on growth only.'],
+  ['我的往期召唤 · (\\d+)', 'Past summons · $1'],
+  ['(明日 )?(\\d\\d:\\d\\d) 自动匹配', (m) => `Matches ${m[2]}${m[1] ? ' tomorrow' : ''}`],
+  ['请在 (\\d+) 小时内完成支付结算', 'Pay within $1h'], ['修炼值 · (.+)', 'Value · $1'], ['超过 (\\d+) 小时未支付判定逾期违约，暂扣的(召唤)?蟠桃全部充公(、不予退还)?。', 'Miss the $1h window and your held Peaches are forfeited.'],
+  ['传承人确认到账后，(.+?)进入猴舍。', 'Once the keeper confirms, $1 moves into the Den.'], ['(.+?)现世 · 已进入猴舍', '$1 · In the Den'],
+  ['已修炼 (\\d+) / (\\d+) 天 · 每天进修炼室点一次', 'Trained $1/$2d · Train once a day'],
+  ['召唤成功后 (\\d+) 小时内未完成修炼值的支付结算，判定逾期违约：.+', 'Payment was not made within $1h. Your held Peaches were forfeited. You can still join later rounds.'],
+  [`(明日 )?${T} 系统自动匹配，不需要再操作`, 'Auto-match at $2. Nothing more to do.'],
+  [`修炼增长 · ${N} × ${N}%（每天都修炼）`, 'Growth · $1 × $2% (trained daily)'], [`手续费 · 修炼增长的 ${N}%`, 'Fee · $1% of growth'],
+  [`(明日 )?${T}（北京时间）系统自动匹配并公布结果，.+?成功后须在 (\\d+) 小时内.+`, 'Matching runs at $2 (Beijing time). Joining does not guarantee a match. If matched, pay the keeper within $3h. Payout is an estimate.'],
+  [`(明日 )?${T}（北京时间）系统自动匹配`, 'Auto-match at $2 (Beijing time)'], ['召唤成功后要在 (\\d+) 小时内完成支付结算，请留意通知。', 'If matched, pay within $1h. Watch your notifications.'],
+  [`${NAME} · (\\d+) 秒后开始匹配`, '$1 · Matching in $2s'],
+  // 猴舍
+  ['(\\d+) ?只悟空', '$1 Wukong'], ['按住一键修炼(.*)', 'Hold to Train All$1'], [`(\\d+) 只${NAME}，进入修炼室(.*)`, '$1 $2, enter hall$3'], ['，(\\d+) 只今日待修炼', ', $1 to train today'],
+  [`${NAME} · 当前悟空 (\\d+) 只(.*)`, '$1 · $2 here$3'], ['· 修炼中 (\\d+) 只', '· $1 training'], [`${NAME}修炼之境`, '$1 Hall'], ['本室共 (\\d+) 只 · 左右滑动查看', '$1 here · Swipe to browse'], ['(.+?) · 修炼有时，传承有序。', '$1 · Train in time. Pass on in turn.'],
+  [`${NAME}未开放`, '$1 locked'], [`(.+?)，${NAME}未开放`, '$1, $2 locked'], [`(.+?)，暂无修炼中的${NAME}，前往召唤`, '$1 — none in training. Summon one'], [`暂无修炼中的${NAME}，前往召唤`, 'No $1 in training. Summon one'], [`暂无修炼中的${NAME}`, 'No $1 in training'],
+  ['第 (\\d+) 天 / 共 (\\d+) 天', 'Day $1 of $2'], ['第 (\\d+) 天 / 共 (\\d+) 天 · (.+)', 'Day $1 of $2 · $3'], [`${NAME}修炼台`, '$1'],
+  [`已修炼 (\\d+) / (\\d+) 天 · 每天都修炼可得修炼加成 \\+${N}%`, 'Trained $1/$2d · Train daily for +$3% growth'], ['共 (\\d+) 天，已修炼 (\\d+) 天(，现在是第 (\\d+) 天)?', '$2 of $1 days trained'], ['修炼周期已结束 · 共修炼 (\\d+) 天', 'Cycle complete · Trained $1d'],
+  ['按住修炼', 'Hold to Train'], ['按住修炼 (\\d+) 天', 'Hold to Train'], ['修炼 (\\d+) 天', 'Train $1d'], ['按住(.+)', 'Hold to $1'], ['· 已连续修炼 (\\d+) 天', '· $1-day streak'], [`预计 (明日 )?${T} 匹配`, 'Match expected $2'], [`预计 (明日 )?${T} 随下一轮召唤匹配`, 'Match expected at $2, next round'],
+  ['第(.+?)日', (m) => `Day ${'零一二三四五六七八九十'.indexOf(m[1]) >= 0 ? '零一二三四五六七八九十'.indexOf(m[1]) : m[1]}`],
+  [`${NAME}的${NAME}修炼之境`, '$2 Hall'], [`暂无${NAME}`, 'No $1'], [`召唤成功后，即可开启${NAME}修炼之境。`, 'Summon a $1 to open this hall.'], ['前往(.+)', 'Go to $1'], [`${NAME} · 修炼之境`, '$1 · Training Hall'],
+  ['共 (\\d+) 条传承记录', '$1 records'], ['(.+?)结缘 · 传承 (.+)', 'Summoned $1 · Passed on $2'], [`暂无${NAME}?传承记录`, 'No records yet'], [`修炼增长（\\+${N}%）`, 'Growth (+$1%)'], [`平台手续费（修炼增长的 ${N}%）`, 'Fee ($1% of growth)'], ['(.+?) · 结缘', '$1 · Summoned'],
+  // 交易
+  ['(.+?) · 匹配于 (.+?)（北京时间）', '$1 · Matched $2 (UTC+8)'], ['(传承人|承接人)钱包地址', '$1 wallet'],
+  [`立即支付 ${N} USDT`, 'Pay $1 USDT'], [`确认已收到 ${N} USDT`, 'Confirm $1 USDT'], ['已支付，等待传承人核实到账并确认。确认后 (.+?) 自动进入猴舍。', 'Paid. Once the keeper confirms, $1 moves into the Den.'],
+  [`传承完成，${N} USDT 已转入 USDT 余额`, 'Passed on. $1 USDT added to your balance'], ['召唤成功后 (\\d+) 小时内未完成支付结算，判定逾期违约', 'Payment not made within $1h'], ['待我处理 · (\\d+)', 'Needs you · $1'],
+  // 暂扣、资产
+  [`共 (\\d+) 笔 · 可用蟠桃 ${N}`, '$1 holds · $2 Peaches available'], ['· 剩 (.+)', '· $1 left'], [`转出后蟠桃将少于 ${N} 个，你将不再是有效用户，无法获得同行与部族奖励。`, "This leaves you under $1 Peaches — you'd no longer be active or earn rewards."],
+  ['用 USDT 余额购买，(.+?)，立即到账。', 'Paid from your USDT balance. $1. Instant.'], ['(.+?)上一页', 'Prev'], ['第 (\\d+) 页', 'Page $1'],
+]

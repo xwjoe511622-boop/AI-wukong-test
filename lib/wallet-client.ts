@@ -1,5 +1,6 @@
 'use client'
 
+import { detectLang, translate } from './i18n'
 import { isAddress } from './wallet'
 
 /**
@@ -34,7 +35,7 @@ const randomHex = (bytes: number) => Array.from(crypto.getRandomValues(new Uint8
 
 /** 登录消息：写明域名、地址、随机数和时间，防止签名被拿到别处重放 */
 export function loginMessage(address: string, nonce: string, issuedAt: string) {
-  return ['AI WUKONG 登录签名', '', `钱包地址：${address}`, `域名：${location.host}`, `随机数：${nonce}`, `时间：${issuedAt}`, '', '本次签名只用于登录验证，不会发起任何交易，也不消耗矿工费。'].join('\n')
+  return ['AI WUKONG 登录签名', '', `钱包地址：${address}`, `域名：${location.host}`, `随机数：${nonce}`, `时间：${issuedAt}`, '', '本次签名只用于登录验证，不会发起任何交易，也不消耗矿工费。'].map(line => detectLang() === 'en' ? translate(line) : line).join('\n')
 }
 
 export class WalletError extends Error { constructor(public code: 'no-wallet' | 'rejected' | 'failed', message: string) { super(message) } }

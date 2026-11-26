@@ -17,6 +17,8 @@ export function AppOpening({ children }: { children: React.ReactNode }) {
   const finishing = useRef(false)
   const invitationEntry = useRef(pathname === '/me/join')
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // 切换语言会刷新页面：这一次不重播开场动画
+  useEffect(() => { try { if (sessionStorage.getItem('wukong-skip-opening')) { sessionStorage.removeItem('wukong-skip-opening'); setPhase('done') } } catch {} }, [])
 
   const clearWatchdog = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)

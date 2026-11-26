@@ -7,6 +7,7 @@ import { TrialRibbon } from './trial-notice'
 import { NoticeBell, NoticeToast } from './notifications'
 import { MatchBanner } from './summon-matching'
 import { ConnectCard, WalletButton, useWallet } from './wallet-gate'
+import { LangSwitch } from './lang-provider'
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { loading, error, retry } = useGame()
@@ -23,7 +24,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <NoticeToast />
       <MatchBanner />
       {/* 钱包和通知铃铛只在首页左上角显示，其他页面不显示 */}
-      <div className="home-tools"><WalletButton />{connected && <NoticeBell />}</div>
+      <div className="home-tools"><WalletButton />{connected && <NoticeBell />}<LangSwitch /></div>
       <main>{children}</main>
       <BottomNav />
     </div>

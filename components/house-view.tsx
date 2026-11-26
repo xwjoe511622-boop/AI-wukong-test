@@ -1,5 +1,6 @@
 'use client'
 
+import { useLang } from './lang-provider'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -16,7 +17,11 @@ import { PeachValue, PeachText, UsdtValue } from './peach-value'
  * 猴舍首页：这是「我的家」，不是资产页，所以不放金额。
  * 顶部总览（几只悟空、今天还有几只没修炼、一键修炼）→ 七间修炼室的徽章 → 七间修炼室（空的折叠成一行）。
  */
+/** 徽章下的短名（英文） */
+const EN_SHORT: Record<string, string> = { stone_spirit: 'Stone', spirit_monkey: 'Spirit', wukong: 'Wukong', battle_wukong: 'Warrior', great_sage: 'Sage', destiny_sage: 'Destined', infinite_sage: 'Limitless' }
+
 export function HouseView() {
+  const { lang } = useLang()
   const { state, now, message, act } = useCultivationPreview()
   const { play } = useSound()
   const [done, setDone] = useState(0)
@@ -60,7 +65,7 @@ export function HouseView() {
       const mine = state.contracts.filter(c => c.stage === level.id)
       const need = mine.filter(c => due(c, now) > 0).length
       const href = mine.length ? `/house/room/${level.id}` : `/world?stage=${level.id}`
-      const body = <><span className="house-badge-art"><Image src={level.characterImage} alt="" width={96} height={144} sizes="52px" />{need > 0 && <i aria-hidden />}{mine.length > 1 && <b aria-hidden>{mine.length}</b>}</span><span className="house-badge-name">{level.name.length > 2 ? level.name.slice(0, 2) : level.name}</span></>
+      const body = <><span className="house-badge-art"><Image src={level.characterImage} alt="" width={96} height={144} sizes="52px" />{need > 0 && <i aria-hidden />}{mine.length > 1 && <b aria-hidden>{mine.length}</b>}</span><span className="house-badge-name">{lang === 'en' ? <span data-no-i18n>{EN_SHORT[level.id]}</span> : level.name.length > 2 ? level.name.slice(0, 2) : level.name}</span></>
       const label = `${level.name}：${mine.length ? `${mine.length} 只${need ? `，${need} 只今日待修炼` : ''}，进入修炼室` : level.isOpen ? '还没有，去召唤' : '未开放'}`
       return level.isOpen || mine.length ? <Link key={level.id} href={href} aria-label={label} className={`house-badge ${mine.length ? 'is-on' : ''}`}>{body}</Link> : <span key={level.id} aria-label={label} className="house-badge">{body}</span>
     })}</nav>

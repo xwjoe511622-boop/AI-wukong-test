@@ -1239,3 +1239,18 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .realm-facts dd { margin-top: 5px; font-family: var(--num); font-size: 18px; font-weight: 700; line-height: 1.1; white-space: nowrap; color: #fff1cf; }
 .realm-facts dd small { margin-left: 2px; font-family: var(--font-sans, 'Noto Sans SC'), sans-serif; font-size: 12px; font-weight: 400; color: #b7afa0; }
 .realm-facts dd .unit { font-size: .62em; }
+
+/* ═══ 英文 ═══ */
+.lang-switch { display: inline-flex; align-items: center; gap: 3px; height: 36px; padding: 0 11px; border-radius: 999px; border: 1.5px solid transparent; background: radial-gradient(circle at 50% 30%, #4a3513, #171008 72%) padding-box, linear-gradient(160deg, #ffe7a3, #b9862c 45%, #6b4a14 70%, #f3c969) border-box; font-size: 12px; color: #8f8778; box-shadow: 0 0 0 2px #0b0906, 0 4px 12px #000a; }
+.lang-switch .is-on { font-weight: 700; color: #ffd98a; }
+.lang-switch i { font-style: normal; color: #6b6557; }
+/* 导航图标：盖住图里的中文 */
+.nav-en { position: absolute; left: 12%; right: 12%; bottom: 13%; display: flex; align-items: center; justify-content: center; height: 19%; border-radius: 4px; background: linear-gradient(180deg, #1c150b, #0d0a06); font-family: 'Cinzel', serif; font-size: clamp(9px, 2.9vw, 12px); font-weight: 700; letter-spacing: .04em; color: #e9cf9f; box-shadow: inset 0 0 0 1px #c59b5266; }
+a[aria-current=page] .nav-en { color: #ffe39a; box-shadow: inset 0 0 0 1px #ffcf5c, 0 0 8px #ffcf5c66; }
+/* 英文标题用衬线拉丁字体；英文不需要中文那样的字距 */
+html[lang=en] :is(.font-display, .profile-heading, .home-title, .house-card-title, .asset-name, .home-label, .match-step, .page-bar h1, .page-bar) { font-family: 'Cinzel', 'Noto Serif SC', serif; letter-spacing: .01em; }
+html[lang=en] :is(.btn-gold, .btn-ghost-gold, .cultivation-primary, .cultivation-secondary) { letter-spacing: .01em; }
+html[lang=en] [class*="tracking-"]:not(.font-latin) { letter-spacing: .02em; }
+html[lang=en] .home-label { letter-spacing: .06em; text-transform: uppercase; }
+html[lang=en] .house-badge-name { font-size: 10px; letter-spacing: 0; }
+html[lang=en] .btn-compact { font-size: 11px; letter-spacing: 0; white-space: nowrap; }

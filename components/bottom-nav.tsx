@@ -1,5 +1,6 @@
 'use client'
 
+import { useLang } from './lang-provider'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -15,9 +16,13 @@ const ITEMS = [
   { href: '/me', label: '我的', asset: 'me' },
 ] as const
 
+/** 导航图标上的中文字是画在图里的；英文模式下用同样位置的文字牌盖住 */
+const EN_LABELS: Record<string, string> = { '/': 'Home', '/world': 'Realms', '/house': 'Den', '/me': 'Me' }
+
 export function BottomNav() {
   const pathname = usePathname()
   const { play } = useSound()
+  const { lang } = useLang()
   const { state } = useProduct()
   const todo = pendingTrades(state?.trades ?? []).length
 
@@ -64,6 +69,7 @@ export function BottomNav() {
                   priority
                   className={cn('absolute inset-0 h-auto w-full transition-opacity duration-200 motion-reduce:transition-none', active ? 'opacity-100' : 'opacity-0')}
                 />
+                {lang === 'en' && <span className="nav-en" data-no-i18n aria-hidden="true">{EN_LABELS[href]}</span>}
                 {href === '/me' && todo > 0 && <span className="nav-badge" aria-hidden="true">{todo > 9 ? '9+' : todo}</span>}
               </Link>
             )
