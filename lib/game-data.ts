@@ -303,7 +303,7 @@ const SEEDS: StageSeed[] = [
     nameEn: 'INFINITE SAGE',
     // 正式版未开放，体验版开放；立绘暂借天命大圣
     isOpen: TRIAL_MODE,
-    characterImage: '/assets/characters/destiny_sage.png',
+    characterImage: '/assets/characters/infinite_sage.png',
     realmCover: '/assets/realms/infinite_sage.webp',
     roomCover: '/assets/room-sage.png',
     cultivationAsset: 'qitian',
