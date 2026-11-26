@@ -70,8 +70,8 @@
 .contract-slip-grid dd { margin-top: 2px; font-size: 13px; color: #f0e7d5; font-variant-numeric: tabular-nums; }
 
 /* 修炼台 */
-.slip-value { margin-top: 4px; font-family: var(--font-latin); font-size: 38px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; color: #ffd27a; text-shadow: 0 0 22px #ffcf5c40; }
-.slip-value span { font-size: 20px; color: #e9cf9f; }
+.slip-value { margin-top: 4px; font-family: var(--font-latin); font-size: clamp(26px, 8.2vw, 34px); font-weight: 700; line-height: 1.1; white-space: nowrap; font-variant-numeric: tabular-nums; color: #ffd27a; text-shadow: 0 0 22px #ffcf5c40; }
+.slip-value span { font-size: inherit; color: inherit; }
 .slip-value small { margin-left: 6px; font-family: inherit; font-size: 11px; font-weight: 400; letter-spacing: .12em; color: #a59c8c; }
 .slip-beads { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .slip-beads li { width: 12px; height: 12px; border-radius: 999px; border: 1px solid #8f7a4c; background: #100e0b; }
@@ -120,3 +120,11 @@
 .slip-journal li.is-new { animation: journal-write 1.4s ease-out; }
 @keyframes journal-write { 0% { opacity: 0; transform: translateX(-10px); color: #ffe39a; } 40% { opacity: 1; transform: none; color: #ffe39a; } 100% { color: #d6cfc2; } }
 @media (prefers-reduced-motion: reduce) { .stage-idle, .stage-aura i, .stage-flash, .slip-hold, .slip-fly, .slip-value.is-surge, .slip-beads li.is-pop, .slip-journal li.is-new { animation: none !important; } .stage-flash, .slip-fly { display: none; } }
+
+/* 修炼值：整数和小数同一字号，单位略小 */
+.slip-value .unit { font-size: .55em; }
+/* 修炼完成：按钮位置飘出本次扣了多少蟠桃 */
+.slip-spent { position: absolute; left: 0; right: 0; top: 52%; z-index: 6; display: flex; align-items: center; justify-content: center; gap: 6px; pointer-events: none; font-family: 'Cinzel', 'Noto Serif SC', serif; font-size: 26px; font-weight: 700; color: #ffb38a; text-shadow: 0 2px 10px #000, 0 0 18px #ff783c80; animation: slip-spent 2.2s ease-out forwards; }
+.slip-spent img { width: 26px; height: 26px; }
+@keyframes slip-spent { 0% { transform: translateY(10px) scale(.8); opacity: 0; } 15% { transform: none; opacity: 1; } 70% { opacity: 1; } 100% { transform: translateY(-46px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .slip-spent { animation: none; display: none; } }
