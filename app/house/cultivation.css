@@ -90,3 +90,33 @@
 /* 漏掉修炼的那天：暗红空心珠，手记里也标出来 */
 .slip-beads li.is-missed { border-color: #7a3f2c; background: #1a0f0c; }
 .slip-journal li.is-missed, .slip-journal li.is-missed span { color: #b0705a !important; }
+
+/* ── 修炼之境：没修炼时静止压暗，修炼后循环播放、灵气上升 ── */
+.cultivation-stage.is-idle :is(img, video) { filter: brightness(.5) saturate(.55); transition: filter .8s ease; }
+.cultivation-stage.is-active :is(img, video) { filter: none; transition: filter .8s ease; }
+.stage-idle { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 0 16px; font-family: var(--font-display); font-size: 14px; letter-spacing: .24em; color: #f3d6a8; text-shadow: 0 2px 10px #000; animation: idle-breathe 3s ease-in-out infinite; }
+@keyframes idle-breathe { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+.stage-aura { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.stage-aura i { position: absolute; bottom: -8px; width: 4px; height: 4px; border-radius: 999px; background: #ffe39a; box-shadow: 0 0 8px 2px #ffcf5c99; opacity: 0; animation: aura-rise 4s linear infinite; }
+@keyframes aura-rise { 0% { transform: translateY(0) scale(.6); opacity: 0; } 15% { opacity: .9; } 100% { transform: translateY(-230px) scale(1.1); opacity: 0; } }
+.stage-flash { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 50% 55%, #fff6d8 0%, #ffcf5ccc 22%, #ffcf5c00 62%); animation: stage-flash 1.3s ease-out forwards; }
+@keyframes stage-flash { 0% { opacity: 0; transform: scale(.4); } 18% { opacity: 1; } 100% { opacity: 0; transform: scale(1.8); } }
+
+/* ── 按住运功 ── */
+.slip-hold { position: relative; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; animation: hold-invite 2.4s ease-in-out infinite; }
+.slip-hold:disabled { animation: none; }
+.slip-hold-fill { position: absolute; inset: 14% 8%; border-radius: 999px; background: linear-gradient(90deg, #ffcf5c00, #ffcf5c8c 60%, #fff2c8cc); transform: scaleX(0); transform-origin: left; opacity: 0; }
+.slip-hold.is-holding { animation: none; filter: brightness(1.25); }
+.slip-hold.is-holding .slip-hold-fill { opacity: 1; transform: scaleX(1); transition: transform var(--hold, 1400ms) linear; }
+@keyframes hold-invite { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.22) drop-shadow(0 0 10px #ffcf5c66); } }
+
+/* ── 修炼完成的那一刻 ── */
+.slip-fly { position: absolute; left: 50%; top: 58%; z-index: 5; width: 34px; height: 34px; margin-left: -17px; pointer-events: none; filter: drop-shadow(0 0 12px #ffb35c); animation: slip-fly 1s cubic-bezier(.3, .7, .3, 1) forwards; }
+@keyframes slip-fly { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-420px) scale(.35); opacity: 0; } }
+.slip-value.is-surge { animation: slip-surge 1.2s ease-out; }
+@keyframes slip-surge { 0% { transform: scale(1); text-shadow: 0 0 22px #ffcf5c40; } 25% { transform: scale(1.12); text-shadow: 0 0 34px #ffe39a, 0 0 60px #ffcf5c; } 100% { transform: scale(1); text-shadow: 0 0 22px #ffcf5c40; } }
+.slip-beads li.is-pop { animation: bead-pop 1s ease-out; }
+@keyframes bead-pop { 0% { transform: scale(.4); box-shadow: 0 0 0 0 #ffe39a; } 40% { transform: scale(1.7); box-shadow: 0 0 0 10px #ffcf5c00, 0 0 18px #ffcf5c; } 100% { transform: scale(1); } }
+.slip-journal li.is-new { animation: journal-write 1.4s ease-out; }
+@keyframes journal-write { 0% { opacity: 0; transform: translateX(-10px); color: #ffe39a; } 40% { opacity: 1; transform: none; color: #ffe39a; } 100% { color: #d6cfc2; } }
+@media (prefers-reduced-motion: reduce) { .stage-idle, .stage-aura i, .stage-flash, .slip-hold, .slip-fly, .slip-value.is-surge, .slip-beads li.is-pop, .slip-journal li.is-new { animation: none !important; } .stage-flash, .slip-fly { display: none; } }

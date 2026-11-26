@@ -42,6 +42,15 @@ export const dayIndex = (c: Contract, now: number) => Math.min(RULES[c.stage].da
 export const trainedDays = (c: Contract) => c.trainedDays ?? Array.from({ length: c.completed }, (_, i) => i)
 /** 这一时段是否已经点过修炼 */
 export const trainedNow = (c: Contract, now: number) => trainedDays(c).includes(dayIndex(c, now))
+/** 已连续修炼几次：今天还没点不算断，昨天漏了就归零 */
+export function streak(c: Contract, now: number) {
+  const trained = new Set(trainedDays(c))
+  let i = now >= endsAt(c) ? RULES[c.stage].days - 1 : dayIndex(c, now)
+  if (!trained.has(i) && now < endsAt(c)) i -= 1
+  let count = 0
+  while (i >= 0 && trained.has(i)) { count += 1; i -= 1 }
+  return count
+}
 /** 修炼手记：每过一天多一行；漏掉修炼的那天如实记下 */
 const JOURNAL = ['吐纳灵气，根基初成', '静坐观心，杂念渐消', '引气入体，筋骨微鸣', '灵光内敛，气息绵长', '踏云而行，身轻如叶', '夜观星斗，心有所悟', '运转周天，灵气充盈', '破障一重，目中有光', '听风辨势，耳聪目明', '凝神聚气，金光隐现', '行走山川，与万物同息', '闭关三刻，气海翻涌', '心猿归位，意马收缰', '淬炼筋骨，力贯双臂', '明心见性，尘念不生', '吞吐日月，光华护体', '一念通达，万法随心', '御气凌空，俯瞰云海', '道心稳固，不动如山', '功行将满，只待圆满']
 /** 到现在为止的修炼手记，最新的在前。missed = 这一天没有修炼 */
