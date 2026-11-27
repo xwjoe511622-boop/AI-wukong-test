@@ -58,7 +58,7 @@ test('体验版：第七阶段召唤暂扣 100 蟠桃；进猴舍后点一次修
   s = transition(s, { type: 'tick' }, pub + 15_000).state
   assert.equal(s.usdt, initial.usdt)
   s = payAndEnter(s, pub)
-  assert.equal(s.usdt, initial.usdt - 500_000)
+  assert.equal(s.usdt, initial.usdt - 550_000)
   let c = s.contracts.find(item => item.id.startsWith('summon-'))
   // 体验版每只悟空只点一次修炼：这一次扣 15 × 20 = 300 蟠桃，算整个周期
   const at = pub + COUNTERPARTY_DELAY_MS + 1000
@@ -70,7 +70,7 @@ test('体验版：第七阶段召唤暂扣 100 蟠桃；进猴舍后点一次修
   const end = nextMatchAfter('infinite_sage', pub + DAY) + COUNTERPARTY_DELAY_MS
   s = transition(parseProduct(JSON.stringify(s)), { type: 'tick' }, end).state
   s = transition(s, { type: 'cultivate', action: { type: 'claim', id: c.id } }, end).state
-  assert.equal(s.usdt, initial.usdt - 500_000 + 500_000 + 125_000 - 3_750)
+  assert.equal(s.usdt, initial.usdt - 550_000 + 550_000 + 137_500 - 4_125)
   assert.equal(s.balance, initial.balance - 40_000)
 })
 test('USDT 余额不足以结算，1 小时后判定逾期违约，暂扣的召唤蟠桃全部充公', () => {
