@@ -11,13 +11,13 @@ import { useProduct } from './product-provider'
 
 const ITEMS = [
   { href: '/', label: '首页', asset: 'home' },
-  { href: '/world', label: '悟空世界', asset: 'world' },
+  { href: '/world', label: '召唤', asset: 'world' },
   { href: '/house', label: '猴舍', asset: 'house' },
   { href: '/me', label: '我的', asset: 'me' },
 ] as const
 
 /** 导航图标上的中文字是画在图里的；英文模式下用同样位置的文字牌盖住 */
-const EN_LABELS: Record<string, string> = { '/': 'Home', '/world': 'Realms', '/house': 'Den', '/me': 'Me' }
+const EN_LABELS: Record<string, string> = { '/': 'Home', '/world': 'Summon', '/house': 'Den', '/me': 'Me' }
 
 export function BottomNav() {
   const pathname = usePathname()
@@ -54,7 +54,7 @@ export function BottomNav() {
                 className="pointer-events-auto relative block w-1/4 max-w-[104px] rounded-xl outline-offset-2 focus-visible:outline-2 focus-visible:outline-[var(--gold-300)]"
               >
                 <Image
-                  src={`/assets/nav-${asset}-default.png?v=2`}
+                  src={`/assets/nav-${asset}-default.png?v=3`}
                   alt=""
                   width={274}
                   height={332}
@@ -62,7 +62,7 @@ export function BottomNav() {
                   className={cn('block h-auto w-full transition-opacity duration-200 motion-reduce:transition-none', active ? 'opacity-0' : 'opacity-100')}
                 />
                 <Image
-                  src={`/assets/nav-${asset}-active.png?v=2`}
+                  src={`/assets/nav-${asset}-active.png?v=3`}
                   alt=""
                   width={274}
                   height={332}
