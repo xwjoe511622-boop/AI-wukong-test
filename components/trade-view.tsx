@@ -77,7 +77,7 @@ export function TradeView({ id }: { id: string }) {
     {trade.status === 'overdue' && <section className="profile-surface text-center">
       <p className="text-sm text-[#f0b49a]">召唤成功后 {PAYMENT_WINDOW_HOURS} 小时内未完成支付结算，判定逾期违约</p>
       <p className="mt-2 text-xs leading-6 text-[var(--profile-muted)]">暂扣的召唤蟠桃已全部充公，不予退还，系统保留违约记录。可继续参与后续召唤。</p>
-      <div className="mt-3 flex justify-center"><Link href="/world" className="btn-ghost-gold profile-button inline-flex items-center justify-center">返回悟空世界</Link></div>
+      <div className="mt-3 flex justify-center"><Link href="/world" className="btn-ghost-gold profile-button inline-flex items-center justify-center">返回召唤</Link></div>
     </section>}
 
     <p role="status" aria-live="polite" className="min-h-4 text-center text-[12px] leading-5 text-[var(--gold-200)]">{notice}</p>

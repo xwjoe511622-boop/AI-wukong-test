@@ -44,7 +44,7 @@ export const LORE: Record<string, string> = {
   // 路线图章节
   '路线图｜从一只悟空，到神话智能体世界': 'Roadmap | From one Wukong to a world of mythic agents', '悟空，只是第一个被唤醒的神话。': 'Wukong is only the first legend to wake.', '云海中的东方神话世界': 'A world of Eastern legend above the clouds',
   '神话不属于过去。': 'Legends do not belong to the past.', '它属于每一个愿意让它继续下去的人。': 'They belong to everyone willing to carry them on.', '标注「规划」「远景」的内容是发展方向，具体功能与开放时间以实际上线为准。': 'Items marked Planned or Vision show direction. Features and timing may change.',
-  '走进悟空世界': 'Enter the Realms', '回到天书之初 ↑': 'Back to top ↑',
+  '去召唤': 'Summon Now', '回到天书之初 ↑': 'Back to top ↑',
   // 召唤章节
   '召唤｜唤醒一个智能体': 'Summon | Wake an agent', '截止前点一次召唤，到点系统自动匹配，成功后限时支付结算。': 'Tap once before cutoff. Matching is automatic. If matched, pay in time.',
   '截止前点召唤 · 暂扣召唤蟠桃': 'Tap Summon · Fee held', '到点系统自动匹配': 'Auto-match on the hour', '公布结果并通知': 'Result & notification', '召唤成功 · 匹配到传承人': 'Matched with a keeper', '承接人 1 小时内完成支付结算': 'Successor pays within 1h', '传承人确认实际到账': 'Keeper confirms', '悟空进入猴舍 · 蟠桃正式扣除': 'Wukong moves in · Fee charged',

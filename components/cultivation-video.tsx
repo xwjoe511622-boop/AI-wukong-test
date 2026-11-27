@@ -57,7 +57,7 @@ export function CultivationVideo({ stage, locked, empty, active = true, idleText
       <LockKeyhole className="mb-1 size-6 text-stone-300" />
       <h3 className="font-display text-base font-bold text-amber-100">{empty ? '猴舍尚无悟空' : `暂无${rule.name}`}</h3>
       <p className="max-w-64 text-xs leading-relaxed text-stone-300">召唤成功后，即可开启{empty ? '对应悟空' : rule.realm}修炼之境。</p>
-      <Link className="cultivation-secondary mt-1 !min-h-9 !px-4" href={empty ? '/world' : `/world?stage=${stage}`}>{empty ? '前往悟空世界' : `前往${rule.realm}`}</Link>
+      <Link className="cultivation-secondary mt-1 !min-h-9 !px-4" href={empty ? '/world' : `/world?stage=${stage}`}>{empty ? '前往召唤' : `前往${rule.realm}`}</Link>
     </div> : <>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/80 to-transparent" />
       {active && <div className="stage-aura" aria-hidden>{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ left: `${6 + (i * 37) % 88}%`, animationDelay: `${(i * 0.53) % 4.2}s`, animationDuration: `${3.6 + (i % 4) * 0.7}s` }} />)}</div>}

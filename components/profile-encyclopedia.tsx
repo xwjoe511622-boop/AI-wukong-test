@@ -77,7 +77,7 @@ export function ProfileEncyclopedia() {
       <ol className="flex flex-col">{ROADMAP.map(([tag, name, body], i) => <li key={name} className="relative border-l border-[var(--gold-600)]/50 pb-5 pl-5 last:pb-0"><span className={`absolute -left-[7px] top-1 size-3.5 rounded-full border ${i === 0 ? 'border-[#ffcf5c] bg-[#ffcf5c] shadow-[0_0_10px_#ffcf5c]' : 'border-[var(--gold-500)] bg-[#14110d]'}`} aria-hidden /><p className="flex items-center gap-2"><span className="font-latin text-[12px] text-[var(--gold-400)]">0{i + 1}</span><span className={`rounded px-1.5 py-0.5 text-[12px] ${i === 0 ? 'bg-[#ffcf5c26] text-[#ffe39a]' : 'border border-[var(--gold-600)]/50 text-[var(--gold-200)]'}`}>{tag}</span></p><h3 className="mt-1.5 font-display text-lg text-[var(--gold-100)]">{name}</h3><p className="mt-1.5 text-[13px] leading-7">{body}</p></li>)}</ol>
       <p className="py-4 text-center font-display text-xl font-bold leading-9 text-gold">神话不属于过去。<br />它属于每一个愿意让它继续下去的人。</p>
       <p className="text-[12px] leading-6 text-stone-400">标注「规划」「远景」的内容是发展方向，具体功能与开放时间以实际上线为准。</p>
-      <Link href="/world" className="btn-gold inline-flex w-full items-center justify-center text-sm">走进悟空世界</Link><a href="#encyclopedia-title" className="mt-2 text-center text-xs text-[var(--gold-200)]">回到天书之初 ↑</a>
+      <Link href="/world" className="btn-gold inline-flex w-full items-center justify-center text-sm">去召唤</Link><a href="#encyclopedia-title" className="mt-2 text-center text-xs text-[var(--gold-200)]">回到天书之初 ↑</a>
     </LoreChapter>
   </div>
 }

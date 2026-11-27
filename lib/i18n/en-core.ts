@@ -2,7 +2,7 @@
 export const CORE: Record<string, string> = {
   // 通用
   '1蟠桃 = 1 USDT': '1 Peach = 1 USDT', '体验版': 'Trial', '正式版': 'Live', '明日': 'Tomorrow', '第一轮': 'Round 1',
-  '蟠桃': 'Peach', '悟空': 'Wukong', '首页': 'Home', '悟空世界': 'Realms', '猴舍': 'Den', '我的': 'Me',
+  '蟠桃': 'Peach', '悟空': 'Wukong', '首页': 'Home', '悟空世界': 'World of Wukong', '猴舍': 'Den', '我的': 'Me',
   '召唤': 'Summon', '修炼': 'Train', '收款': 'Receive', '支付结算': 'Payment', '转账': 'Transfer',
   // 七阶段
   '石灵': 'Stoneborn', '灵猴': 'Spirit Monkey', '斗战悟空': 'Warrior Wukong', '齐天大圣': 'Great Sage', '天命大圣': 'Destined Sage', '无极大圣': 'Limitless Sage',

@@ -37,9 +37,9 @@ export const PAGES: Record<string, string> = {
   // ── 资产卡 ──
   '我的资产：蟠桃': 'My Peaches', '我的资产：USDT': 'My USDT', '有效用户': 'Active', '可用余额': 'Available', '暂扣中': 'On hold',
   // ── 悟空世界 ──
-  '悟空世界 · 七大仙境': 'Realms · The Seven Realms', '七大仙境': 'The Seven Realms', '选择仙境 · 发起召唤 · 每日修炼': 'Pick a realm · Summon · Train daily',
+  '召唤 · 七大仙境': 'Summon · The Seven Realms', '七大仙境': 'The Seven Realms', '选择仙境 · 发起召唤 · 每日修炼': 'Pick a realm · Summon · Train daily',
   '选择仙境，发起召唤，召唤成功后进入猴舍修炼。七大仙境自每日 11:00 起依次召唤。': 'Pick a realm and summon. Seven realms open in turn from 11:00 daily.',
-  '未找到该仙境': 'Realm not found', '返回七大仙境': 'Back to Realms', '· 未开放': '· Locked', '未开放': 'Locked', '该阶段尚未开放召唤 · 静待天时': 'Not open yet · Stay tuned',
+  '未找到该仙境': 'Realm not found', '返回七大仙境': 'Back to Summon', '· 未开放': '· Locked', '未开放': 'Locked', '该阶段尚未开放召唤 · 静待天时': 'Not open yet · Stay tuned',
   '前 30 分钟召唤截止 · 每日 19:00 可以开启新一天的召唤': "Summons close 30 min before · Next day's opens at 19:00", '· 无极大圣未开放': '· Limitless Sage coming soon',
   '本轮已匹配 · 距本轮结束': 'Round ends in', '召唤已截止 · 距系统匹配': 'Closed · Matching in',
   // ── 仙境页 ──
@@ -56,7 +56,7 @@ export const PAGES: Record<string, string> = {
   '召唤成功 · 待支付': 'Matched · Pay now', '已支付 · 等待传承人确认到账': 'Paid · Awaiting keeper', '待支付': 'To pay', '已支付': 'Paid', '支付剩余': 'Time left', '已暂扣蟠桃': 'Peaches on hold', '立即支付': 'Pay Now', '查看交易': 'View Trade',
   '修炼值已支付 · 传承人已确认到账': 'Paid · Keeper confirmed', '修炼值 · 已支付': 'Value · Paid', '已扣除召唤蟠桃': 'Summon fee charged', '预计传承': 'Est. payout', '进入猴舍': 'Enter Den',
   '修炼周期结束后进入传承，等下一轮同阶段召唤匹配承接人；承接人完成支付结算、你确认到账后完成传承所得。没修炼的那天没有修炼加成。': 'When the cycle ends, your Wukong is passed on in the next round. Once the successor pays and you confirm, you get your payout. Missed days earn no growth.',
-  '本轮召唤未成功': 'No match this round', '本次召唤使用的蟠桃已全额退还，可继续参与后续召唤': 'Your Peaches were refunded. Try the next round.', '返回悟空世界': 'Back to Realms',
+  '本轮召唤未成功': 'No match this round', '本次召唤使用的蟠桃已全额退还，可继续参与后续召唤': 'Your Peaches were refunded. Try the next round.', '返回召唤': 'Back to Summon',
   '已参与召唤': 'Joined', '已参与召唤，等待匹配': 'Joined — awaiting match', '系统自动匹配，不需要再操作': 'Matching is automatic. Nothing more to do.', '距系统匹配': 'Matching in', '召唤成功扣除召唤蟠桃并进入支付结算；失败全额退还。': 'Matched: fee charged, then payment. No match: full refund.',
   // 召唤确认
   '确认召唤': 'Confirm Summon', '本次召唤暂扣': 'On hold for this summon', '召唤失败全额退还 · 悟空进猴舍时扣除': 'Refunded if no match · Charged on move-in', '修炼值怎么算': 'How value works', '本轮修炼值 · 成功后向传承人支付': 'Value · Paid to the keeper if matched',
@@ -77,7 +77,7 @@ export const PAGES: Record<string, string> = {
   '修炼值': 'Value', '修炼进度': 'Progress', '今日还没修炼': 'Not trained today', '还没修炼': 'Not trained yet', '今日已修炼': 'Trained today', '已修炼': 'Trained',
   '按住不放，运功完成才算；过了今天不能补。': 'Hold until it completes. No make-ups after today.', '按住不放，运功完成才算；修炼周期结束后不能补。': 'Hold until it completes. No make-ups after the cycle.',
   '· 本次消耗': '· Cost', '· 明天记得再来': '· Come back tomorrow', '传承中 · 已匹配承接人，等待对方支付': 'Passing on · Awaiting payment', '· 查看交易': '· View trade', '承接人已支付 · 去确认收款': 'Confirm Receipt',
-  '修炼手记': 'Training log', '修炼详情': 'Details', '已消耗修炼蟠桃': 'Peaches spent', '猴舍尚无悟空': 'No Wukong yet', '对应悟空': 'Wukong', '前往悟空世界': 'Go to Realms',
+  '修炼手记': 'Training log', '修炼详情': 'Details', '已消耗修炼蟠桃': 'Peaches spent', '猴舍尚无悟空': 'No Wukong yet', '对应悟空': 'Wukong', '前往召唤': 'Summon',
   '按悟空类型筛选历史': 'Filter by type', '传承完成 · 已到账': 'Passed on · Paid out', '传承完成并确认收款后，可以在这里查看。': 'Completed pass-ons show up here.', '返回猴舍': 'Back to Den',
   '关闭结算弹窗': 'Close', '修炼值不参与平台手续费；结算以 USDT 计，确认后转入 USDT 余额；已消耗的召唤与修炼蟠桃不退还。确认后本次传承归档至传承历史。': 'The fee applies to growth only. Payout is in USDT and goes to your balance once confirmed. Peaches already spent are not refunded.',
   '确认支付': 'Confirm', '稍后再看': 'Later', '正在开启修炼之境…': 'Opening the hall…',
