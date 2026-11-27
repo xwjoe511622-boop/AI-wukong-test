@@ -8,6 +8,7 @@ import { CURRENCY_LABEL, type Currency } from '@/lib/product-state'
 import { money } from '@/lib/cultivation-preview'
 import { AssetCard } from './asset-card'
 import { useProduct } from './product-provider'
+import { DepositPanel } from './deposit-panel'
 import { ProfileAmount, ProfileButton, ProfileButtonLink, ProfileEmpty, ProfilePageHeader } from './profile-ui'
 
 type Mode = 'deposit' | 'transfer' | 'buy'
@@ -27,7 +28,7 @@ export function ProfileWallet({ initialMode }: { initialMode?: string }) {
   const available = mode === 'buy' || currency === 'usdt' ? usdt : peach
   const badAmount = !Number.isFinite(cents) || cents <= 0 || cents > available
   const belowValid = mode === 'transfer' && currency === 'peach' && Number.isFinite(cents) && peach >= VALID_USER_MIN_PEACH * 100 && peach - cents < VALID_USER_MIN_PEACH * 100
-  const records = (state?.records ?? []).filter(r => r.amountCents !== 0 && ['recharge', 'buy_pay', 'transfer_out', 'transfer_in'].includes(r.kind)).slice(0, 10)
+  const records = (state?.records ?? []).filter(r => r.amountCents !== 0 && ['deposit', 'recharge', 'buy_pay', 'transfer_out', 'transfer_in'].includes(r.kind)).slice(0, 10)
   const pick = (next: Mode) => { setMode(next); setConfirming(false); setAmount('') }
   function transfer() {
     if (!confirming) { setConfirming(true); return }
@@ -39,10 +40,7 @@ export function ProfileWallet({ initialMode }: { initialMode?: string }) {
     <AssetCard />
     <div role="tablist" aria-label="操作" className="quick-actions">{MODES.map(([id, label]) => <button type="button" role="tab" key={id} aria-selected={mode === id} onClick={() => pick(id)} className={`${mode === id ? 'btn-gold' : 'btn-ghost-gold'} ornate-short`}>{label}</button>)}</div>
     <section className="profile-surface" aria-label={MODES.find(([id]) => id === mode)?.[1]}>
-      {mode === 'deposit' && <div role="tabpanel" className="py-6 text-center">
-        <p className="font-display text-base text-[var(--gold-100)]">充值 USDT</p>
-        <p className="mt-2 text-xs leading-6 text-[var(--profile-muted)]">充值通道即将开放，开放后会在通知里告诉你。</p>
-      </div>}
+      {mode === 'deposit' && <DepositPanel />}
 
       {mode === 'transfer' && <div role="tabpanel">
         <h2 className="font-display text-base text-[var(--gold-100)]">转账</h2>

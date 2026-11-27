@@ -59,6 +59,8 @@ export type ProductAction =
   /** 传承人：核实到账后确认收款，完成传承所得 */
   | { type: 'trade-confirm'; id: string }
   /** 仅演示：让对方立即完成操作（支付结算 / 确认到账），或让传承中的悟空立即匹配到承接人 */
+  /** 充值到账：txHash 为链上交易哈希，演示模式以 demo- 开头 */
+  | { type: 'deposit'; amountCents: number; txHash: string }
   | { type: 'demo-counterparty'; id: string }
   /** 演示：我是传承人，承接人逾期未支付 */
   | { type: 'demo-counterparty-overdue'; id: string }
@@ -315,6 +317,15 @@ export function productTransition(state: ProductState, action: ProductAction, no
     next = record(next, 'buy_pay', -action.amountCents, `购买 ${money(action.amountCents)} 蟠桃，支付 ${money(action.amountCents)} USDT（1蟠桃 = 1 USDT）。`, now, 'usdt')
     next = record(next, 'recharge', action.amountCents, `购买到账 ${money(action.amountCents)} 蟠桃，已显示在「我的资产」。`, now)
     return { state: next, message: `已购买 ${money(action.amountCents)} 蟠桃。` }
+  }
+  if (action.type === 'deposit') {
+    if (!Number.isSafeInteger(action.amountCents) || action.amountCents <= 0) return { state, message: '请输入有效的数量，最多两位小数。' }
+    // 同一笔链上转账只入账一次
+    if (state.records.some(r => r.id === `deposit-${action.txHash}`)) return { state, message: '' }
+    if (state.usdt + action.amountCents > 1e12) return { state, message: '超出演示余额上限。' }
+    const demo = action.txHash.startsWith('demo-')
+    const item: AccountRecord = { id: `deposit-${action.txHash}`, kind: 'deposit', amountCents: action.amountCents, description: `从钱包 ${shortAddress(state.playerId)} 充值 ${money(action.amountCents)} USDT（BSC）${demo ? '；演示，未发生真实转账' : ''}。`, createdAt: new Date(now).toISOString(), currency: 'usdt' }
+    return { state: { ...state, usdt: state.usdt + action.amountCents, records: [item, ...state.records] }, message: `充值到账 ${money(action.amountCents)} USDT。` }
   }
   if (action.type === 'transfer-to') {
     const label = CURRENCY_LABEL[action.currency]

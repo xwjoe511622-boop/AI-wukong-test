@@ -1253,3 +1253,16 @@ html[lang=en] [class*="tracking-"]:not(.font-latin) { letter-spacing: .02em; }
 html[lang=en] .home-label { letter-spacing: .06em; text-transform: uppercase; }
 html[lang=en] .house-badge-name { font-size: 10px; letter-spacing: 0; }
 html[lang=en] .btn-compact { font-size: 11px; letter-spacing: 0; white-space: nowrap; }
+/* ═══ 充值 ═══ */
+.deposit-wallet { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 12px; border-radius: 12px; border: 1px solid #b0904b55; background: linear-gradient(180deg, #2a1f0d99, #120d0699); }
+.deposit-wallet-icon { display: flex; flex-shrink: 0; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 999px; border: 1px solid #c59b5299; color: #f3c969; background: #00000066; }
+.deposit-refresh { display: flex; flex-shrink: 0; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 999px; border: 1px solid #c59b5266; color: #f3c969; }
+.deposit-refresh:disabled { opacity: .5; }
+.deposit-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 16px; }
+.deposit-steps li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; color: #8f8778; }
+.deposit-steps li::before { content: ''; position: absolute; top: 11px; right: 50%; width: 100%; height: 1px; background: #5b4a26; }
+.deposit-steps li:first-child::before { display: none; }
+.deposit-steps li span { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 999px; border: 1px solid #5b4a26; background: #120d06; font-family: var(--num); font-size: 12px; }
+.deposit-steps li[data-state=now] { color: #ffe9c2; } .deposit-steps li[data-state=now] span { border-color: #ffcf5c; color: #ffcf5c; box-shadow: 0 0 10px #ffcf5c66; }
+.deposit-steps li[data-state=done] { color: #e5d5b1; } .deposit-steps li[data-state=done] span { border-color: #c59b52; background: #c59b52; color: #1a1206; }
+.deposit-steps li[data-state=done]::before, .deposit-steps li[data-state=now]::before { background: #c59b52; }

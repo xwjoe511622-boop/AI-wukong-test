@@ -40,3 +40,13 @@ test('转账按钱包地址：不是地址不转，不能转给自己（不分�
   assert.equal(to(me.toUpperCase().replace('0X', '0x')), s)
   assert.equal(to(demoAddress('friend')).usdt, s.usdt - 5000)
 })
+
+test('充值到账：USDT 余额增加、明细多一笔充值；同一笔链上转账只入账一次', () => {
+  const s = createProduct(now, demoAddress('me'))
+  const once = transition(s, { type: 'deposit', amountCents: 12_345, txHash: '0xabc' }, now).state
+  assert.equal(once.usdt, s.usdt + 12_345)
+  assert.equal(once.records[0].kind, 'deposit')
+  assert.equal(once.records[0].currency, 'usdt')
+  assert.equal(transition(once, { type: 'deposit', amountCents: 12_345, txHash: '0xabc' }, now).state.usdt, once.usdt)
+  assert.equal(transition(s, { type: 'deposit', amountCents: 0, txHash: '0xdef' }, now).state.usdt, s.usdt)
+})

@@ -102,10 +102,18 @@ export const PAGES: Record<string, string> = {
   '暂扣中的蟠桃': 'Peaches On Hold', '暂扣合计': 'Total on hold', '一共暂扣': 'Total on hold', '现在没有暂扣的蟠桃': 'Nothing on hold right now', '没有暂扣': 'Nothing on hold', '点召唤时会暂扣召唤蟠桃，在这里可以看到每一笔。': 'Summon fees are held when you tap Summon. Each one is listed here.',
   '暂扣规则': 'Hold rules', '暂扣的蟠桃会怎样': 'What happens to held Peaches', '召唤失败：全额退还。': 'No match: fully refunded.', '悟空进猴舍：正式扣除。': 'Wukong moves in: charged.', '召唤成功却逾期未支付：全部转给传承人，不退还。': 'Matched but payment missed: goes to the keeper.', '全部资产明细': 'All Activity',
   // ── 资产 ──
-  '充值': 'Deposit', '我的资产': 'My Assets', '操作': 'Actions', '充值 USDT': 'Deposit USDT', '充值通道即将开放，开放后会在通知里告诉你。': "Deposits are coming soon. We'll notify you.",
+  '充值': 'Deposit', '我的资产': 'My Assets', '操作': 'Actions', '充值 USDT': 'Deposit USDT',
   '转哪种资产': 'Asset', '转账资产': 'Asset', '对方钱包地址': 'Recipient address', '0x 开头的钱包地址': '0x… wallet address', '转账数量': 'Amount', '请核对：向': 'Sending to', '转出': ':', '（北京时间）系统自动匹配': ' (UTC+8) auto-match', '。转出后无法撤回。': '. This cannot be undone.',
   '确认无误，转出': 'Send', '返回修改': 'Edit', '购买数量': 'Amount', '→ 到账': '→ You get', '确认购买': 'Buy', '最近记录': 'Recent', '暂无记录': 'No activity', '充值、转账和购买蟠桃的记录会显示在这里。': 'Deposits, transfers and purchases show up here.',
   '承接人逾期未支付 · 次日优先匹配': 'Successor overdue · Priority tomorrow', '对方暂扣的召唤蟠桃已转给你；这只悟空次日优先匹配新的承接人，到时会再通知你。': "Their summon fee is yours. Your Wukong gets priority matching tomorrow — we'll notify you.", '查看资产明细': 'View Activity',
+  // 充值
+  '钱包 USDT 余额 · BSC': 'Wallet USDT · BSC','钱包确认': 'Wallet',  '链上确认': 'On-chain', '到账': 'Credited', '刷新钱包余额': 'Refresh wallet balance', '充值数量': 'Amount', '钱包里的 USDT 不够这个数量。': 'Not enough USDT in your wallet.',
+  'USDT 从你的钱包直接转入平台，链上确认后到账。需要钱包里有少量 BNB 作为矿工费。': 'USDT moves straight from your wallet to the app and is credited once confirmed on-chain. Keep a little BNB for gas.',
+  '充值进度': 'Deposit progress', '请在钱包里确认这笔转账…': 'Confirm the transfer in your wallet…', '已发出，等待链上确认…': 'Sent. Waiting for confirmation…', '充值中…': 'Depositing…',
+  '演示流程：充值通道接入前，不会动用你钱包里的资产，余额为演示数字。': 'Demo flow: until deposits go live, nothing leaves your wallet and the balance shown is a sample.',
+  '没能读取钱包余额，请重试。': "Couldn't read your wallet balance. Try again.", '充值失败，请重试。': 'Deposit failed. Try again.', '你取消了切换网络。': 'Network switch cancelled.', '请先在钱包里切换到 BSC 网络。': 'Switch your wallet to BSC first.', '请先在钱包里添加并切换到 BSC 网络。': 'Add BSC to your wallet and switch to it first.',
+  '你在钱包里取消了这笔充值。': 'You cancelled this deposit.', '充值没有发出：请确认钱包里有足够的 USDT 和少量 BNB 作为矿工费。': "Deposit not sent. Check you have enough USDT and a little BNB for gas.", '这笔充值在链上失败了，USDT 没有转出。': 'The deposit failed on-chain. No USDT left your wallet.',
+  '链上确认超时。转账可能仍在处理，到账后余额会更新；如长时间未到账请联系客服。': 'Confirmation timed out. It may still be processing — contact support if it does not arrive.',
   // 补充
   '每日北京时间 11:00—17:00，': 'Daily 11:00–17:00 (UTC+8), ', '七': 'seven', '前六': 'six', '阶段依次召唤匹配': ' realms match in turn',
   '我的往期召唤 ·': 'Past summons ·', '修炼周期': 'Cycle',
@@ -158,6 +166,7 @@ export const PAGES_PATTERNS: [string, string | ((m: RegExpMatchArray) => string)
   ['共 (\\d+) 条传承记录', '$1 records'], ['(.+?)结缘 · 传承 (.+)', 'Summoned $1 · Passed on $2'], [`暂无${NAME}?传承记录`, 'No records yet'], [`修炼增长（\\+${N}%）`, 'Growth (+$1%)'], [`平台手续费（修炼增长的 ${N}%）`, 'Fee ($1% of growth)'], ['(.+?) · 结缘', '$1 · Summoned'],
   ['承接人在 (\\d+) 小时内未完成支付结算，这笔交易已作废', 'The successor did not pay within $1h. This trade is void.'],
   ['预计 (.+?) 随下一轮召唤匹配', 'Match expected $1'], ['预计 (.+?) 匹配', 'Match expected $1'],
+  ['钱包 USDT 余额 · (.+)', 'Wallet USDT · $1'], ['充值到账 ([\\d.,]+) USDT。?', 'Deposited $1 USDT'], ['从钱包 (.+?) 充值 ([\\d.,]+) USDT（BSC）(；演示，未发生真实转账)?。', (m) => `Deposited ${m[2]} USDT from ${m[1]} (BSC)${m[3] ? ' — demo, no real transfer' : ''}.`],
   // 交易
   ['(.+?) · 匹配于 (.+?)（北京时间）', '$1 · Matched $2 (UTC+8)'], ['(传承人|承接人)钱包地址', '$1 wallet'],
   [`立即支付 ${N} USDT`, 'Pay $1 USDT'], [`确认已收到 ${N} USDT`, 'Confirm $1 USDT'], ['已支付，等待传承人核实到账并确认。确认后 (.+?) 自动进入猴舍。', 'Paid. Once the keeper confirms, $1 moves into the Den.'],

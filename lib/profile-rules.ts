@@ -17,7 +17,7 @@ export function rewardParts(profitCents: number, generation: number, level: numb
 export const generationName = (generation: number) => generation === 1 ? '同行者' : '部族成员'
 export const shortUid = (id: string) => `${id.slice(0, 8)}…`
 export const profileTime = (time: string) => new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(time))
-export const LEDGER_LABELS: Record<string, string> = { welcome: '新手赠送', summon: '召唤成功', adopt: '历史契约', contract: '历史契约', cycle: '修炼消耗', inherit: '传承所得', overdue_comp: '逾期补偿', summon_lock: '召唤暂扣', summon_return: '召唤退还', companion: '同行奖励', tribe: '部族奖励', recharge: '购买蟠桃', buy_pay: '购买蟠桃支付', summon_pay: '修炼值支付', summon_forfeit: '逾期违约', transfer_out: '转账', transfer_in: '收到转账' }
+export const LEDGER_LABELS: Record<string, string> = { welcome: '新手赠送', summon: '召唤成功', adopt: '历史契约', contract: '历史契约', cycle: '修炼消耗', inherit: '传承所得', deposit: '充值', overdue_comp: '逾期补偿', summon_lock: '召唤暂扣', summon_return: '召唤退还', companion: '同行奖励', tribe: '部族奖励', recharge: '购买蟠桃', buy_pay: '购买蟠桃支付', summon_pay: '修炼值支付', summon_forfeit: '逾期违约', transfer_out: '转账', transfer_in: '收到转账' }
 export type ProfileSummary = {
   inviteCode: string; companions: number; members: number; level: number;
   companionCents: number; tribeCents: number; todayCents: number; totalCents: number;
