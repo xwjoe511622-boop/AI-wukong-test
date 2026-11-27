@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import { Languages } from 'lucide-react'
 import { HAS_ZH, LANG_KEY, detectLang, translate, type Lang } from '@/lib/i18n'
 
 const Context = createContext<{ lang: Lang; setLang: (lang: Lang) => void }>({ lang: 'zh', setLang: () => {} })
@@ -77,8 +78,9 @@ export function LangProvider({ children }: { children: ReactNode }) {
   return <Context.Provider value={{ lang, setLang }}>{children}</Context.Provider>
 }
 
-/** 语言切换：中 / EN */
-export function LangSwitch({ className = '' }: { className?: string }) {
+/** 语言切换：和钱包、铃铛同款的圆形图标按钮，点一下在中文和英文之间切换 */
+export function LangSwitch({ label = false }: { label?: boolean }) {
   const { lang, setLang } = useLang()
-  return <button type="button" data-no-i18n onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')} aria-label={lang === 'zh' ? 'Switch to English' : '切换到中文'} className={`lang-switch ${className}`}><span className={lang === 'zh' ? 'is-on' : ''}>中</span><i aria-hidden>/</i><span className={lang === 'en' ? 'is-on' : ''}>EN</span></button>
+  const button = <button type="button" data-no-i18n onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')} aria-label={lang === 'zh' ? 'Switch to English' : '切换到中文'} className="notice-bell lang-icon"><Languages className="size-[18px]" aria-hidden /></button>
+  return label ? <span data-no-i18n className="flex items-center gap-2.5 text-sm text-[var(--gold-100)]">{lang === 'zh' ? '中文' : 'English'}{button}</span> : button
 }

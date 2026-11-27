@@ -1241,9 +1241,8 @@ button.relation-stat[aria-pressed=true] { border-color: #ffcf5c; background: #ff
 .realm-facts dd .unit { font-size: .62em; }
 
 /* ═══ 英文 ═══ */
-.lang-switch { display: inline-flex; align-items: center; gap: 3px; height: 36px; padding: 0 11px; border-radius: 999px; border: 1.5px solid transparent; background: radial-gradient(circle at 50% 30%, #4a3513, #171008 72%) padding-box, linear-gradient(160deg, #ffe7a3, #b9862c 45%, #6b4a14 70%, #f3c969) border-box; font-size: 12px; color: #8f8778; box-shadow: 0 0 0 2px #0b0906, 0 4px 12px #000a; }
-.lang-switch .is-on { font-weight: 700; color: #ffd98a; }
-.lang-switch i { font-style: normal; color: #6b6557; }
+.notice-bell.lang-icon { position: relative; top: auto; right: auto; }
+.notice-bell.lang-icon svg { fill: none; }
 /* 导航图标：盖住图里的中文 */
 .nav-en { position: absolute; left: 12%; right: 12%; bottom: 13%; display: flex; align-items: center; justify-content: center; height: 19%; border-radius: 4px; background: linear-gradient(180deg, #1c150b, #0d0a06); font-family: 'Cinzel', serif; font-size: clamp(9px, 2.9vw, 12px); font-weight: 700; letter-spacing: .04em; color: #e9cf9f; box-shadow: inset 0 0 0 1px #c59b5266; }
 a[aria-current=page] .nav-en { color: #ffe39a; box-shadow: inset 0 0 0 1px #ffcf5c, 0 0 8px #ffcf5c66; }
