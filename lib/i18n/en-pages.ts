@@ -77,7 +77,7 @@ export const PAGES: Record<string, string> = {
   '修炼值': 'Value', '修炼进度': 'Progress', '今日还没修炼': 'Not trained today', '还没修炼': 'Not trained yet', '今日已修炼': 'Trained today', '已修炼': 'Trained',
   '按住不放，运功完成才算；过了今天不能补。': 'Hold until it completes. No make-ups after today.', '按住不放，运功完成才算；修炼周期结束后不能补。': 'Hold until it completes. No make-ups after the cycle.',
   '· 本次消耗': '· Cost', '· 明天记得再来': '· Come back tomorrow', '传承中 · 已匹配承接人，等待对方支付': 'Passing on · Awaiting payment', '· 查看交易': '· View trade', '承接人已支付 · 去确认收款': 'Confirm Receipt',
-  '修炼手记': 'Training log', '修炼详情': 'Details', '已消耗修炼蟠桃': 'Peaches spent', '猴舍尚无悟空': 'No Wukong yet', '对应悟空': 'Wukong', '前往召唤': 'Summon',
+  '修炼手记': 'Training log', '修炼详情': 'Details', '已消耗修炼蟠桃': 'Peaches spent', '猴舍尚无悟空': 'No Wukong yet', '对应悟空': 'Wukong',
   '按悟空类型筛选历史': 'Filter by type', '传承完成 · 已到账': 'Passed on · Paid out', '传承完成并确认收款后，可以在这里查看。': 'Completed pass-ons show up here.', '返回猴舍': 'Back to Den',
   '关闭结算弹窗': 'Close', '修炼值不参与平台手续费；结算以 USDT 计，确认后转入 USDT 余额；已消耗的召唤与修炼蟠桃不退还。确认后本次传承归档至传承历史。': 'The fee applies to growth only. Payout is in USDT and goes to your balance once confirmed. Peaches already spent are not refunded.',
   '确认支付': 'Confirm', '稍后再看': 'Later', '正在开启修炼之境…': 'Opening the hall…',
