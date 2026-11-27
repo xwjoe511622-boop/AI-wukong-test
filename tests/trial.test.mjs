@@ -21,7 +21,7 @@ test('体验版：赠送 1000 蟠桃和 10000 USDT、七阶段全部开放、时
   assert.equal(initial.balance, 100_000)
   assert.equal(initial.usdt, 1_000_000)
   assert.ok(LEVELS.every(l => l.isOpen && l.runDays === 1))
-  assert.deepEqual(LEVELS.map(l => l.cycleDays), [1, 3, 5, 8, 12, 15, 20])
+  assert.deepEqual(LEVELS.map(l => l.cycleDays), [1, 3, 5, 8, 11, 15, 20])
   assert.ok(Object.values(RULES).every(r => r.days === 1))
   // 不预置悟空和成员，也没有任何额外加速
   assert.equal(initial.contracts.length, 0)
@@ -124,10 +124,10 @@ test('用 USDT 购买蟠桃：1蟠桃 = 1 USDT，分别记账；USDT 不足或�
 })
 test('体验版只是时间加速：各阶段蟠桃消耗与正式版相同', () => {
   const { runCost } = require('../lib/game-data.ts')
-  assert.deepEqual(LEVELS.map(runCost), [0.2, 2, 7.5, 21, 85, 200, 400])
+  assert.deepEqual(LEVELS.map(runCost), [0.2, 2, 7.5, 21, 80, 200, 400])
   // 一次修炼扣满正式周期的修炼蟠桃；显示时按正式天数换算
   assert.deepEqual(LEVELS.map(l => RULES[l.id].daily / 100), LEVELS.map(l => l.perCycleCost * l.cycleDays))
-  assert.deepEqual(LEVELS.map(l => RULES[l.id].dayFactor), [1, 3, 5, 8, 12, 15, 20])
+  assert.deepEqual(LEVELS.map(l => RULES[l.id].dayFactor), [1, 3, 5, 8, 11, 15, 20])
   assert.equal(LEVELS[0].notes, undefined)
 })
 test('有效用户：未达标成员不产生奖励，自己未达标不能拿奖励，且都不补发', () => {
