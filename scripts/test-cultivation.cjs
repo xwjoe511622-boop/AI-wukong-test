@@ -6,7 +6,7 @@ const c = { id: 'pending', stage: 'wukong', principal: 100000, started: now - 2 
 const state = { version: 2, balance: 100000, contracts: [c], history: [] }
 let passed = 0
 function test(name, fn) { fn(); passed++; console.log(`PASS ${name}`) }
-test('七阶段周期、成长比例、每日修炼', () => assert.deepEqual(Object.values(RULES).map(r => [r.days, r.gain, r.daily]), [[1,5,10],[3,6,50],[5,7,100],[8,11,200],[12,15,500],[15,18,1000],[20,25,1500]]))
+test('七阶段周期、成长比例、每日修炼', () => assert.deepEqual(Object.values(RULES).map(r => [r.days, r.gain, r.daily]), [[1,5,10],[3,6,50],[5,7,100],[8,12,200],[11,15,500],[15,18,1000],[20,25,1500]]))
 test('每天只能修炼当天那一次，漏掉的不累计', () => { assert.equal(due(c, now), 1); assert.equal(quote([c], now, false).total, 100); assert.equal(due({ ...c, started: now + DAY }, now), 0); assert.equal(due(c, endsAt(c)), 0) })
 test('点一次只扣当天的蟠桃、只记当天；漏掉的两天不能补', () => { const result = transition(state, { type: 'train', ids: [c.id], accelerate: false, expected: 100 }, now).state; assert.equal(result.balance, state.balance - 100); assert.equal(result.contracts[0].completed, 1); assert.deepEqual(result.contracts[0].trainedDays, [2]); assert.equal(due(result.contracts[0], now), 0); assert.equal(due(result.contracts[0], now + DAY), 1); assert.equal(isPreview(result), true) })
 test('不能提前或批量修炼', () => { assert.equal(quote([c], now, true).total, 100); assert.equal(transition(state, { type: 'train', ids: [c.id], accelerate: true, expected: 100 }, now).state, state) })

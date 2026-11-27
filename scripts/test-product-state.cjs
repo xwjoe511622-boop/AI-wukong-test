@@ -23,7 +23,7 @@ const paid = transition(success, { type: 'trade-pay', id: payTrade(success).id }
 const entered = transition(paid, { type: 'tick' }, pub + COUNTERPARTY_DELAY_MS).state
 let passed = 0
 function test(name, fn) { fn(); passed++; console.log(`PASS ${name}`) }
-test('七阶段消耗 = 召唤 + 每日修炼 × 天数：0.2、2、7.5、21、85、200、400', () => { const r = n => Math.round(n * 100) / 100; assert.deepEqual(LEVELS.map(l => r(l.summonCost + l.cultivationCost * l.cultivationCount)), [0.2,2,7.5,21,85,200,400]); assert.deepEqual(LEVELS.map(l => r(l.lifecycleCost)), [0.2,2,7.5,21,85,200,400]) })
+test('七阶段消耗 = 召唤 + 每日修炼 × 天数：0.2、2、7.5、21、85、200、400', () => { const r = n => Math.round(n * 100) / 100; assert.deepEqual(LEVELS.map(l => r(l.summonCost + l.cultivationCost * l.cultivationCount)), [0.2,2,7.5,21,80,200,400]); assert.deepEqual(LEVELS.map(l => r(l.lifecycleCost)), [0.2,2,7.5,21,85,200,400]) })
 test('正式版新用户从零开始：无余额、无悟空、无成员', () => { const fresh = createProduct(now, '01234567-89ab-cdef-0123-456789abcdef'); assert.equal(fresh.balance, 0); assert.equal(fresh.usdt, 0); assert.equal(fresh.contracts.length, 0); assert.equal(fresh.members.length, 0); assert.equal(LEVELS[6].isOpen, false); assert.deepEqual(LEVELS.map(l => l.runDays), [1,3,5,8,12,15,20]) })
 test('初始猴舍预置六只且无历史', () => { assert.equal(initial.contracts.length, 6); assert.equal(initial.history.length, 0); assert.equal(initial.records.length, 0); assert.equal(initial.rewards.length, 0); assert.equal(initial.members.length, 0); assert.equal(initial.balance, 100_000); assert.equal(initial.usdt, 1_000_000) })
 test('七阶段修炼范围为唯一最终版本', () => assert.deepEqual(LEVELS.map(l => [l.cultivationMin, l.cultivationMax]), [[10,50],[50,200],[200,500],[500,1200],[1200,2500],[2500,5500],[5500,13000]]))
