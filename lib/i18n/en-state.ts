@@ -6,7 +6,7 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 export const STATE: Record<string, string> = {
   '传承人已确认到账。记得每天进修炼室点修炼，没点的那天没有修炼加成。': 'Payment confirmed. Train every day — a missed day earns no growth.',
   '等待对方完成支付结算，到账后会再通知你确认收款。': "Waiting for their payment. We'll notify you when it's time to confirm.",
-  '已判定违约，暂扣的召唤蟠桃全部充公。': 'Payment missed. Your held Peaches were forfeited.',
+  '已判定违约，暂扣的召唤蟠桃全部转给传承人。': 'Payment missed. Your held Peaches went to the keeper.',
   '时间无效，请重新进入页面。': 'Something went wrong. Please reopen this page.', '仅演示：时钟已调整，不影响真实账户。': 'Demo: clock adjusted.', '演示时钟超出范围。': 'Demo clock out of range.',
   '成功': 'success', '失败': 'failure', '同行': 'Ally', '部族': 'Clan',
   '演示部族已载入，无需重复添加。': 'Demo clan already loaded.', '示例成员都已完成过传承。': 'All demo members have already passed on.', '请先载入演示部族。': 'Load the demo clan first.', '该成员的演示传承已结算，不会重复发奖。': 'Already settled for this member.',
@@ -39,6 +39,10 @@ export const STATE: Record<string, string> = {
   'AI WUKONG 登录签名': 'AI WUKONG sign-in', '本次签名只用于登录验证，不会发起任何交易，也不消耗矿工费。': 'This signature only signs you in. It does not start a transaction or cost any gas.',
 }
 export const STATE_PATTERNS: [string, string | ((m: RegExpMatchArray) => string)][] = [
+  [`(.+?)传承：承接人逾期未支付，对方暂扣的召唤蟠桃 ${N} 已转给你；.+?次日优先匹配。`, "$1: successor missed payment. Their $2-Peach summon fee is yours, and your Wukong gets priority tomorrow."],
+  ['(.+?) · 承接人逾期未支付', '$1 · Successor overdue'], [`对方暂扣的 ${N} 召唤蟠桃已转给你，(.+?)次日优先匹配。`, 'Their $1-Peach summon fee is yours. $2 gets priority matching tomorrow.'], ['(.+?)次日优先匹配。', '$1 gets priority matching tomorrow.'],
+  ['(.+?) · 已优先匹配到新的承接人', '$1 · Priority match found'], ['(.+?)已优先匹配到新的承接人，等待对方完成支付结算。', '$1 got a priority match. Waiting for payment.'],
+  ['仅演示：承接人逾期未支付，.+', 'Demo: successor missed payment. Their summon fee is yours.'],
   ['钱包地址：(.+)', 'Wallet: $1'], ['域名：(.+)', 'Domain: $1'], ['随机数：(.+)', 'Nonce: $1'], ['时间：(.+)', 'Time: $1'],
   // 修炼日志里的日期：十一月二十六 → Nov 26
   ['([一二三四五六七八九十]+)月([一二三四五六七八九十]+)', m => `${MONTHS[cn(m[1]) - 1] ?? ''} ${cn(m[2])}`],
@@ -46,8 +50,8 @@ export const STATE_PATTERNS: [string, string | ((m: RegExpMatchArray) => string)
   [`传承人已确认收到修炼值 ${N} USDT，交易完成；(.+?)已进入猴舍，暂扣的召唤蟠桃正式扣除。`, 'Keeper confirmed $1 USDT. $2 moved into the Den and the summon fee was charged.'],
   ['(.+?) · 承接人已支付', '$1 · Successor paid'], [`请核实到账 ${N} USDT 后确认收款。`, 'Check that $1 USDT arrived, then confirm.'],
   ['(.+?)已匹配到承接人，等待对方完成支付结算。', '$1 matched with a successor. Waiting for payment.'],
-  [`(.+?)召唤成功后 (\\d+) 小时内未完成修炼值 ${N} USDT 的支付结算，判定逾期违约，暂扣的召唤蟠桃全部充公。`, '$1: $3 USDT was not paid within $2h. Held Peaches forfeited.'],
-  ['(.+?)逾期未支付，判定违约，暂扣的蟠桃已全部充公。', '$1: payment missed. Held Peaches forfeited.'],
+  [`(.+?)召唤成功后 (\\d+) 小时内未完成修炼值 ${N} USDT 的支付结算，判定逾期违约，暂扣的召唤蟠桃全部转给传承人。`, '$1: $3 USDT was not paid within $2h. Held Peaches go to the keeper.'],
+  ['(.+?)逾期未支付，判定违约，暂扣的蟠桃已全部转给传承人。', '$1: payment missed. Held Peaches go to the keeper.'],
   ['传承人已确认到账，(.+?)已进入猴舍。', 'Keeper confirmed. $1 moved into the Den.'], [`承接人已支付 ${N} USDT，请核实到账后确认收款。`, 'Successor paid $1 USDT. Check and confirm.'],
   ['仅演示：下一次到点模拟(.+?)，不是真实召唤结果。', 'Demo: next result will be a $1.'],
   ['已载入演示部族：.+', 'Demo clan loaded: 15 active allies, 150 active clan members — Clan Tier Ⅱ.'],
@@ -56,7 +60,7 @@ export const STATE_PATTERNS: [string, string | ((m: RegExpMatchArray) => string)
   [`成员 (.+?) 传承完成，修炼增长 ${N} USDT；(同行|部族)奖励 ${N}%，返 USDT，不扣成员的修炼增长。`, 'Member $1 passed on with $2 USDT growth. $3 reward $4%, paid in USDT.'],
   [`(.+?)召唤成功，暂扣的 ${N} 召唤蟠桃将在进猴舍时正式扣除；请在 (\\d+) 小时内完成修炼值 ${N} USDT 的支付结算。`, '$1 matched. Pay $4 USDT within $3h. The $2-Peach fee is charged on move-in.'],
   [`(.+?)召唤成功，本阶段不消耗蟠桃；请在 (\\d+) 小时内完成修炼值 ${N} USDT 的支付结算。`, '$1 matched. Pay $3 USDT within $2h.'],
-  [`请在 (\\d+) 小时内完成 ${N} USDT 的支付结算，逾期暂扣的蟠桃全部充公。`, 'Pay $2 USDT within $1h, or your held Peaches are forfeited.'],
+  [`请在 (\\d+) 小时内完成 ${N} USDT 的支付结算，逾期暂扣的蟠桃全部转给传承人。`, 'Pay $2 USDT within $1h, or your held Peaches go to the keeper.'],
   ['(.+?)召唤成功！请在 (\\d+) 小时内完成支付结算。', '$1 matched! Pay within $2h.'], ['(.+?)召唤成功', '$1 matched'], ['(.+?) · 本轮召唤未成功', '$1 · No match'],
   [`(.+?)召唤：向传承人 (.+?) 支付修炼值 ${N} USDT，等待传承人确认到账。`, '$1: paid $3 USDT to keeper $2. Awaiting confirmation.'], [`已支付 ${N} USDT，等待传承人确认到账。`, 'Paid $1 USDT. Awaiting keeper.'],
   ['(.+?) · 传承所得已到账', '$1 · Payout received'], [`${N} USDT 已转入你的 USDT 余额。`, '$1 USDT added to your balance.'],

@@ -31,7 +31,7 @@ export function ProfileLocked() {
       </Link></li>)}</ul>}
     <section className="profile-surface text-xs leading-6 text-[var(--profile-muted)]" aria-label="暂扣规则">
       <h2 className="mb-1 font-display text-sm text-[var(--gold-100)]">暂扣的蟠桃会怎样</h2>
-      <p>召唤失败：全额退还。</p><p>悟空进猴舍：正式扣除。</p><p>召唤成功却逾期未支付：全部充公，不退还。</p>
+      <p>召唤失败：全额退还。</p><p>悟空进猴舍：正式扣除。</p><p>召唤成功却逾期未支付：全部转给传承人，不退还。</p>
     </section>
     <ProfileButtonLink href="/me/ledger" size="large" secondary>全部资产明细</ProfileButtonLink>
   </div>

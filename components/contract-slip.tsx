@@ -9,7 +9,7 @@ import { useCultivationPreview } from './cultivation-preview-provider'
 import { PeachValue, UsdtValue } from './peach-value'
 import { cycleText } from '@/lib/game-data'
 import { durationText } from '@/lib/summon-preview'
-import { nextMatchAfter } from '@/lib/trade'
+import { liveTradeFor, nextMatchAfter } from '@/lib/trade'
 import { useProduct } from './product-provider'
 import { useSound } from '@/lib/sound'
 import { HoldButton } from './hold-button'
@@ -22,7 +22,10 @@ function countdown(ms: number) {
 /** 同类型角色以召唤日期、修炼值和进度区分，不显示编号。 */
 export function ContractSlip({ contract: c }: { contract: Contract }) {
   const { now, act, state } = useCultivationPreview()
-  const trade = useProduct().state?.trades.find(t => t.contractId === c.id)
+  const trades = useProduct().state?.trades ?? []
+  const trade = liveTradeFor(trades, c.id)
+  // 上一位承接人逾期未支付：召唤蟠桃已转给我，次日优先匹配
+  const missed = trades.some(t => t.contractId === c.id && t.status === 'overdue')
   const rule = RULES[c.stage]
   const status = phase(c, now)
   const p = progress(c, now)
@@ -74,7 +77,7 @@ export function ContractSlip({ contract: c }: { contract: Contract }) {
         <p className={`text-center text-[12px] leading-5 ${short ? 'text-[#f0a58a]' : 'text-stone-400'}`}>{short ? <>蟠桃不足，<Link href="/me/wallet?mode=buy" className="underline underline-offset-2">去购买蟠桃</Link></> : rule.days > 1 ? '按住不放，运功完成才算；过了今天不能补。' : '按住不放，运功完成才算；修炼周期结束后不能补。'}</p>
       </> : <p className="rounded-lg border border-[var(--gold-600)]/30 bg-black/30 py-2.5 text-center text-xs text-[var(--gold-100)]"><span className="inline-flex flex-wrap items-center justify-center gap-1">{rule.days > 1 ? '今日已修炼' : '已修炼'} ✓{rule.daily > 0 && <> · 本次消耗 <PeachValue cents={rule.daily} size="sm" /></>}</span>{rule.days > 1 && run > 1 ? ` · 已连续修炼 ${shownDays(c.stage, run)} 天` : ''}{rule.days > 1 && current < rule.days - 1 ? ' · 明天记得再来' : ''}</p>)}
       {status === '传承中' && (trade ? <Link href={`/me/trades/${encodeURIComponent(trade.id)}`} className="flex flex-col items-center gap-1 text-center text-xs text-[var(--gold-200)]"><span className="flex items-center gap-2"><Hourglass className="size-4" aria-hidden />传承中 · 已匹配承接人，等待对方支付</span><span className="text-[12px] text-stone-400">支付剩余 <span className="num text-[var(--gold-100)]">{durationText(Math.max(0, trade.deadline - now))}</span> · 查看交易</span></Link>
-        : <p className="flex flex-col items-center gap-1 text-center text-xs text-[var(--gold-200)]"><span className="flex items-center gap-2"><Hourglass className="size-4" aria-hidden />传承中 · 等待下一轮召唤匹配承接人</span><span className="text-[12px] text-stone-400">预计 {dateTime(nextMatchAfter(c.stage, Math.max(endsAt(c), now)))} 匹配</span></p>)}
+        : <p className="flex flex-col items-center gap-1 text-center text-xs text-[var(--gold-200)]"><span className="flex items-center gap-2"><Hourglass className="size-4" aria-hidden />{missed ? '承接人逾期未支付 · 次日优先匹配' : '传承中 · 等待下一轮召唤匹配承接人'}</span><span className="text-[12px] text-stone-400">预计 {dateTime(nextMatchAfter(c.stage, Math.max(endsAt(c), now)))} 匹配</span></p>)}
       {status === '传承完成' && trade && <Link href={`/me/trades/${encodeURIComponent(trade.id)}`} className="cultivation-primary flex w-full items-center justify-center">承接人已支付 · 去确认收款</Link>}
 
       <section aria-label="修炼手记" className="border-t border-[var(--gold-600)]/25 pt-3">

@@ -30,7 +30,7 @@ export const TRIBE_REWARD = {
   level2: { direct: 15, members: 150, rate: 3 },
   level3: { direct: 30, members: 300, rate: 5 },
 } as const
-/** 支付期：召唤成功后 1 小时内完成支付结算；逾期判定违约，暂扣的召唤蟠桃全部充公 */
+/** 支付期：召唤成功后 1 小时内完成支付结算；逾期判定违约，暂扣的召唤蟠桃全部转给传承人，传承人的悟空次日优先匹配 */
 export const PAYMENT_WINDOW_HOURS = 1
 
 export interface WukongLevel {

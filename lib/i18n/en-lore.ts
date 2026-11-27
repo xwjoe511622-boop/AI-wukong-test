@@ -40,7 +40,7 @@ export const LORE: Record<string, string> = {
   '可在「我的资产」用 USDT 购买蟠桃，也可以按钱包地址把蟠桃或 USDT 转给其他玩家（平台内转账，不走链上）。': 'Buy Peaches with USDT in My Assets, or send Peaches or USDT to another player by wallet address (in-app, not on-chain).',
   '七阶段召唤参数': 'Costs by stage', '召唤消耗': 'Summon fee', '阶段消耗 = 召唤 +（每日修炼 × 修炼天数）。以上不含修炼值（USDT）及传承平台手续费。': 'Stage cost = summon fee + (daily training × days). Excludes value (USDT) and the platform fee.',
   '蟠桃使用规则': 'Peach rules', '玩家通过蟠桃参与AI悟空召唤。': 'You summon with Peaches.', '每次召唤按照所属阶段计算蟠桃消耗。': 'Each stage has its own fee.', '召唤蟠桃在点召唤时暂扣，悟空进猴舍时正式扣除。': 'The fee is held on Summon and charged on move-in.',
-  '修炼蟠桃每天点修炼时扣当天的；当天没点就没有当天的修炼加成，不能补。': "Training is charged per day trained. Miss a day and that day's growth is gone.", '召唤失败，暂扣的蟠桃全额退还。': 'No match: fully refunded.', '召唤成功却逾期未支付，暂扣的召唤蟠桃全部充公，不予退还。': 'Matched but payment missed: the fee is forfeited.',
+  '修炼蟠桃每天点修炼时扣当天的；当天没点就没有当天的修炼加成，不能补。': "Training is charged per day trained. Miss a day and that day's growth is gone.", '召唤失败，暂扣的蟠桃全额退还。': 'No match: fully refunded.', '召唤成功却逾期未支付，暂扣的召唤蟠桃全部转给传承人，不予退还。': 'Matched but payment missed: the fee goes to the keeper.',
   // 路线图章节
   '路线图｜从一只悟空，到神话智能体世界': 'Roadmap | From one Wukong to a world of mythic agents', '悟空，只是第一个被唤醒的神话。': 'Wukong is only the first legend to wake.', '云海中的东方神话世界': 'A world of Eastern legend above the clouds',
   '神话不属于过去。': 'Legends do not belong to the past.', '它属于每一个愿意让它继续下去的人。': 'They belong to everyone willing to carry them on.', '标注「规划」「远景」的内容是发展方向，具体功能与开放时间以实际上线为准。': 'Items marked Planned or Vision show direction. Features and timing may change.',
@@ -75,7 +75,7 @@ export const LORE_PATTERNS: [string, string | ((m: RegExpMatchArray) => string)]
   ['智能：(.+)', 'Intelligence: $1'], ['七种不同难度、周期与成长幅度的修炼世界(.*)', 'Seven worlds, each with its own difficulty, cycle and growth$1'], [`修炼加成 \\+${N}%`, 'Growth +$1%'], ['探索(.+?) →', 'Explore $1 →'],
   ['统一计量：(.+)', 'Rate: $1'], ['修炼（每天）× (\\d+)天', 'Training (daily) × $1d'],
   ['承接人为支付方：收到交易通知后，系统自动启动 (\\d+) 小时支付倒计时，.+', 'The successor pays: once notified, a $1h countdown starts and payment comes from your USDT balance. The keeper receives: check the amount and confirm without delay. For disputes, contact support — platform records are final.'],
-  ['召唤成功后超过 (\\d+) 小时仍未完成支付结算，系统判定为逾期违约：.+', 'If payment is not made within $1h of a match, the summon fee is forfeited and the miss is recorded.'],
+  ['召唤成功后超过 (\\d+) 小时仍未完成支付结算，系统判定为逾期违约：.+', "If payment is not made within $1h of a match, the successor's summon fee goes to the keeper and the miss is recorded. The keeper's Wukong gets priority matching the next day."],
   ['七阶段修炼天数各不相同：(.+?)。', 'Each stage has its own cycle: $1.'], ['(石灵|灵猴|悟空|斗战悟空|齐天大圣|天命大圣|无极大圣) (\\d+) 天', '$1 $2d'], ['(.+?) · 修炼蟠桃', '$1 · Training Peaches'], ['天，共', 'd, total'],
   ['从召唤成功那一刻起算，修炼天数走完即进入传承，.+?例如(.+?)修炼 (\\d+) 天，第 (\\d+) 天结束后进入传承。', 'The cycle starts at the match and cannot be shortened or sped up. Growth counts only the days you trained. Example: $1 trains for $2d and passes on after day $3.'],
   [`平台手续费 · 修炼增长的 ${N}%`, 'Platform fee · $1% of growth'], [`平台仅收实际修炼增长的${N}%，不对修炼值收费。.+`, 'The platform takes $1% of real growth only. Payout = value + growth − fee, in USDT.'],

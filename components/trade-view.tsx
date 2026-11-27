@@ -37,7 +37,7 @@ export function TradeView({ id }: { id: string }) {
       <p className="text-xs text-[var(--profile-muted)]">{payer ? '应支付修炼值' : '本次传承应收'}</p>
       <UsdtValue cents={trade.amountCents} size="xl" className="mt-2" />
       {trade.status === 'awaiting_payment' && <p className="mt-3 text-xs text-[var(--profile-muted)]">{payer ? '支付剩余时间' : '承接人支付剩余时间'}　<Countdown ms={left} /></p>}
-      {payer && trade.status === 'awaiting_payment' && <p className="mt-2 text-[12px] leading-5 text-[#f0b49a]">超过 {PAYMENT_WINDOW_HOURS} 小时未支付判定逾期违约，暂扣的召唤蟠桃全部充公、不予退还。</p>}
+      {payer && trade.status === 'awaiting_payment' && <p className="mt-2 text-[12px] leading-5 text-[#f0b49a]">超过 {PAYMENT_WINDOW_HOURS} 小时未支付判定逾期违约，暂扣的召唤蟠桃全部转给传承人、不予退还。</p>}
     </section>
 
     <section className="profile-surface"><h2 className="profile-heading mb-3">交易进度</h2><TradeSteps trade={trade} /></section>
@@ -74,9 +74,14 @@ export function TradeView({ id }: { id: string }) {
       <p className="text-sm text-[var(--gold-100)]">{payer ? `交易完成，${level.name}已进入猴舍` : `传承完成，${money(trade.amountCents)} USDT 已转入 USDT 余额`}</p>
       <div className="mt-3 flex justify-center">{payer ? <Link href={`/house/room/${trade.stage}`} className="btn-gold profile-button inline-flex items-center justify-center">进入猴舍修炼</Link> : <Link href="/house/history" className="btn-ghost-gold profile-button inline-flex items-center justify-center">查看传承历史</Link>}</div>
     </section>}
-    {trade.status === 'overdue' && <section className="profile-surface text-center">
+    {trade.status === 'overdue' && trade.role === 'receiver' && <section className="profile-surface text-center">
+      <p className="text-sm text-[#f0b49a]">承接人在 {PAYMENT_WINDOW_HOURS} 小时内未完成支付结算，这笔交易已作废</p>
+      <p className="mt-2 text-xs leading-6 text-[var(--profile-muted)]">对方暂扣的召唤蟠桃已转给你；这只悟空次日优先匹配新的承接人，到时会再通知你。</p>
+      <div className="mt-3 flex justify-center"><Link href="/me/ledger" className="btn-ghost-gold profile-button inline-flex items-center justify-center">查看资产明细</Link></div>
+    </section>}
+    {trade.status === 'overdue' && trade.role === 'payer' && <section className="profile-surface text-center">
       <p className="text-sm text-[#f0b49a]">召唤成功后 {PAYMENT_WINDOW_HOURS} 小时内未完成支付结算，判定逾期违约</p>
-      <p className="mt-2 text-xs leading-6 text-[var(--profile-muted)]">暂扣的召唤蟠桃已全部充公，不予退还，系统保留违约记录。可继续参与后续召唤。</p>
+      <p className="mt-2 text-xs leading-6 text-[var(--profile-muted)]">暂扣的召唤蟠桃已全部转给传承人，不予退还，系统保留违约记录。可继续参与后续召唤。</p>
       <div className="mt-3 flex justify-center"><Link href="/world" className="btn-ghost-gold profile-button inline-flex items-center justify-center">返回召唤</Link></div>
     </section>}
 

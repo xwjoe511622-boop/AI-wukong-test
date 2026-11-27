@@ -37,7 +37,7 @@ export function SummonPreviewConfirm({ level, cost, balance, usdt, expired, onCl
       <div><dt>召唤 · 现在暂扣</dt><dd><PeachValue cents={lock} size="sm" /></dd></div>
       <div><dt>修炼 · 进猴舍后每天点修炼时扣</dt><dd className="flex items-center gap-1 text-sm text-[var(--gold-100)]">每日 <PeachValue cents={Math.round(level.perCycleCost * 100)} size="sm" /> × {level.cycleDays} 天</dd></div>
     </dl> : <p className="text-xs text-[var(--gold-200)]">本阶段召唤与修炼均不消耗蟠桃。</p>}
-    {!!level.lifecycleCost && <p className="mt-2 text-xs leading-5 text-[var(--gold-200)]/80">修炼要每天自己点：当天没点，就没有当天的修炼加成，过后不能补；一天都没点，按原修炼值传承。召唤成功却逾期未支付，暂扣的召唤蟠桃全部充公。</p>}
+    {!!level.lifecycleCost && <p className="mt-2 text-xs leading-5 text-[var(--gold-200)]/80">修炼要每天自己点：当天没点，就没有当天的修炼加成，过后不能补；一天都没点，按原修炼值传承。召唤成功却逾期未支付，暂扣的召唤蟠桃全部转给传承人。</p>}
 
     <h3 className="confirm-heading">我的余额</h3>
     <dl className="cultivation-facts"><div><dt>蟠桃</dt><dd><PeachValue cents={balance} size="sm" muted /></dd></div><div><dt>USDT</dt><dd><UsdtValue cents={usdt} size="sm" muted /></dd></div></dl>

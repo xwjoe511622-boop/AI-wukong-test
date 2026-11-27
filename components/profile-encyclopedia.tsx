@@ -69,7 +69,7 @@ export function ProfileEncyclopedia() {
       <div className="flex flex-col gap-4">{LEVELS.map(l => <div key={l.id} className="border-t border-[var(--gold-600)]/25 pt-3"><div className="flex items-center justify-between gap-2"><h4 className="text-sm text-[var(--gold-100)]">{l.name} · {l.realm}</h4><PeachValue cents={Math.round(l.lifecycleCost * 100)} size="sm" /></div><dl className="mt-3 grid grid-cols-2 gap-2 text-[12px]"><div><dt>召唤消耗</dt><dd><PeachValue cents={Math.round(l.summonCost*100)} size="xs" /></dd></div><div><dt>修炼（每天）× {l.cycleDays}天</dt><dd><PeachValue cents={Math.round(l.perCycleCost*100)} size="xs" /></dd></div></dl></div>)}</div>
       <p className="text-[12px] text-stone-400">阶段消耗 = 召唤 +（每日修炼 × 修炼天数）。以上不含修炼值（USDT）及传承平台手续费。</p>
       <h3 className="font-display text-base text-[var(--gold-100)]">蟠桃使用规则</h3>
-      <ol className="flex list-decimal flex-col gap-1 pl-5 text-xs leading-6">{['玩家通过蟠桃参与AI悟空召唤。', '每次召唤按照所属阶段计算蟠桃消耗。', '召唤蟠桃在点召唤时暂扣，悟空进猴舍时正式扣除。', '修炼蟠桃每天点修炼时扣当天的；当天没点就没有当天的修炼加成，不能补。', '召唤失败，暂扣的蟠桃全额退还。', `${PEACH_UNIT_TEXT}。`, '召唤成功却逾期未支付，暂扣的召唤蟠桃全部充公，不予退还。'].map(rule => <li key={rule}>{rule}</li>)}</ol>
+      <ol className="flex list-decimal flex-col gap-1 pl-5 text-xs leading-6">{['玩家通过蟠桃参与AI悟空召唤。', '每次召唤按照所属阶段计算蟠桃消耗。', '召唤蟠桃在点召唤时暂扣，悟空进猴舍时正式扣除。', '修炼蟠桃每天点修炼时扣当天的；当天没点就没有当天的修炼加成，不能补。', '召唤失败，暂扣的蟠桃全额退还。', `${PEACH_UNIT_TEXT}。`, '召唤成功却逾期未支付，暂扣的召唤蟠桃全部转给传承人，不予退还。'].map(rule => <li key={rule}>{rule}</li>)}</ol>
     </LoreChapter>
     <EncyclopediaJourney />
     <LoreChapter id="future" number="13" title="路线图｜从一只悟空，到神话智能体世界" subtitle="悟空，只是第一个被唤醒的神话。">

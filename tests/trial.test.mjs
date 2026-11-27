@@ -73,7 +73,7 @@ test('体验版：第七阶段召唤暂扣 100 蟠桃；进猴舍后点一次修
   assert.equal(s.usdt, initial.usdt - 550_000 + 550_000 + 137_500 - 4_125)
   assert.equal(s.balance, initial.balance - 40_000)
 })
-test('USDT 余额不足以结算，1 小时后判定逾期违约，暂扣的召唤蟠桃全部充公', () => {
+test('USDT 余额不足以结算，1 小时后判定逾期违约，暂扣的召唤蟠桃全部转给传承人', () => {
   const round = roundFor('infinite_sage', now)
   const pub = matchAt({ key: round.key, deadline: round.deadline })
   let s = transition(initial, { type: 'summon', action: { type: 'join', stage: 'infinite_sage', now } }, now).state
@@ -150,4 +150,31 @@ test('有效用户：未达标成员不产生奖励，自己未达标不能拿�
   const ok = transition({ ...team, balance: 5_000 }, { type: 'demo-reward', generation: 1 }, now).state
   assert.equal(ok.rewards.length, 2)
   assert.ok(ok.usdt > team.usdt)
+})
+
+test('我是传承人、承接人逾期未支付：对方的召唤蟠桃转给我，悟空次日优先匹配', () => {
+  const round = roundFor('wukong', now)
+  const pub = matchAt({ key: round.key, deadline: round.deadline })
+  let s = transition(initial, { type: 'summon', action: { type: 'join', stage: 'wukong', now } }, now).state
+  s = transition(s, { type: 'tick' }, pub + 15_000).state
+  s = payAndEnter(s, pub)
+  const c = s.contracts.find(item => item.id.startsWith('summon-'))
+  const matched = nextMatchAfter('wukong', pub + DAY)
+  s = transition(s, { type: 'tick' }, matched + 1000).state
+  const first = s.trades.find(t => t.contractId === c.id)
+  assert.equal(first.status, 'awaiting_payment')
+  const before = s.balance
+  s = transition(s, { type: 'demo-counterparty-overdue', id: first.id }, matched + 3_600_000).state
+  // 悟空阶段的召唤蟠桃是 2.5
+  assert.equal(s.balance, before + 250)
+  assert.equal(s.trades.find(t => t.id === first.id).status, 'overdue')
+  assert.ok(s.records.some(r => r.kind === 'overdue_comp' && r.amountCents === 250))
+  // 次日同阶段这一轮重新匹配到新的承接人，之后照常支付、确认
+  const again = nextMatchAfter('wukong', matched + 3_600_000)
+  assert.ok(again > matched)
+  s = transition(parseProduct(JSON.stringify(s)), { type: 'tick' }, again + 1000).state
+  const second = s.trades.find(t => t.contractId === c.id && t.status !== 'overdue')
+  assert.ok(second && second.id !== first.id)
+  s = transition(s, { type: 'tick' }, again + COUNTERPARTY_DELAY_MS + 1000).state
+  assert.equal(s.trades.find(t => t.id === second.id).status, 'awaiting_confirm')
 })

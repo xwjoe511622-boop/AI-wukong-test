@@ -5,7 +5,7 @@ import { todayOccurrence, splitDuration } from './schedule'
 export const SUMMON_PREVIEW_KEY = 'wukong-summon-preview-v4'
 /**
  * paid = 点「召唤」时暂扣的召唤蟠桃（分）；修炼蟠桃不暂扣，进猴舍后每天点修炼时才扣。
- * 召唤失败全部退还；悟空进猴舍时正式扣除；召唤成功却逾期未支付，全部充公。
+ * 召唤失败全部退还；悟空进猴舍时正式扣除；召唤成功却逾期未支付，全部转给传承人。
  * amount = 本轮修炼值（USDT 分），不占用蟠桃
  */
 export type Entry = { key: string; stage: Stage; date: string; deadline: number; paid: number; amount?: number; enteredAt: number; /** 召唤周期内玩家点下「召唤」的时刻 */ summonedAt?: number; status: 'waiting' | 'success' | 'refunded' | 'forfeited'; settledAt?: number; adoptedAt?: number; summonFee?: number }

@@ -2,7 +2,7 @@
 
 import { Hourglass } from 'lucide-react'
 import { RULES, dateTime, endsAt, phase, settlement } from '@/lib/cultivation-preview'
-import { nextMatchAfter, pendingTrades } from '@/lib/trade'
+import { liveTradeFor, nextMatchAfter, pendingTrades } from '@/lib/trade'
 import { useProduct } from './product-provider'
 import { UsdtValue } from './peach-value'
 import { ProfileButton, ProfileEmpty, ProfilePageHeader } from './profile-ui'
@@ -15,7 +15,7 @@ export function TradeList() {
   const waiting = state.trades.filter(t => !todo.includes(t) && (t.status === 'awaiting_payment' || t.status === 'awaiting_confirm')).sort((a, b) => b.matchedAt - a.matchedAt)
   const ended = state.trades.filter(t => t.status === 'completed' || t.status === 'overdue').sort((a, b) => (b.confirmedAt ?? b.overdueAt ?? 0) - (a.confirmedAt ?? a.overdueAt ?? 0))
   // 传承中、尚未匹配到承接人的悟空
-  const matching = state.contracts.filter(c => phase(c, now) === '传承中' && !state.trades.some(t => t.contractId === c.id))
+  const matching = state.contracts.filter(c => phase(c, now) === '传承中' && !liveTradeFor(state.trades, c.id))
 
   return <div className="flex flex-col gap-5">
     <ProfilePageHeader title="我的交易" subtitle="召唤成功后向传承人支付（我是承接人），传承时等承接人支付并确认收款（我是传承人）。时间均为北京时间。" />

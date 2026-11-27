@@ -75,9 +75,11 @@ export function needsMyAction(trade: Trade) {
 export function pendingTrades(trades: Trade[]) {
   return trades.filter(needsMyAction).sort((a, b) => (a.role === 'payer' ? a.deadline : Infinity) - (b.role === 'payer' ? b.deadline : Infinity) || a.matchedAt - b.matchedAt)
 }
+/** 一只悟空当前有效的传承交易：承接人逾期的那一笔已经作废，悟空会在次日优先重新匹配 */
+export const liveTradeFor = (trades: Trade[], contractId: string) => trades.find(t => t.contractId === contractId && t.status !== 'overdue')
 export function tradeStatusText(trade: Trade) {
   if (trade.status === 'completed') return '交易完成'
-  if (trade.status === 'overdue') return '逾期未支付'
+  if (trade.status === 'overdue') return trade.role === 'payer' ? '逾期未支付' : '承接人逾期'
   if (trade.role === 'payer') return trade.status === 'awaiting_payment' ? '待我支付' : '等待传承人确认'
   return trade.status === 'awaiting_payment' ? '等待承接人支付' : '待确认收款'
 }

@@ -55,12 +55,12 @@ export const CORE: Record<string, string> = {
   // 暂扣
   '已参与召唤 · 等待匹配': 'Joined · Awaiting match', '召唤成功 · 待我支付': 'Matched · Pay now', '已支付 · 等传承人确认': 'Paid · Awaiting keeper',
   '召唤失败全额退还；召唤成功并完成支付结算、悟空进猴舍时扣除。': 'Fully refunded if the summon fails. Charged when your Wukong moves into the Den.',
-  '按时完成支付结算、传承人确认后，悟空进猴舍并扣除；逾期未支付全部充公。': 'Pay on time and it is charged once your Wukong moves in. Miss the deadline and it is forfeited.',
+  '按时完成支付结算、传承人确认后，悟空进猴舍并扣除；逾期未支付全部转给传承人。': 'Pay on time and it is charged once your Wukong moves in. Miss the deadline and it goes to the keeper.',
   '传承人确认到账后，悟空进猴舍并扣除。': 'Charged once the keeper confirms and your Wukong moves in.',
   // 部族与明细类型
   '第一代': 'Gen 1', '第二代': 'Gen 2', '更深层': 'Deeper', '部族成员': 'Clan members',
   '新手赠送': 'Welcome gift', '召唤成功': 'Summon matched', '历史契约': 'Legacy record', '修炼消耗': 'Training cost', '传承所得': 'Payout', '召唤暂扣': 'Summon hold', '召唤退还': 'Summon refund',
-  '同行奖励': 'Ally reward', '部族奖励': 'Clan reward', '购买蟠桃': 'Buy', '购买蟠桃支付': 'Peach purchase', '修炼值支付': 'Value payment', '逾期违约': 'Forfeit', '收到转账': 'Transfer in', '资产变动': 'Balance change',
+  '同行奖励': 'Ally reward', '部族奖励': 'Clan reward', '购买蟠桃': 'Buy', '购买蟠桃支付': 'Peach purchase', '修炼值支付': 'Value payment', '逾期违约': 'Forfeit', '逾期补偿': 'Overdue payout', '承接人逾期': 'Successor overdue', '收到转账': 'Transfer in', '资产变动': 'Balance change',
   '最新加入': 'Newest', '最早加入': 'Oldest', '带来奖励最多': 'Top rewards',
 }
 const NAME = '(石灵|灵猴|悟空|斗战悟空|齐天大圣|天命大圣|无极大圣)'
@@ -72,7 +72,7 @@ export const CORE_PATTERNS: [string, string | ((m: RegExpMatchArray) => string)]
   ['可召唤 · (.+)', 'Summon $1'], ['(.+?) 自动匹配', 'Matches at $1'], ['另有 (\\d+) 个仙境可召唤', '$1 more open'], ['共 (\\d+) 个在等', '$1 waiting'], ['还可召唤 (\\d+) 个', '$1 more open'], ['还可召唤 (\\d+) 个仙境', '$1 more realms open'],
   ['成功 (.+)', 'Matched: $1'], ['未成功 (\\d+) 个，蟠桃已退还', '$1 missed, refunded'],
   [`${NAME} · 待我支付`, '$1 · Pay'], ['(.+?)（共 (\\d+) 笔）', '$1 ($2 total)'], ['(.+?)（(\\d+) 笔）', '$1 ($2)'],
-  ['逾期 (\\d+) 小时未支付，暂扣的蟠桃全部充公', 'Pay within $1h or forfeit'],
+  ['逾期 (\\d+) 小时未支付，暂扣的蟠桃全部转给传承人', 'Pay within $1h or lose your fee'],
   ['已支付 · 等待传承人确认', 'Paid · Awaiting keeper'], ['确认到账后，(.+?)进入猴舍', 'Once confirmed, $1 moves into the Den'],
   ['(\\d+) 只悟空待修炼', '$1 Wukong to train'], ['需 (.+?) 蟠桃', '$1 Peaches'], ['(.+?) 修炼中', '$1 in training'],
   ['(.+?) · 确认收款', '$1 · Confirm'], ['(.+?) · 等待承接人支付', '$1 · Awaiting payment'],

@@ -101,7 +101,7 @@ export function SummonPreview({ stage }: { stage: Stage }) {
         <li>每晚 19:00（北京时间）起可以召唤次日的悟空，到次日 {level.summonStopTime} 截止。截止前点「召唤」即参与，每轮每人一次；{level.summonStartTime} 系统自动匹配并公布结果，不需要再操作。没在截止前点召唤的，不参与本轮匹配。</li>
         <li>修炼值以 USDT 计，由承接人向传承人完成支付结算；蟠桃只是召唤与修炼的消耗单位，{PEACH_UNIT_TEXT}。</li>
         <li>{free ? '本阶段不需要消耗蟠桃：召唤与修炼均不扣费。' : `蟠桃消耗：召唤 ${peachWhole(level.summonCost)}，点召唤时暂扣，召唤失败全额退还，悟空进猴舍时正式扣除；修炼每日 ${peachWhole(level.perCycleCost)}，每天点修炼时扣当天的。`}</li>
-        <li>召唤成功后，承接人须在 {PAYMENT_WINDOW_HOURS} 小时内向系统匹配的传承人完成支付结算（从 USDT 余额扣除）；传承人确认到账后，悟空进入猴舍。超过 {PAYMENT_WINDOW_HOURS} 小时未支付判定逾期违约，暂扣的召唤蟠桃全部充公、不予退还。</li>
+        <li>召唤成功后，承接人须在 {PAYMENT_WINDOW_HOURS} 小时内向系统匹配的传承人完成支付结算（从 USDT 余额扣除）；传承人确认到账后，悟空进入猴舍。超过 {PAYMENT_WINDOW_HOURS} 小时未支付判定逾期违约，暂扣的召唤蟠桃全部转给传承人、不予退还。</li>
         <li>修炼周期 {level.cycleDays} 天，从召唤成功时刻起算。需要每天进修炼室点一次「修炼」：点了扣当天的蟠桃、算当天的修炼加成；当天没点就没有当天的加成，过后不能补。周期结束后进入传承。</li>
         <li>修炼加成 +{level.gainPct}% 是每天都修炼时的总加成，按实际修炼的天数计：修炼增长 = 修炼值 × {level.gainPct}% × 已修炼天数 ÷ {level.cycleDays}。一天都没修炼，就按原修炼值传承。传承时平台只对修炼增长收取 {INHERITANCE_FEE_PCT}% 手续费，不对修炼值收费。</li>
       </ul>
