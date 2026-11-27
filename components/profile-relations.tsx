@@ -11,7 +11,7 @@ import { COMPANION_REWARD, VALID_USER_MIN_PEACH } from '@/lib/game-data'
 import { useProduct } from './product-provider'
 import { ProfileAmount, ProfileButton, ProfileButtonLink, ProfileEmpty, ProfilePageHeader, ProfilePager } from './profile-ui'
 
-const GENERATIONS = [['all', '全部'], ['1', '第一代'], ['2', '第二代'], ['3', '更深层']] as const
+const GENERATIONS = [['all', '全部'], ['1', '同行者'], ['2', '更深层']] as const
 type Section = 'companions' | 'tribe'
 const DAY = 86_400_000
 
@@ -23,22 +23,21 @@ export function ProfileRelations({ initial = 'companions' }: { initial?: Section
   const level = data?.level ?? 0
   const next = TRIBE_TIERS.find(t => t.level > level)
   const all = state?.members ?? []
-  const count = (gen: number) => all.filter(m => gen === 3 ? m.generation >= 3 : m.generation === gen).length
+  const count = (gen: number) => all.filter(m => gen === 2 ? m.generation >= 2 : m.generation === gen).length
   return <div className="flex flex-col gap-5">
-    <ProfilePageHeader title="同行与部族" subtitle={`直接邀请的是第一代，他们邀请的是第二代；所有层级合起来是你的部族。`} />
+    <ProfilePageHeader title="同行与部族" subtitle={"你直接邀请的人是同行者；同行者再邀请的人，连同更深的层级，合起来是你的部族。"} />
     {/* 整页只有一个切换：同行者 / 部族。每个板块里是自己的数据和自己的明细，不用跳来跳去 */}
     <div role="tablist" aria-label="同行者或部族" className="relation-tabs">
-      <button type="button" role="tab" aria-selected={tab === 'companions'} onClick={() => setTab('companions')}>我的同行者<small>{count(1) + count(2)}</small></button>
+      <button type="button" role="tab" aria-selected={tab === 'companions'} onClick={() => setTab('companions')}>我的同行者<small>{count(1)}</small></button>
       <button type="button" role="tab" aria-selected={tab === 'tribe'} onClick={() => setTab('tribe')}>我的部族<small>{all.length}</small></button>
     </div>
     {error ? <div role="alert" className="profile-surface"><p className="text-sm">{error.message}</p><ProfileButton onClick={() => mutate()}>重试</ProfileButton></div> : !data ? <p role="status" className="text-sm">正在读取同行关系…</p> : <>
       {tab === 'companions' && <section className="profile-surface" aria-labelledby="companions-title">
         <div className="flex items-center justify-between"><h2 id="companions-title" className="profile-heading">我的同行者</h2><Users className="size-5 text-[var(--gold-400)]" /></div>
-        <div className="mt-3 grid grid-cols-2 gap-2">{([1, 2] as const).map(gen => <div key={gen} className="relation-stat">
-          <span className="block text-[12px] text-[var(--profile-muted)]">{generationName(gen)}</span>
-          <strong className="my-1 block text-2xl tabular-nums text-[var(--gold-100)]">{count(gen)}<small className="ml-1 text-xs font-normal text-[var(--profile-muted)]">人</small></strong>
-          <span className="text-[12px] text-[var(--gold-200)]">同行奖励 {gen === 1 ? COMPANION_REWARD.generation1 : COMPANION_REWARD.generation2}%</span>
-        </div>)}</div>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <div className="relation-stat"><span className="block text-[12px] text-[var(--profile-muted)]">同行者</span><strong className="my-1 block text-2xl tabular-nums text-[var(--gold-100)]">{count(1)}<small className="ml-1 text-xs font-normal text-[var(--profile-muted)]">人</small></strong><span className="text-[12px] text-[var(--profile-muted)]">你直接邀请的人</span></div>
+          <div className="relation-stat"><span className="block text-[12px] text-[var(--profile-muted)]">同行奖励</span><strong className="my-1 block font-latin text-2xl tabular-nums text-[var(--gold-100)]">{COMPANION_REWARD.generation1}%</strong><span className="text-[12px] text-[var(--gold-200)]">同行者的修炼增长</span></div>
+        </div>
         <div className="mt-4 flex items-end justify-between gap-3 border-t border-[var(--profile-border)] pt-3"><div><p className="mb-1.5 text-[12px] text-[var(--profile-muted)]">累计同行奖励 · 返 USDT</p><ProfileAmount cents={data.companionCents} currency="usdt" /></div><ProfileButtonLink href="/me/rewards?filter=companion" size="small" secondary>同行奖励明细</ProfileButtonLink></div>
       </section>}
 
@@ -50,7 +49,7 @@ export function ProfileRelations({ initial = 'companions' }: { initial?: Section
         </div>
         {next ? <div className="mt-4 flex flex-col gap-3 border-t border-[var(--profile-border)] pt-3">
           <p className="flex justify-between text-xs text-[var(--gold-200)]"><span>下一阶 · {next.name}</span><span>部族修炼增长 {next.rate}%</span></p>
-          <Progress label="第一代有效同行者" value={data.companions} target={next.companions} />
+          <Progress label="有效同行者" value={data.companions} target={next.companions} />
           <Progress label="部族有效成员" value={data.members} target={next.members} />
           <p className="text-[12px] text-[var(--profile-muted)]">两个条件同时满足后自动晋升。</p>
         </div> : <p className="mt-4 border-t border-[var(--profile-border)] pt-3 text-xs leading-6 text-[var(--gold-200)]">已达最高阶。部族奖励为部族修炼增长的 {TRIBE_TIERS[2].rate}%，返 USDT。</p>}
@@ -60,14 +59,14 @@ export function ProfileRelations({ initial = 'companions' }: { initial?: Section
 
     <section aria-labelledby="detail-title">
       <h2 id="detail-title" className="profile-heading">{tab === 'tribe' ? '部族成员' : '同行者'}明细</h2>
-      <MemberDetail key={tab} section={tab} empty={!all.length} count={count} now={now} invalid={all.filter(m => m.valid === false && (tab === 'tribe' || m.generation <= 2)).length} />
+      <MemberDetail key={tab} section={tab} empty={!all.length} count={count} now={now} invalid={all.filter(m => m.valid === false && (tab === 'tribe' || m.generation === 1)).length} />
     </section>
 
     <details className="profile-surface profile-article">
       <summary className="flex cursor-pointer list-none items-center justify-between font-display text-sm text-[var(--gold-200)]">奖励规则<ChevronDown className="size-4" aria-hidden /></summary>
-      <p className="mt-3">同行奖励：第一代 {COMPANION_REWARD.generation1}% · 第二代 {COMPANION_REWARD.generation2}%，返 USDT。第三代及更深的关系不产生同行奖励，但仍计入部族。</p>
-      <p>部族奖励：第一代有效同行者人数与部族有效成员人数同时达标后，按部族修炼增长的 {TRIBE_TIERS.map(t => `${t.rate}%`).join('、')} 产生奖励，返 USDT。</p>
-      <ol className="my-2 flex flex-col gap-2">{TRIBE_TIERS.map(t => <li key={t.level} className="flex items-center justify-between gap-2 text-[12px]"><span>{t.name}{level >= t.level && <span className="ml-1.5 text-[var(--gold-200)]">已达成</span>}：第一代有效同行者 ≥ {t.companions} 人且部族有效成员 ≥ {t.members} 人</span><span className="shrink-0 text-[var(--gold-200)]">{t.rate}%</span></li>)}</ol>
+      <p className="mt-3">同行奖励：你直接邀请的同行者完成传承，按其修炼增长的 {COMPANION_REWARD.generation1}% 返 USDT。同行者再邀请的人不产生同行奖励，但计入部族。</p>
+      <p>部族奖励：有效同行者人数与部族有效成员人数同时达标后，按部族修炼增长的 {TRIBE_TIERS.map(t => `${t.rate}%`).join('、')} 产生奖励，返 USDT。</p>
+      <ol className="my-2 flex flex-col gap-2">{TRIBE_TIERS.map(t => <li key={t.level} className="flex items-center justify-between gap-2 text-[12px]"><span>{t.name}{level >= t.level && <span className="ml-1.5 text-[var(--gold-200)]">已达成</span>}：有效同行者 ≥ {t.companions} 人且部族有效成员 ≥ {t.members} 人</span><span className="shrink-0 text-[var(--gold-200)]">{t.rate}%</span></li>)}</ol>
       <p>持有不少于 {VALID_USER_MIN_PEACH} 个蟠桃才算有效用户。未达标的成员完成传承不产生奖励；自己未达标时不能获得奖励。两种奖励可叠加、分别记账，计算基础为成员完成传承后实际产生的修炼增长。</p>
       <ProfileButtonLink href="/me/encyclopedia#rewards" size="small" secondary>查看完整规则</ProfileButtonLink>
     </details>
@@ -85,16 +84,16 @@ function MemberDetail({ section, empty, count, now, invalid }: { section: Sectio
   const [generation, setGeneration] = useState<(typeof GENERATIONS)[number][0]>('all')
   const [invalidOnly, setInvalidOnly] = useState(false)
   const members = useProfileList(section, generation, page, invalidOnly ? 'invalid' : 'all', keyword, sort)
-  const generations = section === 'tribe' ? GENERATIONS : GENERATIONS.slice(0, 3)
+  const generations = section === 'tribe' ? GENERATIONS : []
   const name = section === 'tribe' ? '部族成员' : '同行者'
   return <div role="tabpanel" className="mt-3">
     <div className="flex gap-2">
       <label className="relation-search min-w-0 flex-1"><Search className="size-4 shrink-0 text-[var(--gold-400)]" aria-hidden /><input type="search" inputMode="search" value={keyword} onChange={event => { setKeyword(event.target.value); setPage(0) }} placeholder={`搜索${name}钱包地址`} aria-label={`搜索${name}钱包地址`} />{keyword && <button type="button" onClick={() => { setKeyword(''); setPage(0) }} aria-label="清空搜索"><X className="size-4" /></button>}</label>
       <label className="relation-sort"><ArrowUpDown className="size-3.5 shrink-0 text-[var(--gold-400)]" aria-hidden /><select value={sort} onChange={event => { setSort(event.target.value as MemberSort); setPage(0) }} aria-label="排序方式">{MEMBER_SORTS.map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
     </div>
-    <div className="my-3 flex items-center gap-2">
+    {generations.length === 0 ? <div className="h-3" /> : <div className="my-3 flex items-center gap-2">
       <div role="group" aria-label="按代数筛选" className="relation-filter min-w-0 flex-1">{generations.map(([key, label]) => <button type="button" key={key} aria-pressed={generation === key} onClick={() => { setGeneration(key); setPage(0) }}>{label}{key !== 'all' && <small>{count(Number(key))}</small>}</button>)}</div>
-    </div>
+    </div>}
     <div className="mb-2 flex items-center justify-between gap-3">
       <label className="relation-toggle"><input type="checkbox" checked={invalidOnly} onChange={event => { setInvalidOnly(event.target.checked); setPage(0) }} /><span aria-hidden /><em>只看未达标（{invalid} 人）</em></label>
       <p className="text-[12px] text-[var(--profile-muted)]">符合条件 {members.data?.total ?? 0} 人</p>
@@ -104,7 +103,7 @@ function MemberDetail({ section, empty, count, now, invalid }: { section: Sectio
       : !members.data.members.length ? <ProfileEmpty title={`没有符合条件的${name}`}>{keyword ? '检查一下地址，或换一个分类。' : '换一个分类看看。'}</ProfileEmpty>
       : <ul className="profile-list flex flex-col">{members.data.members.map(m => <li key={`${m.uid}-${m.joinedAt}`} className="flex items-center gap-3 border-b border-[var(--profile-border)] py-3.5">
         <span className="avatar-ring"><Avatar src={m.avatar} size={40} /></span>
-        <div className="min-w-0 flex-1"><p className="truncate font-mono text-[13px] text-[var(--gold-100)]" title={m.uid}>{shortAddress(m.uid)}</p><p className="mt-1 truncate text-[12px] text-[var(--profile-muted)]">{(m.generation ?? 3) <= 2 ? generationName(m.generation ?? 0) : '更深层'} · {joinedText(m.joinedAt, now)}</p></div>
+        <div className="min-w-0 flex-1"><p className="truncate font-mono text-[13px] text-[var(--gold-100)]" title={m.uid}>{shortAddress(m.uid)}</p><p className="mt-1 truncate text-[12px] text-[var(--profile-muted)]">{generationName(m.generation ?? 0)} · {joinedText(m.joinedAt, now)}</p></div>
         <div className="shrink-0 text-right">{!!m.rewardCents && <p className="font-latin text-[13px] font-bold tabular-nums text-gold">+{money(m.rewardCents)}<span className="unit">USDT</span></p>}<p className={`text-[12px] ${m.valid === false ? 'text-[#f0b49a]' : 'text-[var(--profile-muted)]'}`}>{m.valid === false ? `未达 ${VALID_USER_MIN_PEACH} 蟠桃` : '有效用户'}</p></div>
       </li>)}</ul>}
     <div className="mt-3"><ProfilePager page={page} hasMore={members.data?.hasMore ?? false} onPage={setPage} /></div>

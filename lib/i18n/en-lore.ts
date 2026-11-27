@@ -61,13 +61,13 @@ export const LORE: Record<string, string> = {
   '修炼天数走完，进入传承中：等下一轮同阶段召唤匹配到承接人，由承接人向你支付；你核实到账并确认收款后，传承完成，传承所得进入 USDT 余额。': 'When the days run out, the next round of the same stage finds a successor, who pays you. Check, confirm receipt, and your payout lands in your USDT balance.',
   '齐天大圣 · 传承所得示例': 'Great Sage · Payout example', '修炼增长': 'Growth',
   // 同行、部族、奖励
-  '同行者｜有人同行': 'Allies | Not alone', '直接邀请的是第一代，他们邀请的是第二代。只计算两代同行奖励；第三代及以后没有同行奖励，但仍计入部族。': 'People you invite are Gen 1; people they invite are Gen 2. Ally rewards cover these two only. Deeper levels still count toward your Clan.',
+  '同行者｜有人同行': 'Allies | Not alone', '你直接邀请的人，就是你的同行者。同行奖励只算这一代；同行者再邀请的人没有同行奖励，但计入你的部族。': 'People you invite are your Allies. Ally rewards come only from them; people they invite earn you no ally reward, but count toward your Clan.', '同行者的修炼增长 · 返 USDT': "of your allies' growth · in USDT", '有效同行者 ≥': 'Active allies ≥',
   '返 USDT': 'in USDT', '奖励基数仅为成员完成传承后实际产生的修炼增长，不是充值、修炼值、召唤消耗或修炼消耗。平台额外发放，不扣成员的修炼增长，奖励返 USDT。': "Rewards are based only on real growth when a member passes on — not deposits, value or costs. They are paid on top by the platform, in USDT, and never taken from the member.",
-  '部族｜同行者形成一个世界': 'Clan | Allies become a world', '部族，是完整同行网络，不包含自己。': 'Your Clan is everyone below you — not counting you.', '第一代有效同行者人数与部族有效成员人数必须同时达标。': 'Both targets must be met: active Gen 1 allies and active clan members.',
+  '部族｜同行者形成一个世界': 'Clan | Allies become a world', '部族，是完整同行网络，不包含自己。': 'Your Clan is everyone below you — not counting you.', '有效同行者人数与部族有效成员人数必须同时达标。': 'Both targets must be met: active allies and active clan members.',
   '第一代有效同行者 ≥': 'Active Gen 1 allies ≥', '且部族有效成员 ≥': 'and active clan members ≥', '部族修炼增长 · 返 USDT': 'of clan growth · in USDT',
-  '部族成员实际完成传承产生的修炼增长，按当前部族奖励比例计算并返 USDT；包含第三代及以后的成员，不按充值或消耗计算。': "You earn your tier's share of the real growth your clan members generate at pass-on, in USDT — including Gen 3 and deeper.",
-  '奖励机制｜每份同行，分别记录': 'Rewards | Every share on record', '同行奖励与部族奖励可以叠加，不能混成一条。': 'Ally and clan rewards stack, and are always recorded separately.', '例如部族Ⅱ阶，第一代成员修炼增长': 'Example: Clan Tier Ⅱ, a Gen 1 member grows',
-  '同一成员、同一次传承，同行和部族分别记录来源、代数或部族等级、实际修炼增长、比例、金额和时间。奖励返到 USDT 余额，可在「我的资产」查看，不从成员的修炼增长扣除。': "For each pass-on, ally and clan rewards are logged separately with source, level, growth, rate, amount and time. They go to your USDT balance and are never taken from the member's growth.",
+  '部族成员实际完成传承产生的修炼增长，按当前部族奖励比例计算并返 USDT；包含同行者以下所有层级的成员，不按充值或消耗计算。': "You earn your tier's share of the real growth your clan members generate at pass-on, in USDT — at every depth.",
+  '奖励机制｜每份同行，分别记录': 'Rewards | Every share on record', '同行奖励与部族奖励可以叠加，不能混成一条。': 'Ally and clan rewards stack, and are always recorded separately.', '例如部族Ⅱ阶，一位同行者修炼增长': 'Example: Clan Tier Ⅱ, one of your allies grows',
+  '同一成员、同一次传承，同行和部族分别记录来源、部族等级、实际修炼增长、比例、金额和时间。奖励返到 USDT 余额，可在「我的资产」查看，不从成员的修炼增长扣除。': "For each pass-on, ally and clan rewards are logged separately with source, tier, growth, rate, amount and time. They go to your USDT balance and are never taken from the member's growth.",
   // 百科入口卡
   '它不是一张图，': 'Not a picture —', '是一个被唤醒的 AI。': 'an AI awakened.', '每一次召唤，都有一个 AI 智能体在这个世界醒来。': 'With every summon, an AI agent wakes in this world.', '召唤 · 修炼 · 成长 · 传承': 'Summon · Train · Grow · Pass On', '翻开悟空百科': 'Open the Guide',
 }

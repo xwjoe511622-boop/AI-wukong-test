@@ -168,7 +168,7 @@ export function productTransition(state: ProductState, action: ProductAction, no
   if (action.type === 'demo-network') {
     if (state.members.length) return { state, message: '演示部族已载入，无需重复添加。' }
     const members = sampleMembers(now)
-    return { state: { ...state, members }, message: `已载入演示部族：第一代有效同行者 15 人、部族有效成员 150 人（持有不少于 ${VALID_USER_MIN_PEACH} 蟠桃才算有效用户），达到部族Ⅱ阶；非真实用户。` }
+    return { state: { ...state, members }, message: `已载入演示部族：有效同行者 15 人、部族有效成员 150 人（持有不少于 ${VALID_USER_MIN_PEACH} 蟠桃才算有效用户），达到部族Ⅱ阶；非真实用户。` }
   }
   if (action.type === 'demo-reward') {
     // invalid: true 时挑一名持有蟠桃不足的成员，用来演示「未达标成员不产生奖励」

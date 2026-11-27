@@ -22,8 +22,8 @@ export const VALID_USER_MIN_PEACH = 50
 export const MATCH_WINDOW_HOURS = 1
 export const PLATFORM_PROFIT_FEE = 0.03
 export const INHERITANCE_FEE_PCT = PLATFORM_PROFIT_FEE * 100
-/** 同行奖励：第一代 10%、第二代 5%，返 USDT */
-export const COMPANION_REWARD = { generation1: 10, generation2: 5 } as const
+/** 同行奖励：只有一代——自己直接邀请的同行者，10%，返 USDT。同行者再邀请的人只计入部族 */
+export const COMPANION_REWARD = { generation1: 10 } as const
 /** 部族奖励：第一代有效同行者数与部族有效成员数同时达标，按部族修炼增长比例返 USDT */
 export const TRIBE_REWARD = {
   level1: { direct: 5, members: 50, rate: 1 },

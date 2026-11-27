@@ -10,17 +10,17 @@ test('部族晋升同时满足同行者与全部成员门槛', () => {
     assert.equal(tribeTier(direct, members)?.level ?? 0, level)
   }
 })
-test('Ⅱ阶部族：第一代10%+3%、第二代5%+3%、更深仅3%，分别记账', () => {
-  for (const [generation, expected] of [[1,1300],[2,800],[3,300],[50,300]]) {
+test('Ⅱ阶部族：同行者10%+3%，同行者再邀请的人及更深层仅3%，分别记账', () => {
+  for (const [generation, expected] of [[1,1300],[2,300],[3,300],[50,300]]) {
     const parts = rewardParts(10000, generation, 2)
     assert.equal(parts.reduce((n, p) => n + p.amountCents, 0), expected)
-    assert.equal(parts.length, generation <= 2 ? 2 : 1)
+    assert.equal(parts.length, generation === 1 ? 2 : 1)
     assert.equal(parts.find(p => p.type === 'tribe')?.amountCents, 300)
   }
 })
-test('第三代没有同行奖励，未达Ⅰ阶没有部族奖励', () => {
+test('同行奖励只有一代，未达Ⅰ阶没有部族奖励', () => {
   assert.deepEqual(rewardParts(10000, 3, 0), [])
-  assert.deepEqual(rewardParts(10000, 2, 0), [{ type: 'companion', rate: 5, amountCents: 500 }])
+  assert.deepEqual(rewardParts(10000, 2, 0), [])
   assert.deepEqual(rewardParts(10000, 1, 0), [{ type: 'companion', rate: 10, amountCents: 1000 }])
 })
 test('无盈利、负数、非整数不发奖，最小单位正确舍入', () => {
